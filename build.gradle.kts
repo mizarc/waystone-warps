@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "dev.mizarc"
-version = "1.0-SNAPSHOT"
+version = "0.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -42,10 +42,10 @@ dependencies {
 }
 
 tasks.shadowJar {
-    relocate("co.aikar.commands", "dev.mizarc.worldwidewarps.acf")
-    relocate("co.aikar.locales", "dev.mizarc.worldwidewarps.locales")
-    relocate("co.aikar.idb", "dev.mizarc.worldwidewarps.idb")
-    relocate ("com.github.stefvanschie.inventoryframework", "dev.mizarc.worldwidewarps.inventoryframework")
+    relocate("co.aikar.commands", "dev.mizarc.waystonewarps.acf")
+    relocate("co.aikar.locales", "dev.mizarc.waystonewarps.locales")
+    relocate("co.aikar.idb", "dev.mizarc.waystonewarps.idb")
+    relocate ("com.github.stefvanschie.inventoryframework", "dev.mizarc.waystonewarps.inventoryframework")
 }
 
 tasks.test {

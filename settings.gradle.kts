@@ -1,2 +1,2 @@
-rootProject.name = "WorldWideWarps"
+rootProject.name = "WaystoneWarps"
 
