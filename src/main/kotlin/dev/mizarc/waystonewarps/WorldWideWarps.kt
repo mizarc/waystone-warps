@@ -11,7 +11,7 @@ import dev.mizarc.waystonewarps.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.domain.HomeRepository
 import dev.mizarc.waystonewarps.domain.PlayerRepository
 import dev.mizarc.waystonewarps.domain.WarpAccessRepository
-import dev.mizarc.waystonewarps.domain.WarpRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
 import dev.mizarc.waystonewarps.listeners.*
 
 class WorldWideWarps: JavaPlugin() {
@@ -21,8 +21,8 @@ class WorldWideWarps: JavaPlugin() {
     private val storage = DatabaseStorage(this)
     val players = PlayerRepository()
     val homeRepository = HomeRepository(storage.connection)
-    val warpRepository = WarpRepository(storage.connection)
-    val warpAccessRepository = WarpAccessRepository(storage.connection, warpRepository)
+    val waystoneRepository = WaystoneRepository(storage.connection)
+    val warpAccessRepository = WarpAccessRepository(storage.connection, waystoneRepository)
     val teleporter = Teleporter(this, config, players)
 
     override fun onEnable() {
@@ -47,7 +47,7 @@ class WorldWideWarps: JavaPlugin() {
         commandManager.registerDependency(DatabaseStorage::class.java, storage)
         commandManager.registerDependency(PlayerRepository::class.java, players)
         commandManager.registerDependency(Teleporter::class.java, teleporter)
-        commandManager.registerDependency(WarpRepository::class.java, warpRepository)
+        commandManager.registerDependency(WaystoneRepository::class.java, waystoneRepository)
         commandManager.registerDependency(WarpAccessRepository::class.java, warpAccessRepository)
     }
 
@@ -63,9 +63,9 @@ class WorldWideWarps: JavaPlugin() {
         server.pluginManager.registerEvents(TeleportCancelListener(players), this)
         server.pluginManager.registerEvents(BedInteractListener(homeRepository, players), this)
         server.pluginManager.registerEvents(BedDestructionListener(homeRepository), this)
-        server.pluginManager.registerEvents(WarpInteractListener(warpRepository, warpAccessRepository), this)
-        server.pluginManager.registerEvents(WarpDestructionListener(warpRepository, warpAccessRepository), this)
-        server.pluginManager.registerEvents(WarpMoveToolListener(warpRepository), this)
+        server.pluginManager.registerEvents(WarpInteractListener(waystoneRepository, warpAccessRepository), this)
+        server.pluginManager.registerEvents(WarpDestructionListener(waystoneRepository, warpAccessRepository), this)
+        server.pluginManager.registerEvents(WarpMoveToolListener(waystoneRepository), this)
         server.pluginManager.registerEvents(WarpMoveToolRemovalListener(), this)
     }
 }

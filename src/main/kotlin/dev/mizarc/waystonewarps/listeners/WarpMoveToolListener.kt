@@ -1,7 +1,7 @@
 package dev.mizarc.waystonewarps.listeners
 
 import dev.mizarc.waystonewarps.Position
-import dev.mizarc.waystonewarps.domain.WarpRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
 import dev.mizarc.waystonewarps.utils.getStringMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -13,7 +13,7 @@ import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class WarpMoveToolListener(private val warpRepo: WarpRepository): Listener {
+class WarpMoveToolListener(private val warpRepo: WaystoneRepository): Listener {
 
     @EventHandler
     fun onWarpMoveBlockPlace(event: BlockPlaceEvent) {
