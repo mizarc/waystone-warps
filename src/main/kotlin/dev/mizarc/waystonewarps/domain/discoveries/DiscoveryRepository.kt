@@ -14,7 +14,7 @@ interface DiscoveryRepository {
      * @param waystone The waystone to query.
      * @return The map of waystones linked to each player.
      */
-    fun getByWaystone(waystone: Waystone): Set<OfflinePlayer>
+    fun getByWaystone(waystone: Waystone): Set<Discovery>
 
     /**
      * Gets all waystones the player has discovered.
@@ -22,21 +22,19 @@ interface DiscoveryRepository {
      * @param player The player to query.
      * @return The set of waystones that the player has discovered.
      */
-    fun getByPlayer(player: OfflinePlayer): Set<Waystone>
+    fun getByPlayer(player: OfflinePlayer): Set<Discovery>
 
     /**
-     * Adds an entry that links a player to a waystone.
+     * Adds a discovery entry that links a player to a waystone.
      *
-     * @param waystone The target waystone.
-     * @param player The player to give the permission to.
+     * @param discovery The discovery to add.
      */
-    fun add(waystone: Waystone, player: OfflinePlayer)
+    fun add(discovery: Discovery)
 
     /**
-     * Removes the link between a player and the waystone.
+     * Removes the discovery link between a player and the waystone.
      *
-     * @param waystone The target waystone.
-     * @param player The player to remove the permission from.
+     * @param discovery The discovery to remove.
      */
-    fun remove(waystone: Waystone, player: OfflinePlayer)
+    fun remove(discovery: Discovery)
 }
