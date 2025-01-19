@@ -1,7 +1,7 @@
 package dev.mizarc.waystonewarps.interaction.listeners
 
 import dev.mizarc.waystonewarps.Position
-import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones.WaystoneRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.utils.getStringMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor

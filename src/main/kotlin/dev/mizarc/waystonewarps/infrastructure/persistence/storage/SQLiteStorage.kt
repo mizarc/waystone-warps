@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.storage
+package dev.mizarc.waystonewarps.infrastructure.persistence.storage
 
 import co.aikar.idb.Database
 import co.aikar.idb.DatabaseOptions

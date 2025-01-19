@@ -1,10 +1,10 @@
-package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.discoveries
+package dev.mizarc.waystonewarps.infrastructure.persistence.discoveries
 
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
-import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.storage.Storage
+import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import org.bukkit.OfflinePlayer
 import java.sql.SQLException
 import java.util.*

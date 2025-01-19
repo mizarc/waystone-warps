@@ -1,10 +1,10 @@
-package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones
+package dev.mizarc.waystonewarps.infrastructure.persistence.waystones
 
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
-import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.storage.Storage
+import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
