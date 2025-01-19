@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.listeners
+package dev.mizarc.waystonewarps.interaction.listeners
 
 import dev.mizarc.waystonewarps.Position
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones.WaystoneRepositorySQLite

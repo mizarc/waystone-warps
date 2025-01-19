@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.menus
+package dev.mizarc.waystonewarps.interaction.menus
 
 import com.github.stefvanschie.inventoryframework.font.util.Font
 import com.github.stefvanschie.inventoryframework.gui.GuiItem

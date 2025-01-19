@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.listeners
+package dev.mizarc.waystonewarps.interaction.listeners
 
 import org.bukkit.Material
 import org.bukkit.event.EventHandler

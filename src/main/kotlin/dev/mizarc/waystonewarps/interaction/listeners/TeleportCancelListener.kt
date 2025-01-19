@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.listeners
+package dev.mizarc.waystonewarps.interaction.listeners
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor

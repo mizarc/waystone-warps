@@ -4,10 +4,11 @@ import co.aikar.commands.PaperCommandManager
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
-import dev.mizarc.waystonewarps.commands.WarpMenuCommand
+import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones.WaystoneRepositorySQLite
-import dev.mizarc.waystonewarps.listeners.*
+import dev.mizarc.waystonewarps.interaction.commands.listeners.*
+import dev.mizarc.waystonewarps.interaction.listeners.*
 
 class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager

@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.listeners
+package dev.mizarc.waystonewarps.interaction.listeners
 
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -9,7 +9,7 @@ import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones.WaystoneRepositorySQLite
-import dev.mizarc.waystonewarps.menus.WarpManagementMenu
+import dev.mizarc.waystonewarps.interaction.menus.WarpManagementMenu
 
 class WarpInteractListener(var waystoneRepositorySQLite: WaystoneRepositorySQLite,
                            var warpAccessRepository: WarpAccessRepository
