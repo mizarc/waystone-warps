@@ -1,6 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.services.playerlimit
 
-import dev.mizarc.waystonewarps.Config
+import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import dev.mizarc.waystonewarps.TeleportTask
 import dev.mizarc.waystonewarps.api.PlayerLimitService
 import net.milkbowl.vault.chat.Chat

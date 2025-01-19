@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
+import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit

@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps
+package dev.mizarc.waystonewarps.infrastructure.persistence
 import org.bukkit.plugin.Plugin
 
 class Config(val plugin: Plugin) {

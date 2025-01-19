@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
+import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 
 class PlayerRegistrationListener(val homes: HomeRepository, val players: PlayerStateRepository,
