@@ -4,9 +4,6 @@ import co.aikar.commands.PaperCommandManager
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
-import dev.mizarc.waystonewarps.commands.HomeCommand
-import dev.mizarc.waystonewarps.commands.SetspawnCommand
-import dev.mizarc.waystonewarps.commands.SpawnCommand
 import dev.mizarc.waystonewarps.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
