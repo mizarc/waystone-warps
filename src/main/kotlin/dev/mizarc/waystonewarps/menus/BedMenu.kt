@@ -17,11 +17,12 @@ import org.bukkit.inventory.ItemStack
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.domain.Home
 import dev.mizarc.waystonewarps.domain.HomeRepository
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 import dev.mizarc.waystonewarps.utils.lore
 import dev.mizarc.waystonewarps.utils.name
 import dev.mizarc.waystonewarps.utils.toBed
 
-class BedMenu(private val homes: HomeRepository, private val playerState: PlayerState,
+class BedMenu(private val homes: HomeRepository, private val vaultPlayerLimitServiceImpl: VaultPlayerLimitServiceImpl,
               private val homeBuilder: Home.Builder) {
     fun openHomeSelectionMenu() {
         // Create homes menu
@@ -42,7 +43,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
 
         // Change bed info depending on who owns the bed, or if bed is unowned
         if (existingHome != null) {
-            if (existingHome.player.uniqueId == playerState.player.uniqueId) {
+            if (existingHome.player.uniqueId == vaultPlayerLimitServiceImpl.player.uniqueId) {
                 currentBedItem.lore("This home belongs to you. Click to edit.")
                 guiCurrentBedItem = GuiItem(currentBedItem) { _ -> openHomeEditMenu(homeBuilder, existingHome) }
             }
@@ -62,7 +63,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
         pane.addItem(guisSeparator, 1, 0)
 
         // Add existing homes to menu
-        val playerHomes = homes.getByPlayer(playerState.player)
+        val playerHomes = homes.getByPlayer(vaultPlayerLimitServiceImpl.player)
         if (playerHomes.isNotEmpty()) {
             var lastIndex = 0
             for (home in playerHomes) {
@@ -74,7 +75,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
                     .name(home.name)
                     .lore("Teleports to bed at ${home.position.x}, ${home.position.y}, ${home.position.z}.")
                 val guiBedItem = GuiItem(bedItem) { _ ->
-                    playerState.inBedMenu = false
+                    vaultPlayerLimitServiceImpl.inBedMenu = false
                     GSitAPI.removePose(homeBuilder.player, GetUpReason.GET_UP)
                     teleportToBed(homeBuilder.player, home)
                 }
@@ -85,7 +86,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
         }
 
         // Sets new home item based on home state
-        if (playerHomes.count() < playerState.getHomeLimit())
+        if (playerHomes.count() < vaultPlayerLimitServiceImpl.getHomeLimit())
         {
             val guiItem = if (isHomeAlreadySet(homeBuilder.position)) {
                 val newBedItem = ItemStack(Material.MAGMA_CREAM)
@@ -109,7 +110,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
         }
 
         gui.show(homeBuilder.player)
-        playerState.inBedMenu = true
+        vaultPlayerLimitServiceImpl.inBedMenu = true
     }
 
     fun openHomeCreationMenu(homeBuilder: Home.Builder) {
@@ -204,7 +205,7 @@ class BedMenu(private val homes: HomeRepository, private val playerState: Player
     }
 
     private fun isHomeAlreadySet(position: Position): Boolean {
-        val playerHomes = homes.getByPlayer(playerState.player)
+        val playerHomes = homes.getByPlayer(vaultPlayerLimitServiceImpl.player)
         for (home in playerHomes) {
             if (position == home.position) {
                 return true

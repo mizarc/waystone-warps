@@ -8,14 +8,15 @@ import org.bukkit.event.player.PlayerQuitEvent
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.domain.HomeRepository
 import dev.mizarc.waystonewarps.domain.PlayerRepository
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 
 class PlayerRegistrationListener(val homes: HomeRepository, val players: PlayerRepository,
                                  val config: Config, val metadata: Chat): Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        val playerState = PlayerState(event.player, config, metadata)
-        players.add(playerState)
+        val vaultPlayerLimitServiceImpl = VaultPlayerLimitServiceImpl(event.player, config, metadata)
+        players.add(vaultPlayerLimitServiceImpl)
     }
 
     @EventHandler

@@ -1,19 +1,19 @@
 package dev.mizarc.waystonewarps.domain
 
-import dev.mizarc.waystonewarps.PlayerState
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.collections.ArrayList
 
 class PlayerRepository {
-    var playerStates: ArrayList<PlayerState> = ArrayList()
+    var vaultPlayerLimitServiceImpls: ArrayList<VaultPlayerLimitServiceImpl> = ArrayList()
 
-    fun getAll(): ArrayList<PlayerState> {
-        return playerStates
+    fun getAll(): ArrayList<VaultPlayerLimitServiceImpl> {
+        return vaultPlayerLimitServiceImpls
     }
 
-    fun getByPlayer(player: Player) : PlayerState? {
-        for (playerState in playerStates) {
+    fun getByPlayer(player: Player) : VaultPlayerLimitServiceImpl? {
+        for (playerState in vaultPlayerLimitServiceImpls) {
             if (playerState.player.uniqueId == player.uniqueId) {
                 return playerState
             }
@@ -22,20 +22,20 @@ class PlayerRepository {
         return null
     }
 
-    fun add(playerState: PlayerState) : Boolean {
-        for (existingPlayerState in playerStates) {
-            if (existingPlayerState.player.uniqueId == playerState.player.uniqueId) {
+    fun add(vaultPlayerLimitServiceImpl: VaultPlayerLimitServiceImpl) : Boolean {
+        for (existingPlayerState in vaultPlayerLimitServiceImpls) {
+            if (existingPlayerState.player.uniqueId == vaultPlayerLimitServiceImpl.player.uniqueId) {
                 return false
             }
         }
-        playerStates.add(playerState)
+        vaultPlayerLimitServiceImpls.add(vaultPlayerLimitServiceImpl)
         return true
     }
 
     fun remove(playerId: UUID) : Boolean {
-        for (playerState in playerStates) {
+        for (playerState in vaultPlayerLimitServiceImpls) {
             if (playerState.player.uniqueId == playerId) {
-                playerStates.remove(playerState)
+                vaultPlayerLimitServiceImpls.remove(playerState)
                 return true
             }
         }
