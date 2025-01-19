@@ -1,8 +1,10 @@
 package dev.mizarc.waystonewarps.domain.waystones
 
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
+import org.bukkit.entity.Player
 import java.time.Instant
 import java.util.*
 
@@ -27,4 +29,24 @@ class Waystone(val id: UUID, val player: OfflinePlayer, val creationTime: Instan
      */
     constructor(worldId: UUID, owner: OfflinePlayer, position: Position3D, name: String) : this(
         UUID.randomUUID(), owner, Instant.now(), name, worldId, position, Material.BELL)
+
+    /**
+     * Compiles a waystone based on waystone builder object data.
+     *
+     * @param builder The waystone builder to build a waystone out of.
+     */
+    constructor(builder: Builder): this(builder.location.world.uid, builder.player,
+        Position3D(builder.location), builder.name)
+
+    /**
+     * A builder for creating instances of a Waystone.
+     *
+     * @property player The player who should own the waystone.
+     * @property location The location the waystone should exist in.
+     */
+    class Builder(val player: Player, val location: Location) {
+        var name = ""
+
+        fun build() = Waystone(this)
+    }
 }
