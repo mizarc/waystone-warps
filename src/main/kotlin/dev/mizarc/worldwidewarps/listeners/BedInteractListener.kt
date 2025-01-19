@@ -15,6 +15,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.util.Vector
 import dev.mizarc.worldwidewarps.*
+import dev.mizarc.worldwidewarps.domain.Home
+import dev.mizarc.worldwidewarps.domain.HomeRepository
+import dev.mizarc.worldwidewarps.domain.PlayerRepository
 import dev.mizarc.worldwidewarps.menus.BedMenu
 
 class BedInteractListener(private val homes: HomeRepository, private val players: PlayerRepository): Listener {

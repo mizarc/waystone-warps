@@ -2,14 +2,12 @@ package dev.mizarc.worldwidewarps.menus
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
-import com.github.stefvanschie.inventoryframework.gui.type.util.Gui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import dev.mizarc.worldwidewarps.Teleporter
-import dev.mizarc.worldwidewarps.WarpAccessRepository
-import dev.mizarc.worldwidewarps.WarpRepository
+import dev.mizarc.worldwidewarps.domain.WarpAccessRepository
 import dev.mizarc.worldwidewarps.utils.lore
 import dev.mizarc.worldwidewarps.utils.name
 import kotlin.math.ceil

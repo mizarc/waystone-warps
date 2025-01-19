@@ -1,4 +1,4 @@
-package dev.mizarc.worldwidewarps
+package dev.mizarc.worldwidewarps.domain
 
 import co.aikar.idb.Database
 import org.bukkit.Bukkit

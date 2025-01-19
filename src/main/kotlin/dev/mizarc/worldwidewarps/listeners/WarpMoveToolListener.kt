@@ -1,7 +1,7 @@
 package dev.mizarc.worldwidewarps.listeners
 
 import dev.mizarc.worldwidewarps.Position
-import dev.mizarc.worldwidewarps.WarpRepository
+import dev.mizarc.worldwidewarps.domain.WarpRepository
 import dev.mizarc.worldwidewarps.utils.getStringMeta
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor

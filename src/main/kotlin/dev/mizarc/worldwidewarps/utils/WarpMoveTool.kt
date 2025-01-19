@@ -1,6 +1,6 @@
 package dev.mizarc.worldwidewarps.utils
 
-import dev.mizarc.worldwidewarps.Warp
+import dev.mizarc.worldwidewarps.domain.Warp
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

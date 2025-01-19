@@ -8,10 +8,14 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import dev.mizarc.worldwidewarps.*
+import dev.mizarc.worldwidewarps.domain.Warp
+import dev.mizarc.worldwidewarps.domain.WarpAccessRepository
+import dev.mizarc.worldwidewarps.domain.WarpRepository
 import dev.mizarc.worldwidewarps.menus.WarpManagementMenu
 
 class WarpInteractListener(var warpRepository: WarpRepository,
-                           var warpAccessRepository: WarpAccessRepository): Listener {
+                           var warpAccessRepository: WarpAccessRepository
+): Listener {
 
     @EventHandler
     fun onPlayerWarpInteract(event: PlayerInteractEvent) {

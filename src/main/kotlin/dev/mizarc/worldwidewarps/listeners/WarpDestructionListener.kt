@@ -5,8 +5,8 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import dev.mizarc.worldwidewarps.Position
-import dev.mizarc.worldwidewarps.WarpAccessRepository
-import dev.mizarc.worldwidewarps.WarpRepository
+import dev.mizarc.worldwidewarps.domain.WarpAccessRepository
+import dev.mizarc.worldwidewarps.domain.WarpRepository
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.block.Block
@@ -14,7 +14,8 @@ import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 
 class WarpDestructionListener(val warpRepository: WarpRepository,
-                              val warpAccessRepository: WarpAccessRepository): Listener {
+                              val warpAccessRepository: WarpAccessRepository
+): Listener {
     @EventHandler
     fun onWarpBreak(event: BlockBreakEvent) {
         if (event.block.type != Material.LODESTONE) return

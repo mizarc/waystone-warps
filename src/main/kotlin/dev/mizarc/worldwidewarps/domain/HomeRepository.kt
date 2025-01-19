@@ -1,6 +1,8 @@
-package dev.mizarc.worldwidewarps
+package dev.mizarc.worldwidewarps.domain
 
 import co.aikar.idb.Database
+import dev.mizarc.worldwidewarps.Direction
+import dev.mizarc.worldwidewarps.Position
 import org.bukkit.Bukkit
 import org.bukkit.DyeColor
 import org.bukkit.OfflinePlayer

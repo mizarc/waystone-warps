@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import org.bukkit.entity.Player
 import dev.mizarc.worldwidewarps.Config
-import dev.mizarc.worldwidewarps.PlayerRepository
+import dev.mizarc.worldwidewarps.domain.PlayerRepository
 import dev.mizarc.worldwidewarps.Teleporter
 
 @CommandAlias("setspawn")

@@ -1,6 +1,8 @@
-package dev.mizarc.worldwidewarps
+package dev.mizarc.worldwidewarps.domain
 
 import dev.geco.gsit.objects.IGPoseSeat
+import dev.mizarc.worldwidewarps.Direction
+import dev.mizarc.worldwidewarps.Position
 import org.bukkit.DyeColor
 import org.bukkit.OfflinePlayer
 import org.bukkit.World
@@ -20,7 +22,8 @@ import java.util.*
  * @property position The position in the world.
  */
 class Home(val id: UUID, val player: OfflinePlayer, val creationTime: Instant, val name: String, val colour: DyeColor,
-           val worldId: UUID, val position: Position, val direction: Direction) {
+           val worldId: UUID, val position: Position, val direction: Direction
+) {
 
     /**
      * Used to create a new home instance with an auto generated UUID.
@@ -30,7 +33,8 @@ class Home(val id: UUID, val player: OfflinePlayer, val creationTime: Instant, v
      * @param position The position in the world.
      */
     constructor(player: OfflinePlayer, name: String, colour: DyeColor,
-                worldId: UUID, position: Position, direction: Direction):
+                worldId: UUID, position: Position, direction: Direction
+    ):
             this(UUID.randomUUID(), player, Instant.now(), name, colour, worldId, position, direction)
 
     constructor(builder: Builder):

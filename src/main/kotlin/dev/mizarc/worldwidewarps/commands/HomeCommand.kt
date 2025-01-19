@@ -7,7 +7,7 @@ import co.aikar.commands.annotation.Default
 import co.aikar.commands.annotation.Dependency
 import org.bukkit.entity.Player
 import dev.mizarc.worldwidewarps.Config
-import dev.mizarc.worldwidewarps.PlayerRepository
+import dev.mizarc.worldwidewarps.domain.PlayerRepository
 import dev.mizarc.worldwidewarps.Teleporter
 
 @CommandAlias("home")

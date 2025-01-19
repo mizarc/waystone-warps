@@ -8,6 +8,10 @@ import dev.mizarc.worldwidewarps.commands.HomeCommand
 import dev.mizarc.worldwidewarps.commands.SetspawnCommand
 import dev.mizarc.worldwidewarps.commands.SpawnCommand
 import dev.mizarc.worldwidewarps.commands.WarpMenuCommand
+import dev.mizarc.worldwidewarps.domain.HomeRepository
+import dev.mizarc.worldwidewarps.domain.PlayerRepository
+import dev.mizarc.worldwidewarps.domain.WarpAccessRepository
+import dev.mizarc.worldwidewarps.domain.WarpRepository
 import dev.mizarc.worldwidewarps.listeners.*
 
 class WorldWideWarps: JavaPlugin() {

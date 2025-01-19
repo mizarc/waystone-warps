@@ -1,5 +1,6 @@
-package dev.mizarc.worldwidewarps
+package dev.mizarc.worldwidewarps.domain
 
+import dev.mizarc.worldwidewarps.PlayerState
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.collections.ArrayList

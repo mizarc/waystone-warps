@@ -10,6 +10,9 @@ import com.github.stefvanschie.inventoryframework.gui.type.HopperGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.component.Label
 import dev.mizarc.worldwidewarps.*
+import dev.mizarc.worldwidewarps.domain.Warp
+import dev.mizarc.worldwidewarps.domain.WarpAccessRepository
+import dev.mizarc.worldwidewarps.domain.WarpRepository
 import dev.mizarc.worldwidewarps.utils.getWarpMoveTool
 import org.bukkit.Bukkit
 import org.bukkit.Material
