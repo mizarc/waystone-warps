@@ -6,7 +6,7 @@ import org.bukkit.OfflinePlayer
 /**
  * A repository that handles the persistence of waystone discoveries.
  */
-interface DiscoveriesRepository {
+interface DiscoveryRepository {
 
     /**
      * Gets all players that have discovered a given waystone.

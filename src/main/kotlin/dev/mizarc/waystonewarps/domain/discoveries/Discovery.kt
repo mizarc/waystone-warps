@@ -7,4 +7,4 @@ import java.util.*
  * @property waystoneId The unique identifier for the claim.
  * @property playerId The unique identifier for a player.
  */
-class Discoveries(var waystoneId: UUID, var playerId: UUID)
+class Discovery(var waystoneId: UUID, var playerId: UUID)
