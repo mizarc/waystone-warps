@@ -22,7 +22,6 @@ import dev.mizarc.waystonewarps.utils.name
 import org.bukkit.entity.Player
 import kotlin.concurrent.thread
 
-class WarpManagementMenu(private val waystoneRepositorySQLite: WaystoneRepositorySQLite,
                          private val warpAccessRepository: WarpAccessRepository,
                          private val warpBuilder: Warp.Builder) {
 
