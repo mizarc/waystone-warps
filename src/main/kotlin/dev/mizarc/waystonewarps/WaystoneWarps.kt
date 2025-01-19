@@ -6,7 +6,7 @@ import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.listeners.*
 
 class WaystoneWarps: JavaPlugin() {

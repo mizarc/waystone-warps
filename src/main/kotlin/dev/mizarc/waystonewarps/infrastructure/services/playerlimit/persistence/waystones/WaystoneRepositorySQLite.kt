@@ -1,13 +1,17 @@
-package dev.mizarc.waystonewarps.domain.waystones
+package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.waystones
 
+import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
+import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.storage.Storage
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
 import java.time.Instant
 import java.util.*
 
-class WaystoneRepositorySQLite(private val storage: SQLiteStorage): WaystoneRepository {
+class WaystoneRepositorySQLite(private val storage: Storage<Database>): WaystoneRepository {
     private val waystones: MutableMap<UUID, Waystone> = mutableMapOf()
 
     init {
@@ -33,7 +37,7 @@ class WaystoneRepositorySQLite(private val storage: SQLiteStorage): WaystoneRepo
 
     override fun add(waystone: Waystone) {
         waystones[waystone.id] = waystone
-        storage.executeInsert("INSERT INTO waystones (id, playerId, creationTime, name, worldId, " +
+        storage.connection.executeInsert("INSERT INTO waystones (id, playerId, creationTime, name, worldId, " +
                 "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             waystone.id, waystone.player.uniqueId, waystone.creationTime, waystone.name, waystone.worldId,
             waystone.position.x, waystone.position.y, waystone.position.z, waystone.icon.name)
@@ -42,7 +46,7 @@ class WaystoneRepositorySQLite(private val storage: SQLiteStorage): WaystoneRepo
     override fun update(waystone: Waystone) {
         waystones.remove(waystone.id)
         waystones[waystone.id] = waystone
-        storage.executeUpdate("UPDATE waystones SET playerId=?, creationTime=?, name=?, worldId=?, " +
+        storage.connection.executeUpdate("UPDATE waystones SET playerId=?, creationTime=?, name=?, worldId=?, " +
                 "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
             waystone.player.uniqueId, waystone.creationTime, waystone.name, waystone.worldId, waystone.position.x, waystone.position.y,
             waystone.position.z, waystone.icon.name, waystone.id)
@@ -51,17 +55,17 @@ class WaystoneRepositorySQLite(private val storage: SQLiteStorage): WaystoneRepo
 
     override fun remove(waystone: Waystone) {
         waystones.remove(waystone.id)
-        storage.executeUpdate("DELETE FROM waystones WHERE id=?", waystone.id)
+        storage.connection.executeUpdate("DELETE FROM waystones WHERE id=?", waystone.id)
     }
 
     private fun createTable() {
-        storage.executeUpdate("CREATE TABLE IF NOT EXISTS waystones (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
+        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS waystones (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
                 "creationTime TEXT NOT NULL, name TEXT, worldId TEXT, positionX INTEGER, positionY INTEGER, " +
                 "positionZ INTEGER, direction INT, icon TEXT);")
     }
 
     private fun preload() {
-        val results = storage.getResults("SELECT * FROM waystones;")
+        val results = storage.connection.getResults("SELECT * FROM waystones;")
         for (result in results) {
             waystones[UUID.fromString(result.getString("id"))] = Waystone(
                 UUID.fromString(result.getString("id")),
