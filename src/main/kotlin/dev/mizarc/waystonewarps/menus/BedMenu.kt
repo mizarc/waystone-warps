@@ -15,8 +15,6 @@ import org.bukkit.entity.Player
 import org.bukkit.entity.Pose
 import org.bukkit.inventory.ItemStack
 import dev.mizarc.waystonewarps.*
-import dev.mizarc.waystonewarps.domain.Home
-import dev.mizarc.waystonewarps.domain.HomeRepository
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 import dev.mizarc.waystonewarps.utils.lore
 import dev.mizarc.waystonewarps.utils.name

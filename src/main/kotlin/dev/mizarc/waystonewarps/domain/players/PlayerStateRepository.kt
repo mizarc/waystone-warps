@@ -1,11 +1,11 @@
-package dev.mizarc.waystonewarps.domain
+package dev.mizarc.waystonewarps.domain.players
 
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 import org.bukkit.entity.Player
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PlayerRepository {
+class PlayerStateRepository {
     var vaultPlayerLimitServiceImpls: ArrayList<VaultPlayerLimitServiceImpl> = ArrayList()
 
     fun getAll(): ArrayList<VaultPlayerLimitServiceImpl> {

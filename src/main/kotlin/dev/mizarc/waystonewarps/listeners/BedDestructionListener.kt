@@ -4,7 +4,6 @@ import org.bukkit.block.data.type.Bed
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
-import dev.mizarc.waystonewarps.domain.HomeRepository
 import dev.mizarc.waystonewarps.Position
 import org.bukkit.block.Block
 import org.bukkit.event.block.BlockExplodeEvent

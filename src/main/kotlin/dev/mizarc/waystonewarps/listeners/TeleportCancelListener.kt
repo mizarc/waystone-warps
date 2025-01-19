@@ -5,13 +5,13 @@ import net.kyori.adventure.text.format.TextColor
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerMoveEvent
-import dev.mizarc.waystonewarps.domain.PlayerRepository
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 
-class TeleportCancelListener(val playerRepository: PlayerRepository): Listener {
+class TeleportCancelListener(val playerStateRepository: PlayerStateRepository): Listener {
 
     @EventHandler
     fun onPlayerMove(event: PlayerMoveEvent) {
-        val playerState = playerRepository.getByPlayer(event.player) ?: return
+        val playerState = playerStateRepository.getByPlayer(event.player) ?: return
 
         // Do nothing if player is not teleporting
         val teleportTask = playerState.teleportTask ?: return

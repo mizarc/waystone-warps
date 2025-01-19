@@ -4,7 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.*
 import org.bukkit.entity.Player
 import dev.mizarc.waystonewarps.Config
-import dev.mizarc.waystonewarps.domain.PlayerRepository
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.Teleporter
 
 @CommandAlias("setspawn")
@@ -12,7 +12,7 @@ import dev.mizarc.waystonewarps.Teleporter
 class SetspawnCommand: BaseCommand() {
     @Dependency lateinit var config: Config
     @Dependency lateinit var teleporter: Teleporter
-    @Dependency lateinit var playerRepository: PlayerRepository
+    @Dependency lateinit var playerStateRepository: PlayerStateRepository
 
     @Default
     fun onSetspawn(player: Player) {

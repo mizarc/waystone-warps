@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import dev.mizarc.waystonewarps.Position
-import dev.mizarc.waystonewarps.domain.WarpAccessRepository
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor

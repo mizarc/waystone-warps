@@ -8,9 +8,7 @@ import dev.mizarc.waystonewarps.commands.HomeCommand
 import dev.mizarc.waystonewarps.commands.SetspawnCommand
 import dev.mizarc.waystonewarps.commands.SpawnCommand
 import dev.mizarc.waystonewarps.commands.WarpMenuCommand
-import dev.mizarc.waystonewarps.domain.HomeRepository
-import dev.mizarc.waystonewarps.domain.PlayerRepository
-import dev.mizarc.waystonewarps.domain.WarpAccessRepository
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.listeners.*
 
@@ -19,7 +17,7 @@ class WorldWideWarps: JavaPlugin() {
     private lateinit var metadata: Chat
     private val config = Config(this)
     private val storage = DatabaseStorage(this)
-    val players = PlayerRepository()
+    val players = PlayerStateRepository()
     val homeRepository = HomeRepository(storage.connection)
     val waystoneRepositorySQLite = WaystoneRepositorySQLite(storage.connection)
     val warpAccessRepository = WarpAccessRepository(storage.connection, waystoneRepositorySQLite)
@@ -45,7 +43,7 @@ class WorldWideWarps: JavaPlugin() {
     private fun registerDependencies() {
         commandManager.registerDependency(Config::class.java, config)
         commandManager.registerDependency(DatabaseStorage::class.java, storage)
-        commandManager.registerDependency(PlayerRepository::class.java, players)
+        commandManager.registerDependency(PlayerStateRepository::class.java, players)
         commandManager.registerDependency(Teleporter::class.java, teleporter)
         commandManager.registerDependency(WaystoneRepositorySQLite::class.java, waystoneRepositorySQLite)
         commandManager.registerDependency(WarpAccessRepository::class.java, warpAccessRepository)

@@ -1,6 +1,5 @@
 package dev.mizarc.waystonewarps.utils
 
-import dev.mizarc.waystonewarps.domain.Warp
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
 

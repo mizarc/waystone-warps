@@ -6,11 +6,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import dev.mizarc.waystonewarps.*
-import dev.mizarc.waystonewarps.domain.HomeRepository
-import dev.mizarc.waystonewarps.domain.PlayerRepository
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 
-class PlayerRegistrationListener(val homes: HomeRepository, val players: PlayerRepository,
+class PlayerRegistrationListener(val homes: HomeRepository, val players: PlayerStateRepository,
                                  val config: Config, val metadata: Chat): Listener {
 
     @EventHandler

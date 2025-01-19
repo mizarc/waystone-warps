@@ -1,7 +1,6 @@
 package dev.mizarc.waystonewarps
 
-import dev.mizarc.waystonewarps.domain.PlayerRepository
-import dev.mizarc.waystonewarps.domain.Warp
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
@@ -12,11 +11,11 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import dev.mizarc.waystonewarps.utils.LocationConversions
 
-class Teleporter(private val plugin: Plugin, private val config: Config, private val playerRepository: PlayerRepository) {
+class Teleporter(private val plugin: Plugin, private val config: Config, private val playerStateRepository: PlayerStateRepository) {
 
     fun teleportHome(player: Player): Boolean {
         val homeLocation = player.bedSpawnLocation ?: return false
-        val playerState = playerRepository.getByPlayer(player) ?: return false
+        val playerState = playerStateRepository.getByPlayer(player) ?: return false
 
         // Do cost checks if required
         if (playerState.getHomeTeleportCost() > 1) {
@@ -44,7 +43,7 @@ class Teleporter(private val plugin: Plugin, private val config: Config, private
 
     fun teleportSpawn(player: Player): Boolean {
         val spawnLocation = LocationConversions.stringTolocation(config.spawnLocation) ?: return false
-        val playerState = playerRepository.getByPlayer(player) ?: return false
+        val playerState = playerStateRepository.getByPlayer(player) ?: return false
 
         // Do cost checks if required
         if (playerState.getSpawnTeleportCost() > 1) {
@@ -77,7 +76,7 @@ class Teleporter(private val plugin: Plugin, private val config: Config, private
         warpLocation.y += 1
         warpLocation.z += 0.5
         warpLocation.direction = Direction.toVector(warp.direction)
-        val playerState = playerRepository.getByPlayer(player) ?: return false
+        val playerState = playerStateRepository.getByPlayer(player) ?: return false
 
         // Do cost checks if required
         if (playerState.getSpawnTeleportCost() > 1) {
@@ -105,7 +104,7 @@ class Teleporter(private val plugin: Plugin, private val config: Config, private
 
     fun teleport(player: Player, location: Location, timer: Int = 0,
                  teleportMessage: TeleportMessage = TeleportMessage.NONE, teleportCost: Int = 0): Boolean {
-        val playerState = playerRepository.getByPlayer(player) ?: return false
+        val playerState = playerStateRepository.getByPlayer(player) ?: return false
 
         // Teleports the player instantaneously
         if (timer == 0) {

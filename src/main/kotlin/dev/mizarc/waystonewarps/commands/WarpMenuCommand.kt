@@ -7,7 +7,6 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import org.bukkit.entity.Player
 import dev.mizarc.waystonewarps.Teleporter
-import dev.mizarc.waystonewarps.domain.WarpAccessRepository
 import dev.mizarc.waystonewarps.menus.WarpMenu
 
 @CommandAlias("warpmenu")

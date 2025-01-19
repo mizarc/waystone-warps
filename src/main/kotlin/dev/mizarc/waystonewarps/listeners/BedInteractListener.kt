@@ -15,12 +15,10 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.player.PlayerBedEnterEvent
 import org.bukkit.util.Vector
 import dev.mizarc.waystonewarps.*
-import dev.mizarc.waystonewarps.domain.Home
-import dev.mizarc.waystonewarps.domain.HomeRepository
-import dev.mizarc.waystonewarps.domain.PlayerRepository
+import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.menus.BedMenu
 
-class BedInteractListener(private val homes: HomeRepository, private val players: PlayerRepository): Listener {
+class BedInteractListener(private val homes: HomeRepository, private val players: PlayerStateRepository): Listener {
     @EventHandler
     fun onBedShiftClick(event: PlayerBedEnterEvent) {
         // Prevent player from sleeping on someone else's bed

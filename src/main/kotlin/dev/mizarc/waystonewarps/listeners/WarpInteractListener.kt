@@ -8,8 +8,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import dev.mizarc.waystonewarps.*
-import dev.mizarc.waystonewarps.domain.Warp
-import dev.mizarc.waystonewarps.domain.WarpAccessRepository
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.menus.WarpManagementMenu
 
