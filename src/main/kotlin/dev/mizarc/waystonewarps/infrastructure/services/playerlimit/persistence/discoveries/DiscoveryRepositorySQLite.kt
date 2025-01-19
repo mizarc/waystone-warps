@@ -1,9 +1,10 @@
-package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence
+package dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.discoveries
 
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.persistence.storage.Storage
 import org.bukkit.OfflinePlayer
 import java.sql.SQLException
 import java.util.*
@@ -24,9 +25,9 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
                 if (discovery.waystoneId == waystone.id) {
                     discoverySet.add(discovery)
                 }
-                return discoveriesSet
             }
         }
+        return discoverySet
     }
 
     override fun getByPlayer(player: OfflinePlayer): Set<Discovery> {
