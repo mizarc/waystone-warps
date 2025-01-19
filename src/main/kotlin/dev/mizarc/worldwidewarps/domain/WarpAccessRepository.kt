@@ -5,7 +5,7 @@ import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import java.util.*
 
-class WarpAccessRepository(private val database: Database, private val warpRepository: WarpRepository) {
+class \WarpAccessRepository(private val database: Database, private val warpRepository: WarpRepository) {
     private val playerAccesses: MutableMap<UUID, MutableSet<Warp>> = mutableMapOf()
     private val warpPlayers: MutableMap<UUID, MutableSet<OfflinePlayer>> = mutableMapOf()
 

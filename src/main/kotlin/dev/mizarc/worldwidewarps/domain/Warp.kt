@@ -20,7 +20,7 @@ import kotlin.concurrent.thread
  * @property position The position in the world.
  * @property direction The facing direction
  */
-data class  Warp(val id: UUID, val player: OfflinePlayer, val creationTime: Instant, var name: String, var worldId: UUID,
+data class Warp(val id: UUID, val player: OfflinePlayer, val creationTime: Instant, var name: String, var worldId: UUID,
                 var position: Position, var direction: Direction, var icon: Material) {
     val defaultBreakCount = 3
     var breakCount = 3
