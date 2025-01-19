@@ -1,84 +1,63 @@
 package dev.mizarc.waystonewarps.domain.waystones
 
-import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
-import org.bukkit.Bukkit
-import org.bukkit.Material
 import org.bukkit.OfflinePlayer
-import java.time.Instant
 import java.util.*
 
-class WaystoneRepository(private val database: Database) {
-    private val waystones: MutableMap<UUID, Waystone> = mutableMapOf()
+/**
+ * A repository that handles the persistence of Waystones.
+ */
+interface WaystoneRepository {
+    /**
+     * Gets all waystones that exist.
+     *
+     * @return The set of all waystones.
+     */
+    fun getAll(): Set<Waystone>
 
-    init {
-        createTable()
-        preload()
-    }
+    /**
+     * Gets a waystone by its id.
+     *
+     * @param id the unique id of the waystone.
+     * @return The found waystone, or null if it doesn't exist.
+     */
+    fun getById(id: UUID): Waystone?
 
-    fun getAll(): List<Waystone> {
-        return waystones.values.toList()
-    }
+    /**
+     * Gets all waystones that a player owns.
+     *
+     * @param player The player to retrieve waystones for.
+     * @return A set of waystones owned by the player.
+     */
+    fun getByPlayer(player: OfflinePlayer): List<Waystone>
 
-    fun getById(id: UUID): Waystone? {
-        return waystones.values.firstOrNull { it.id == id }
-    }
+    /**
+     * Retrieves a waystone by the position in the world.
+     *
+     * @param position The position in the world.
+     * @param worldId The unique id of the world.
+     * @return The found waystone, or null if it doesn't exist.
+     */
+    fun getByPosition(position: Position3D, worldId: UUID): Waystone?
 
-    fun getByPlayer(player: OfflinePlayer): List<Waystone> {
-        return waystones.values.filter { it.player == player }
-    }
+    /**
+     * Adds a new waystone.
+     *
+     * @param waystone The waystone to add.
+     */
+    fun add(waystone: Waystone)
 
-    fun getByPosition(position: Position3D): Waystone? {
-        return waystones.values.firstOrNull { it.position == position }
-    }
+    /**
+     * Updates the data of an existing waystone.
+     *
+     * @param waystone The waystone to update.
+     */
+    fun update(waystone: Waystone)
 
-    fun getByName(name: String): Waystone? {
-        return waystones.values.firstOrNull {it.name == name }
-    }
-
-    fun add(waystone: Waystone) {
-        waystones[waystone.id] = waystone
-        database.executeInsert("INSERT INTO waystones (id, playerId, creationTime, name, worldId, " +
-                "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-            waystone.id, waystone.player.uniqueId, waystone.creationTime, waystone.name, waystone.worldId,
-            waystone.position.x, waystone.position.y, waystone.position.z, waystone.icon.name)
-    }
-
-    fun update(waystone: Waystone) {
-        waystones.remove(waystone.id)
-        waystones[waystone.id] = waystone
-        database.executeUpdate("UPDATE waystones SET playerId=?, creationTime=?, name=?, worldId=?, " +
-                "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
-            waystone.player.uniqueId, waystone.creationTime, waystone.name, waystone.worldId, waystone.position.x, waystone.position.y,
-            waystone.position.z, waystone.icon.name, waystone.id)
-        return
-    }
-
-    fun remove(waystone: Waystone) {
-        waystones.remove(waystone.id)
-        database.executeUpdate("DELETE FROM waystones WHERE id=?", waystone.id)
-    }
-
-    private fun createTable() {
-        database.executeUpdate("CREATE TABLE IF NOT EXISTS waystones (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
-                "creationTime TEXT NOT NULL, name TEXT, worldId TEXT, positionX INTEGER, positionY INTEGER, " +
-                "positionZ INTEGER, direction INT, icon TEXT);")
-    }
-
-    private fun preload() {
-        val results = database.getResults("SELECT * FROM waystones;")
-        for (result in results) {
-            waystones[UUID.fromString(result.getString("id"))] = Waystone(
-                UUID.fromString(result.getString("id")),
-                Bukkit.getOfflinePlayer(UUID.fromString(result.getString("playerId"))),
-                Instant.parse(result.getString("creationTime")),
-                result.getString("name"),
-                UUID.fromString(result.getString("worldId")),
-                Position3D(
-                    result.getInt("positionX"),
-                    result.getInt("positionY"),
-                    result.getInt("positionZ")),
-                Material.valueOf(result.getString("icon")))
-        }
-    }
+    /**
+     * Removes an existing waystone.
+     *
+     * @param waystone The waystone to remove.
+     */
+    fun remove(waystone: Waystone)
 }

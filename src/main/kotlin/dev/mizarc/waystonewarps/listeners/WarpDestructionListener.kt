@@ -6,20 +6,20 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import dev.mizarc.waystonewarps.Position
 import dev.mizarc.waystonewarps.domain.WarpAccessRepository
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.block.Block
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 
-class WarpDestructionListener(val waystoneRepository: WaystoneRepository,
+class WarpDestructionListener(val waystoneRepositorySQLite: WaystoneRepositorySQLite,
                               val warpAccessRepository: WarpAccessRepository
 ): Listener {
     @EventHandler
     fun onWarpBreak(event: BlockBreakEvent) {
         if (event.block.type != Material.LODESTONE) return
-        val warp = waystoneRepository.getAll().find { it.position == Position(event.block.location) } ?: return
+        val warp = waystoneRepositorySQLite.getAll().find { it.position == Position(event.block.location) } ?: return
 
         // Send alert to player until the break count limit is hit
         warp.resetBreakCount()
@@ -33,7 +33,7 @@ class WarpDestructionListener(val waystoneRepository: WaystoneRepository,
         }
 
         // Deletes the warp
-        waystoneRepository.remove(warp)
+        waystoneRepositorySQLite.remove(warp)
         warpAccessRepository.removeAllAccess(warp)
     }
 
@@ -49,7 +49,7 @@ class WarpDestructionListener(val waystoneRepository: WaystoneRepository,
 
     fun explosionHandler(blocks: MutableList<Block>) {
         for (block in blocks) {
-            waystoneRepository.getByPosition(Position(block.location)) ?: continue
+            waystoneRepositorySQLite.getByPosition(Position(block.location)) ?: continue
             blocks.remove(block)
         }
     }

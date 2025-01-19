@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerInteractEvent
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.domain.Warp
 import dev.mizarc.waystonewarps.domain.WarpAccessRepository
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.menus.WarpManagementMenu
 
-class WarpInteractListener(var waystoneRepository: WaystoneRepository,
+class WarpInteractListener(var waystoneRepositorySQLite: WaystoneRepositorySQLite,
                            var warpAccessRepository: WarpAccessRepository
 ): Listener {
 
@@ -22,11 +22,11 @@ class WarpInteractListener(var waystoneRepository: WaystoneRepository,
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
         if ((event.clickedBlock?.type ?: return) != Material.LODESTONE) return
 
-        val existingWarp = waystoneRepository.getAll().find { it.position == Position(event.clickedBlock!!.location) }
+        val existingWarp = waystoneRepositorySQLite.getAll().find { it.position == Position(event.clickedBlock!!.location) }
         if (event.player.isSneaking) {
             if (!event.player.hasPermission("worldwidewarps.action.warp_manage")) return
             val warpBuilder = Warp.Builder(event.player, event.clickedBlock!!.location.world, Position(event.clickedBlock!!.location))
-            WarpManagementMenu(waystoneRepository, warpAccessRepository, warpBuilder).openWarpManagementMenu()
+            WarpManagementMenu(waystoneRepositorySQLite, warpAccessRepository, warpBuilder).openWarpManagementMenu()
         }
         if (existingWarp == null) return
 

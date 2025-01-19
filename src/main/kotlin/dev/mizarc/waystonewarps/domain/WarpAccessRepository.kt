@@ -1,12 +1,12 @@
 package dev.mizarc.waystonewarps.domain
 
 import co.aikar.idb.Database
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import java.util.*
 
-class WarpAccessRepository(private val database: Database, private val waystoneRepository: WaystoneRepository) {
+class WarpAccessRepository(private val database: Database, private val waystoneRepositorySQLite: WaystoneRepositorySQLite) {
     private val playerAccesses: MutableMap<UUID, MutableSet<Warp>> = mutableMapOf()
     private val warpPlayers: MutableMap<UUID, MutableSet<OfflinePlayer>> = mutableMapOf()
 
@@ -15,7 +15,7 @@ class WarpAccessRepository(private val database: Database, private val waystoneR
 
         val results = database.getResults("SELECT * FROM warp_access;")
         for (result in results) {
-            val warp = waystoneRepository.getById(UUID.fromString(result.getString("warpId"))) ?: continue
+            val warp = waystoneRepositorySQLite.getById(UUID.fromString(result.getString("warpId"))) ?: continue
             val player = Bukkit.getOfflinePlayer(UUID.fromString(result.getString("playerId")))
             playerAccesses.getOrPut(player.uniqueId) { mutableSetOf() }.add(warp)
             warpPlayers.getOrPut(warp.id) { mutableSetOf() }.add(player)

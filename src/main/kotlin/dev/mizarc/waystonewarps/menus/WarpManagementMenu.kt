@@ -12,7 +12,7 @@ import com.github.stefvanschie.inventoryframework.pane.component.Label
 import dev.mizarc.waystonewarps.*
 import dev.mizarc.waystonewarps.domain.Warp
 import dev.mizarc.waystonewarps.domain.WarpAccessRepository
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.utils.getWarpMoveTool
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -22,12 +22,12 @@ import dev.mizarc.waystonewarps.utils.name
 import org.bukkit.entity.Player
 import kotlin.concurrent.thread
 
-class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
+class WarpManagementMenu(private val waystoneRepositorySQLite: WaystoneRepositorySQLite,
                          private val warpAccessRepository: WarpAccessRepository,
                          private val warpBuilder: Warp.Builder) {
 
     fun openWarpManagementMenu() {
-        val existingWarp = waystoneRepository.getByPosition(warpBuilder.position)
+        val existingWarp = waystoneRepositorySQLite.getByPosition(warpBuilder.position)
         if (existingWarp == null) {
             openWarpCreationMenu()
             return
@@ -83,12 +83,12 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         val confirmItem = ItemStack(Material.NETHER_STAR).name("Confirm")
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             warpBuilder.name = gui.renameText
-            if (waystoneRepository.getByName(gui.renameText) != null) {
+            if (waystoneRepositorySQLite.getByName(gui.renameText) != null) {
                 openWarpNamingMenu(existing_name = true)
                 return@GuiItem
             }
             val warp = warpBuilder.build()
-            waystoneRepository.add(warp)
+            waystoneRepositorySQLite.add(warp)
             openWarpEditMenu(warp)
             guiEvent.isCancelled = true
         }
@@ -194,7 +194,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
             // Set icon if item in slot
             if (newIcon != null) {
                 warp.icon = newIcon.type
-                waystoneRepository.update(warp)
+                waystoneRepositorySQLite.update(warp)
                 openWarpEditMenu(warp)
             }
 
@@ -241,13 +241,13 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
             }
 
             // Stay on menu if the name is already taken
-            if (waystoneRepository.getByName(gui.renameText) != null) {
+            if (waystoneRepositorySQLite.getByName(gui.renameText) != null) {
                 openWarpRenamingMenu(warp, existingName = true)
                 return@GuiItem
             }
 
             warp.name = gui.renameText
-            waystoneRepository.update(warp)
+            waystoneRepositorySQLite.update(warp)
             openWarpEditMenu(warp)
             guiEvent.isCancelled = true
         }
@@ -268,7 +268,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         }
         northLabel.setOnClick {
             warp.direction = Direction.NORTH
-            waystoneRepository.update(warp)
+            waystoneRepositorySQLite.update(warp)
             openWarpEditMenu(warp)
         }
         gui.contentsComponent.addPane(northLabel)
@@ -281,7 +281,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         }
         southLabel.setOnClick {
             warp.direction = Direction.SOUTH
-            waystoneRepository.update(warp)
+            waystoneRepositorySQLite.update(warp)
             openWarpEditMenu(warp)
         }
         gui.contentsComponent.addPane(southLabel)
@@ -294,7 +294,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         }
         eastLabel.setOnClick {
             warp.direction = Direction.EAST
-            waystoneRepository.update(warp)
+            waystoneRepositorySQLite.update(warp)
             openWarpEditMenu(warp)
         }
         gui.contentsComponent.addPane(eastLabel)
@@ -307,7 +307,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         }
         westLabel.setOnClick {
             warp.direction = Direction.WEST
-            waystoneRepository.update(warp)
+            waystoneRepositorySQLite.update(warp)
             openWarpEditMenu(warp)
         }
         gui.contentsComponent.addPane(westLabel)
@@ -347,7 +347,7 @@ class WarpManagementMenu(private val waystoneRepository: WaystoneRepository,
         val guiYesItem = GuiItem(yesItem) { guiEvent ->
             guiEvent.isCancelled = true
             warpAccessRepository.removeAllAccess(warp)
-            waystoneRepository.remove(warp)
+            waystoneRepositorySQLite.remove(warp)
             warpBuilder.player.closeInventory()
         }
         pane.addItem(guiYesItem, 2, 0)
