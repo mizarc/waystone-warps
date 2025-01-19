@@ -12,15 +12,13 @@ import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepositorySQLite
 import dev.mizarc.waystonewarps.listeners.*
 
-class WorldWideWarps: JavaPlugin() {
+class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
     private val config = Config(this)
     private val storage = DatabaseStorage(this)
     val players = PlayerStateRepository()
-    val homeRepository = HomeRepository(storage.connection)
     val waystoneRepositorySQLite = WaystoneRepositorySQLite(storage.connection)
-    val warpAccessRepository = WarpAccessRepository(storage.connection, waystoneRepositorySQLite)
     val teleporter = Teleporter(this, config, players)
 
     override fun onEnable() {
@@ -28,16 +26,14 @@ class WorldWideWarps: JavaPlugin() {
         val serviceProvider: RegisteredServiceProvider<Chat> = server.servicesManager.getRegistration(Chat::class.java)!!
         metadata = serviceProvider.provider
         commandManager = PaperCommandManager(this)
-        dataFolder.mkdir()
-        warpAccessRepository.init()
         registerDependencies()
         registerCommands()
         registerEvents()
-        logger.info("WorldWideWarps has been Enabled")
+        logger.info("WaystoneWarps has been Enabled")
     }
 
     override fun onDisable() {
-        logger.info("WorldWideWarps has been Disabled")
+        logger.info("WaystoneWarps has been Disabled")
     }
 
     private fun registerDependencies() {
@@ -46,7 +42,6 @@ class WorldWideWarps: JavaPlugin() {
         commandManager.registerDependency(PlayerStateRepository::class.java, players)
         commandManager.registerDependency(Teleporter::class.java, teleporter)
         commandManager.registerDependency(WaystoneRepositorySQLite::class.java, waystoneRepositorySQLite)
-        commandManager.registerDependency(WarpAccessRepository::class.java, warpAccessRepository)
     }
 
     private fun registerCommands() {
