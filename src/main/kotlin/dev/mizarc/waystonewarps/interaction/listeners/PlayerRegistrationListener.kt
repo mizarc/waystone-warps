@@ -10,8 +10,7 @@ import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import dev.mizarc.waystonewarps.infrastructure.services.playerlimit.VaultPlayerLimitServiceImpl
 
-class PlayerRegistrationListener(val homes: HomeRepository, val players: PlayerStateRepository,
-                                 val config: Config, val metadata: Chat): Listener {
+class PlayerRegistrationListener(private val playerStateService: PlayerStateService): Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {

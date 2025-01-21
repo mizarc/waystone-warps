@@ -53,8 +53,6 @@ class WaystoneWarps: JavaPlugin() {
     private fun registerEvents() {
         server.pluginManager.registerEvents(PlayerRegistrationListener(homeRepository, players, config, metadata), this)
         server.pluginManager.registerEvents(TeleportCancelListener(players), this)
-        server.pluginManager.registerEvents(BedInteractListener(homeRepository, players), this)
-        server.pluginManager.registerEvents(BedDestructionListener(homeRepository), this)
         server.pluginManager.registerEvents(WarpInteractListener(waystoneRepositorySQLite, warpAccessRepository), this)
         server.pluginManager.registerEvents(WarpDestructionListener(waystoneRepositorySQLite, warpAccessRepository), this)
         server.pluginManager.registerEvents(WarpMoveToolListener(waystoneRepositorySQLite), this)
