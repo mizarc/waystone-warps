@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps.domain.waystones
 
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
@@ -37,6 +38,10 @@ class Waystone(val id: UUID, val player: OfflinePlayer, val creationTime: Instan
      */
     constructor(builder: Builder): this(builder.location.world.uid, builder.player,
         Position3D(builder.location), builder.name)
+
+    fun getWorld(): org.bukkit.World? {
+        return Bukkit.getWorld(worldId)
+    }
 
     /**
      * A builder for creating instances of a Waystone.
