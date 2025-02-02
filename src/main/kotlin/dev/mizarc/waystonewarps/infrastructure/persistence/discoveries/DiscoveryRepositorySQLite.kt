@@ -30,8 +30,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         return discoverySet
     }
 
-    override fun getByPlayer(player: OfflinePlayer): Set<Discovery> {
-        return discoveries[player.uniqueId] ?: return emptySet()
+    override fun getByPlayer(playerId: UUID): Set<Discovery> {
+        return discoveries[playerId] ?: return emptySet()
     }
 
     override fun add(discovery: Discovery) {
