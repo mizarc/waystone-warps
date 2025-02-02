@@ -1,10 +1,10 @@
-package dev.mizarc.waystonewarps.infrastructure.services
+package dev.mizarc.waystonewarps.application.services
 
 import dev.mizarc.bellclaims.api.PlayerStateService
-import dev.mizarc.waystonewarps.domain.players.TeleportTask
-import dev.mizarc.waystonewarps.api.PlayerLimitService
-import dev.mizarc.waystonewarps.api.TeleportService
+import dev.mizarc.waystonewarps.application.PlayerLimitService
+import dev.mizarc.waystonewarps.application.TeleportService
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
@@ -14,10 +14,14 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
+import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 class TeleportServiceImpl(private val plugin: Plugin, private val config: Config,
                           private val playerLimitService: PlayerLimitService,
-                          private val playerStateService: PlayerStateService): TeleportService {
+                          private val playerStateService: PlayerStateService
+): TeleportService {
+    private val activeTeleportations = ConcurrentHashMap<UUID, TaskHandle>()
 
     override fun teleportWaystone(player: Player, waystone: Waystone, sendAlert: Boolean) {
         val world = waystone.getWorld() ?: return
