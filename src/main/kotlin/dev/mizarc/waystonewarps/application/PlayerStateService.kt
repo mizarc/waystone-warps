@@ -1,7 +1,7 @@
 package dev.mizarc.bellclaims.api
 
-import dev.mizarc.waystonewarps.api.enums.PlayerRegisterResult
-import dev.mizarc.waystonewarps.api.enums.PlayerUnregisterResult
+import dev.mizarc.waystonewarps.application.enums.PlayerRegisterResult
+import dev.mizarc.waystonewarps.application.enums.PlayerUnregisterResult
 import dev.mizarc.waystonewarps.domain.players.PlayerState
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player

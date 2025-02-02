@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.api.enums
+package dev.mizarc.waystonewarps.application.enums
 
 /**
  * Represents the result of registering a player's state.

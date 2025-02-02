@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.api
+package dev.mizarc.waystonewarps.application
 
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
 import org.bukkit.entity.Player

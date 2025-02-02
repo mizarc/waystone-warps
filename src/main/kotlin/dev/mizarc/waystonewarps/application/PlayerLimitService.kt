@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.api
+package dev.mizarc.waystonewarps.application
 
 import org.bukkit.OfflinePlayer
 
