@@ -57,7 +57,7 @@ interface WaystoneRepository {
     /**
      * Removes an existing waystone.
      *
-     * @param waystone The waystone to remove.
+     * @param id The id of the waystone to remove.
      */
-    fun remove(waystone: Waystone)
+    fun remove(id: UUID)
 }
