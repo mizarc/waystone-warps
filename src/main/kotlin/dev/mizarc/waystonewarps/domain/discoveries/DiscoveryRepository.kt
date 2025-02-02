@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps.domain.discoveries
 
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
 import org.bukkit.OfflinePlayer
+import java.util.UUID
 
 /**
  * A repository that handles the persistence of waystone discoveries.
@@ -22,7 +23,7 @@ interface DiscoveryRepository {
      * @param player The player to query.
      * @return The set of waystones that the player has discovered.
      */
-    fun getByPlayer(player: OfflinePlayer): Set<Discovery>
+    fun getByPlayer(playerId: UUID): Set<Discovery>
 
     /**
      * Adds a discovery entry that links a player to a waystone.

@@ -29,7 +29,7 @@ interface WaystoneRepository {
      * @param player The player to retrieve waystones for.
      * @return A set of waystones owned by the player.
      */
-    fun getByPlayer(player: OfflinePlayer): List<Waystone>
+    fun getByPlayer(playerId: UUID): List<Waystone>
 
     /**
      * Retrieves a waystone by the position in the world.
