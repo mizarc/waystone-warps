@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.domain.players
+package dev.mizarc.waystonewarps.domain.playerstate
 
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
