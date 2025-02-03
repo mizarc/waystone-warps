@@ -8,10 +8,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 import dev.mizarc.waystonewarps.*
-import dev.mizarc.waystonewarps.infrastructure.persistence.waystones.WaystoneRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
 import dev.mizarc.waystonewarps.interaction.menus.WarpManagementMenu
 
-class WarpInteractListener(var waystoneRepositorySQLite: WaystoneRepositorySQLite,
+class WarpInteractListener(var warpRepositorySQLite: WarpRepositorySQLite,
                            var warpAccessRepository: WarpAccessRepository
 ): Listener {
 

@@ -2,20 +2,20 @@ package dev.mizarc.waystonewarps.application.actions.teleport
 
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
-import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.*
 
 class TeleportPlayer(private val teleportationService: TeleportationService,
         private val playerAttributeService: PlayerAttributeService) {
 
-    fun execute(playerId: UUID, waystone: Waystone, onDelayed: (delaySeconds: Int) -> Unit, onSuccess: () -> Unit,
+    fun execute(playerId: UUID, warp: Warp, onDelayed: (delaySeconds: Int) -> Unit, onSuccess: () -> Unit,
                 onCanceled: () -> Unit, onFailure: (reason: String) -> Unit) {
         // Retrieve player settings
         val timer = playerAttributeService.getTeleportTimer(playerId)
 
         // Schedule delayed teleport
         if (timer > 0) {
-            val result = teleportationService.scheduleDelayedTeleport(playerId, waystone, timer, onSuccess, onCanceled)
+            val result = teleportationService.scheduleDelayedTeleport(playerId, warp, timer, onSuccess, onCanceled)
             if (result.isSuccess) {
                 onDelayed(timer)
             } else {
@@ -25,7 +25,7 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
         }
 
         // Instant teleport
-        val result = teleportationService.teleportPlayer(playerId, waystone)
+        val result = teleportationService.teleportPlayer(playerId, warp)
         if (result.isSuccess) {
             onSuccess()
         } else {

@@ -13,10 +13,10 @@ import java.util.*
  */
 class PlayerAttributeServiceVault(private val config: Config,
                                   private val metadata: Chat): PlayerAttributeService {
-    override fun getWaystoneLimit(playerId: UUID): Int =
+    override fun getWarpLimit(playerId: UUID): Int =
         metadata.getPlayerInfoInteger(
             Bukkit.getServer().worlds[0].name, Bukkit.getPlayer(playerId),
-            "waystonewarps.waystone_limit", config.waystoneLimit)
+            "waystonewarps.waystone_limit", config.warpLimit)
             .takeIf { it > -1 } ?: -1
 
     override fun getTeleportCost(playerId: UUID): Int =

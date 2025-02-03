@@ -10,12 +10,12 @@ import java.util.*
 interface PlayerAttributeService {
 
     /**
-     * Gets the amount of waystones a player is allowed to own.
+     * Gets the amount of warps a player is allowed to own.
      *
      * @param playerId The target player's id.
-     * @returns The amount of waystones.
+     * @returns The amount of warps.
      */
-    fun getWaystoneLimit(playerId: UUID): Int
+    fun getWarpLimit(playerId: UUID): Int
 
     /**
      * Gets the cost that the player will incur for teleport to a waystone.

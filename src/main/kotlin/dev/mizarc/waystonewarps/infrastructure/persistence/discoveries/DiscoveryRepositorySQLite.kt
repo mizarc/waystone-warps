@@ -3,9 +3,8 @@ package dev.mizarc.waystonewarps.infrastructure.persistence.discoveries
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
-import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
-import org.bukkit.OfflinePlayer
 import java.sql.SQLException
 import java.util.*
 
@@ -17,12 +16,12 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         preload()
     }
 
-    override fun getByWaystone(waystone: Waystone): Set<Discovery> {
+    override fun getByWarp(warp: Warp): Set<Discovery> {
         val discoverySet: MutableSet<Discovery> = mutableSetOf()
 
         for ((_, discoveriesSet) in discoveries) {
             for (discovery in discoveriesSet) {
-                if (discovery.waystoneId == waystone.id) {
+                if (discovery.warpId == warp.id) {
                     discoverySet.add(discovery)
                 }
             }

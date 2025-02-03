@@ -1,7 +1,6 @@
 package dev.mizarc.waystonewarps.domain.discoveries
 
-import dev.mizarc.waystonewarps.domain.waystones.Waystone
-import org.bukkit.OfflinePlayer
+import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.UUID
 
 /**
@@ -12,10 +11,10 @@ interface DiscoveryRepository {
     /**
      * Gets all players that have discovered a given waystone.
      *
-     * @param waystone The waystone to query.
+     * @param warp The waystone to query.
      * @return The map of waystones linked to each player.
      */
-    fun getByWaystone(waystone: Waystone): Set<Discovery>
+    fun getByWarp(warp: Warp): Set<Discovery>
 
     /**
      * Gets all waystones the player has discovered.

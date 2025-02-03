@@ -5,14 +5,14 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import dev.mizarc.waystonewarps.Position
-import dev.mizarc.waystonewarps.infrastructure.persistence.waystones.WaystoneRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.block.Block
 import org.bukkit.event.block.BlockExplodeEvent
 import org.bukkit.event.entity.EntityExplodeEvent
 
-class WarpDestructionListener(val waystoneRepositorySQLite: WaystoneRepositorySQLite,
+class WarpDestructionListener(val warpRepositorySQLite: WarpRepositorySQLite,
                               val warpAccessRepository: WarpAccessRepository
 ): Listener {
     @EventHandler

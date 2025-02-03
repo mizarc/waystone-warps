@@ -1,11 +1,7 @@
-package dev.mizarc.waystonewarps.domain.waystones
+package dev.mizarc.waystonewarps.domain.warps
 
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
-import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
 import java.time.Instant
 import java.util.*
 
@@ -17,8 +13,8 @@ import java.util.*
  * @property worldId The world the warp is in.
  * @property position The position in the world.
  */
-class Waystone(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
-               var position: Position3D, var icon: Material) {
+class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
+           var position: Position3D, var icon: Material) {
 
     /**
      * Compiles a new waystone based on the minimum details required.

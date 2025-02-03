@@ -1,7 +1,7 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
 import dev.mizarc.waystonewarps.application.services.*
-import dev.mizarc.waystonewarps.domain.waystones.Waystone
+import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -16,10 +16,10 @@ class TeleportationServiceImpl(private val playerAttributeService: PlayerAttribu
 ): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
-    override fun teleportPlayer(playerId: UUID, waystone: Waystone): Result<Unit> {
+    override fun teleportPlayer(playerId: UUID, warp: Warp): Result<Unit> {
         // Location data
-        val world = Bukkit.getWorld(waystone.worldId) ?: return Result.failure(Exception("World not found."))
-        val waystoneLocation = waystone.position.toLocation(world)
+        val world = Bukkit.getWorld(warp.worldId) ?: return Result.failure(Exception("World not found."))
+        val waystoneLocation = warp.position.toLocation(world)
         waystoneLocation.x += 0.5
         waystoneLocation.y += 1
         waystoneLocation.z += 0.5
@@ -34,8 +34,8 @@ class TeleportationServiceImpl(private val playerAttributeService: PlayerAttribu
         return Result.success(Unit)
     }
 
-    override fun scheduleDelayedTeleport(playerId: UUID, waystone: Waystone, delaySeconds: Int,
-            onSuccess: () -> Unit, onCanceled: () -> Unit): Result<Unit> {
+    override fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int,
+                                         onSuccess: () -> Unit, onCanceled: () -> Unit): Result<Unit> {
         // Cancel existing pending teleport if any
         activeTeleportations[playerId]?.let {
             it.taskHandle.cancel()
@@ -47,7 +47,7 @@ class TeleportationServiceImpl(private val playerAttributeService: PlayerAttribu
         val taskHandle = scheduler.schedule(delaySeconds * 20L) {
             movementMonitorService.stopMonitoringPlayer(playerId)
             activeTeleportations.remove(playerId)
-            val teleportResult = teleportPlayer(playerId, waystone)
+            val teleportResult = teleportPlayer(playerId, warp)
             if (teleportResult.isSuccess) {
                 onSuccess()
             } else {

@@ -1,53 +1,53 @@
-package dev.mizarc.waystonewarps.infrastructure.persistence.waystones
+package dev.mizarc.waystonewarps.infrastructure.persistence.warps
 
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
-import dev.mizarc.waystonewarps.domain.waystones.Waystone
-import dev.mizarc.waystonewarps.domain.waystones.WaystoneRepository
+import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import org.bukkit.Material
 import java.time.Instant
 import java.util.*
 
-class WaystoneRepositorySQLite(private val storage: Storage<Database>): WaystoneRepository {
-    private val waystones: MutableMap<UUID, Waystone> = mutableMapOf()
+class WarpRepositorySQLite(private val storage: Storage<Database>): WarpRepository {
+    private val warps: MutableMap<UUID, Warp> = mutableMapOf()
 
     init {
         createTable()
         preload()
     }
 
-    override fun getAll(): Set<Waystone> {
+    override fun getAll(): Set<Warp> {
         return waystones.values.toSet()
     }
 
-    override fun getById(id: UUID): Waystone? {
+    override fun getById(id: UUID): Warp? {
         return waystones.values.firstOrNull { it.id == id }
     }
 
-    override fun getByPlayer(playerId: UUID): List<Waystone> {
+    override fun getByPlayer(playerId: UUID): List<Warp> {
         return waystones.values.filter { it.playerId == playerId }
     }
 
-    override fun getByPosition(position: Position3D, worldId: UUID): Waystone? {
+    override fun getByPosition(position: Position3D, worldId: UUID): Warp? {
         return waystones.values.firstOrNull { it.position == position }
     }
 
-    override fun add(waystone: Waystone) {
-        waystones[waystone.id] = waystone
+    override fun add(warp: Warp) {
+        waystones[warp.id] = warp
         storage.connection.executeInsert("INSERT INTO waystones (id, playerId, creationTime, name, worldId, " +
                 "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-            waystone.id, waystone.playerId, waystone.creationTime, waystone.name, waystone.worldId,
-            waystone.position.x, waystone.position.y, waystone.position.z, waystone.icon.name)
+            warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
+            warp.position.x, warp.position.y, warp.position.z, warp.icon.name)
     }
 
-    override fun update(waystone: Waystone) {
-        waystones.remove(waystone.id)
-        waystones[waystone.id] = waystone
+    override fun update(warp: Warp) {
+        waystones.remove(warp.id)
+        waystones[warp.id] = warp
         storage.connection.executeUpdate("UPDATE waystones SET playerId=?, creationTime=?, name=?, worldId=?, " +
                 "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
-            waystone.playerId, waystone.creationTime, waystone.name, waystone.worldId, waystone.position.x, waystone.position.y,
-            waystone.position.z, waystone.icon.name, waystone.id)
+            warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
+            warp.position.z, warp.icon.name, warp.id)
         return
     }
 
@@ -65,7 +65,7 @@ class WaystoneRepositorySQLite(private val storage: Storage<Database>): Waystone
     private fun preload() {
         val results = storage.connection.getResults("SELECT * FROM waystones;")
         for (result in results) {
-            waystones[UUID.fromString(result.getString("id"))] = Waystone(
+            waystones[UUID.fromString(result.getString("id"))] = Warp(
                 UUID.fromString(result.getString("id")),
                 UUID.fromString(result.getString("playerId")),
                 Instant.parse(result.getString("creationTime")),

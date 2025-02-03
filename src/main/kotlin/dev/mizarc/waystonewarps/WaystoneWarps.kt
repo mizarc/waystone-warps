@@ -5,9 +5,8 @@ import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
-import dev.mizarc.waystonewarps.domain.players.PlayerStateRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.Config
-import dev.mizarc.waystonewarps.infrastructure.persistence.waystones.WaystoneRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
 import dev.mizarc.waystonewarps.interaction.commands.listeners.*
 import dev.mizarc.waystonewarps.interaction.listeners.*
 
@@ -17,7 +16,7 @@ class WaystoneWarps: JavaPlugin() {
     private val config = Config(this)
     private val storage = DatabaseStorage(this)
     val players = PlayerStateRepository()
-    val waystoneRepositorySQLite = WaystoneRepositorySQLite(storage.connection)
+    val warpRepositorySQLite = WarpRepositorySQLite(storage.connection)
     val teleporter = Teleporter(this, config, players)
 
     override fun onEnable() {
@@ -40,7 +39,7 @@ class WaystoneWarps: JavaPlugin() {
         commandManager.registerDependency(DatabaseStorage::class.java, storage)
         commandManager.registerDependency(PlayerStateRepository::class.java, players)
         commandManager.registerDependency(Teleporter::class.java, teleporter)
-        commandManager.registerDependency(WaystoneRepositorySQLite::class.java, waystoneRepositorySQLite)
+        commandManager.registerDependency(WarpRepositorySQLite::class.java, waystoneRepositorySQLite)
     }
 
     private fun registerCommands() {
