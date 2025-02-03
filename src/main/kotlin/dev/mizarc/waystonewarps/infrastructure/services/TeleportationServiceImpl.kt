@@ -1,7 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
 import dev.mizarc.waystonewarps.application.services.*
-import dev.mizarc.waystonewarps.domain.players.PlayerLimitRepository
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import org.bukkit.Bukkit
@@ -11,9 +10,9 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class TeleportationServiceImpl(private val playerLimitRepository: PlayerLimitRepository,
-                               private val scheduler: Scheduler,
-                               private val movementMonitorService: MovementMonitorService
+class TeleportationServiceImpl(private val playerAttributeService: PlayerAttributeService,
+                               private val movementMonitorService: MovementMonitorService,
+                               private val scheduler: Scheduler
 ): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
@@ -26,7 +25,7 @@ class TeleportationServiceImpl(private val playerLimitRepository: PlayerLimitRep
         waystoneLocation.z += 0.5
 
         // Player data
-        val cost = playerLimitRepository.getTeleportCost(playerId)
+        val cost = playerAttributeService.getTeleportCost(playerId)
         val player = Bukkit.getPlayer(playerId) ?: return Result.failure(Exception("Player not found."))
 
         // Teleports the player instantaneously
