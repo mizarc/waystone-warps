@@ -31,6 +31,15 @@ interface WarpRepository {
     fun getByPlayer(playerId: UUID): List<Warp>
 
     /**
+     * Gets a warp owned by a player by name.
+     *
+     * @param playerId The player that owns the warp.
+     * @param name The name of the warp.
+     * @return The warp owned by the player.
+     */
+    fun getByName(playerId: UUID, name: String): Warp?
+
+    /**
      * Retrieves a warp by the position in the world.
      *
      * @param position The position in the world.

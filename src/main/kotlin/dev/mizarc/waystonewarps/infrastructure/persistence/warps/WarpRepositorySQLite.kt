@@ -29,6 +29,10 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         return warps.values.filter { it.playerId == playerId }
     }
 
+    override fun getByName(playerId: UUID, name: String): Warp? {
+        return warps.values.find { it.playerId == playerId && it.name.equals(name, ignoreCase = true) }
+    }
+
     override fun getByPosition(position: Position3D, worldId: UUID): Warp? {
         return warps.values.firstOrNull { it.position == position }
     }
