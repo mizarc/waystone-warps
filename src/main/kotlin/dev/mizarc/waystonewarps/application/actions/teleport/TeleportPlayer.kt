@@ -1,17 +1,17 @@
 package dev.mizarc.waystonewarps.application.actions.teleport
 
+import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
-import dev.mizarc.waystonewarps.domain.players.PlayerLimitRepository
 import dev.mizarc.waystonewarps.domain.waystones.Waystone
 import java.util.*
 
 class TeleportPlayer(private val teleportationService: TeleportationService,
-        private val playerLimitRepository: PlayerLimitRepository) {
+        private val playerAttributeService: PlayerAttributeService) {
 
     fun execute(playerId: UUID, waystone: Waystone, onDelayed: (delaySeconds: Int) -> Unit, onSuccess: () -> Unit,
                 onCanceled: () -> Unit, onFailure: (reason: String) -> Unit) {
         // Retrieve player settings
-        val timer = playerLimitRepository.getTeleportTimer(playerId)
+        val timer = playerAttributeService.getTeleportTimer(playerId)
 
         // Schedule delayed teleport
         if (timer > 0) {
