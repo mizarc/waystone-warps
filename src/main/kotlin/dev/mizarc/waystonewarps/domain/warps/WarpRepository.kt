@@ -15,48 +15,48 @@ interface WarpRepository {
     fun getAll(): Set<Warp>
 
     /**
-     * Gets a waystone by its id.
+     * Gets a warp by its id.
      *
-     * @param id the unique id of the waystone.
-     * @return The found waystone, or null if it doesn't exist.
+     * @param id the unique id of the warp.
+     * @return The found warp, or null if it doesn't exist.
      */
     fun getById(id: UUID): Warp?
 
     /**
-     * Gets all waystones that a player owns.
+     * Gets all warps that a player owns.
      *
-     * @param playerId The player to retrieve waystones for.
-     * @return A set of waystones owned by the player.
+     * @param playerId The player to retrieve the warp for.
+     * @return A set of warps owned by the player.
      */
     fun getByPlayer(playerId: UUID): List<Warp>
 
     /**
-     * Retrieves a waystone by the position in the world.
+     * Retrieves a warp by the position in the world.
      *
      * @param position The position in the world.
      * @param worldId The unique id of the world.
-     * @return The found waystone, or null if it doesn't exist.
+     * @return The found warp, or null if it doesn't exist.
      */
     fun getByPosition(position: Position3D, worldId: UUID): Warp?
 
     /**
-     * Adds a new waystone.
+     * Adds a new warp.
      *
-     * @param warp The waystone to add.
+     * @param warp The warp to add.
      */
     fun add(warp: Warp)
 
     /**
-     * Updates the data of an existing waystone.
+     * Updates the data of an existing warp.
      *
-     * @param warp The waystone to update.
+     * @param warp The warp to update.
      */
     fun update(warp: Warp)
 
     /**
-     * Removes an existing waystone.
+     * Removes an existing warp.
      *
-     * @param id The id of the waystone to remove.
+     * @param id The id of the warp to remove.
      */
     fun remove(id: UUID)
 }

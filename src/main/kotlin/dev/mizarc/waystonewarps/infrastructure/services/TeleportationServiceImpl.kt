@@ -19,10 +19,10 @@ class TeleportationServiceImpl(private val playerAttributeService: PlayerAttribu
     override fun teleportPlayer(playerId: UUID, warp: Warp): Result<Unit> {
         // Location data
         val world = Bukkit.getWorld(warp.worldId) ?: return Result.failure(Exception("World not found."))
-        val waystoneLocation = warp.position.toLocation(world)
-        waystoneLocation.x += 0.5
-        waystoneLocation.y += 1
-        waystoneLocation.z += 0.5
+        val warpLocation = warp.position.toLocation(world)
+        warpLocation.x += 0.5
+        warpLocation.y += 1
+        warpLocation.z += 0.5
 
         // Player data
         val cost = playerAttributeService.getTeleportCost(playerId)
@@ -30,7 +30,7 @@ class TeleportationServiceImpl(private val playerAttributeService: PlayerAttribu
 
         // Teleports the player instantaneously
         removeCostFromInventory(player, cost)
-        player.teleport(waystoneLocation)
+        player.teleport(warpLocation)
         return Result.success(Unit)
     }
 

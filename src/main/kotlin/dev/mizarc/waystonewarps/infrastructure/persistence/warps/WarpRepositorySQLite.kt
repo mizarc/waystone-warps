@@ -18,33 +18,33 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     override fun getAll(): Set<Warp> {
-        return waystones.values.toSet()
+        return warps.values.toSet()
     }
 
     override fun getById(id: UUID): Warp? {
-        return waystones.values.firstOrNull { it.id == id }
+        return warps.values.firstOrNull { it.id == id }
     }
 
     override fun getByPlayer(playerId: UUID): List<Warp> {
-        return waystones.values.filter { it.playerId == playerId }
+        return warps.values.filter { it.playerId == playerId }
     }
 
     override fun getByPosition(position: Position3D, worldId: UUID): Warp? {
-        return waystones.values.firstOrNull { it.position == position }
+        return warps.values.firstOrNull { it.position == position }
     }
 
     override fun add(warp: Warp) {
-        waystones[warp.id] = warp
-        storage.connection.executeInsert("INSERT INTO waystones (id, playerId, creationTime, name, worldId, " +
+        warps[warp.id] = warp
+        storage.connection.executeInsert("INSERT INTO warps (id, playerId, creationTime, name, worldId, " +
                 "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
             warp.position.x, warp.position.y, warp.position.z, warp.icon.name)
     }
 
     override fun update(warp: Warp) {
-        waystones.remove(warp.id)
-        waystones[warp.id] = warp
-        storage.connection.executeUpdate("UPDATE waystones SET playerId=?, creationTime=?, name=?, worldId=?, " +
+        warps.remove(warp.id)
+        warps[warp.id] = warp
+        storage.connection.executeUpdate("UPDATE warps SET playerId=?, creationTime=?, name=?, worldId=?, " +
                 "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
             warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
             warp.position.z, warp.icon.name, warp.id)
@@ -52,20 +52,20 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     override fun remove(id: UUID) {
-        waystones.remove(id)
-        storage.connection.executeUpdate("DELETE FROM waystones WHERE id=?", id)
+        warps.remove(id)
+        storage.connection.executeUpdate("DELETE FROM warps WHERE id=?", id)
     }
 
     private fun createTable() {
-        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS waystones (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
+        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
                 "creationTime TEXT NOT NULL, name TEXT, worldId TEXT, positionX INTEGER, positionY INTEGER, " +
                 "positionZ INTEGER, direction INT, icon TEXT);")
     }
 
     private fun preload() {
-        val results = storage.connection.getResults("SELECT * FROM waystones;")
+        val results = storage.connection.getResults("SELECT * FROM warps;")
         for (result in results) {
-            waystones[UUID.fromString(result.getString("id"))] = Warp(
+            warps[UUID.fromString(result.getString("id"))] = Warp(
                 UUID.fromString(result.getString("id")),
                 UUID.fromString(result.getString("playerId")),
                 Instant.parse(result.getString("creationTime")),

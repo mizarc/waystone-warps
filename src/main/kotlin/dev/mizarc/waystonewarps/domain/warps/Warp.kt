@@ -6,9 +6,9 @@ import java.time.Instant
 import java.util.*
 
 /**
- * Stores Waystone information.
+ * Stores Warp information.
  * @property id The unique identifier.
- * @property player The player that owns the warp.
+ * @property playerId The player that owns the warp.
  * @property name The name of the warp.
  * @property worldId The world the warp is in.
  * @property position The position in the world.
@@ -17,7 +17,7 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
            var position: Position3D, var icon: Material) {
 
     /**
-     * Compiles a new waystone based on the minimum details required.
+     * Compiles a new warp based on the minimum details required.
      *
      * @param worldId The unique identifier of the world the claim is to be made in.
      * @param playerId The id of the player who owns the warp.

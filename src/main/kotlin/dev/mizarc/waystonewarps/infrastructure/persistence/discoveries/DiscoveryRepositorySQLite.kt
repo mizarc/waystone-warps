@@ -38,7 +38,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
 
         try {
             storage.connection.executeUpdate("INSERT INTO discoveries (waystoneId, playerId) VALUES (?,?)",
-                discovery.waystoneId, discovery.playerId)
+                discovery.warpId, discovery.playerId)
         } catch (error: SQLException) {
             error.printStackTrace()
         }
@@ -49,7 +49,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
 
         try {
             storage.connection.executeUpdate("REMOVE FROM discoveries WHERE waystoneId=? AND playerId=?",
-                discovery.waystoneId, discovery.playerId)
+                discovery.warpId, discovery.playerId)
         } catch (error: SQLException) {
             error.printStackTrace()
         }
