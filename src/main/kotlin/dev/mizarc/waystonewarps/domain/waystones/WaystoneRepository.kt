@@ -26,7 +26,7 @@ interface WaystoneRepository {
     /**
      * Gets all waystones that a player owns.
      *
-     * @param player The player to retrieve waystones for.
+     * @param playerId The player to retrieve waystones for.
      * @return A set of waystones owned by the player.
      */
     fun getByPlayer(playerId: UUID): List<Waystone>
