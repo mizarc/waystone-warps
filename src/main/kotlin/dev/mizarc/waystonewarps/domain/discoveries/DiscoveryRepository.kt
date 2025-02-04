@@ -11,10 +11,10 @@ interface DiscoveryRepository {
     /**
      * Gets all players that have discovered a given warp.
      *
-     * @param warp The warp to query.
+     * @param warpId The id of the warp to query.
      * @return The map of warps linked to each player.
      */
-    fun getByWarp(warp: Warp): Set<Discovery>
+    fun getByWarp(warpId: UUID): Set<Discovery>
 
     /**
      * Gets all warps the player has discovered.
