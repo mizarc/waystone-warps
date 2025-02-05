@@ -7,14 +7,18 @@ import dev.mizarc.waystonewarps.application.actions.warp.GetPlayersWithAccessToW
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.utils.lore
 import dev.mizarc.waystonewarps.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val warp: Warp,
-                         private val getPlayersWithAccessToWarp: GetPlayersWithAccessToWarp): Menu {
+class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+    private val getPlayersWithAccessToWarp: GetPlayersWithAccessToWarp by inject()
+
     override fun open(player: Player) {
         val gui = ChestGui(1, "Warp '${warp.name}'")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -41,16 +45,27 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
         val renamingItem = ItemStack(Material.NAME_TAG)
             .name("Rename Warp")
             .lore("Renames this warp")
-        val guiRenamingItem = GuiItem(renamingItem) { openWarpRenamingMenu(warp) }
+        val guiRenamingItem = GuiItem(renamingItem) {
+            menuNavigator.openMenu(player, WarpRenamingMenu(menuNavigator, warp)) }
         pane.addItem(guiRenamingItem, 3, 0)
 
         // Add move icon
         val moveItem = ItemStack(Material.PISTON)
             .name("Move Warp")
             .lore("Place the provided item where you want to move the warp")
-        val guiMoveItem = GuiItem(moveItem) { givePlayerMoveTool(warpBuilder.player, warp) }
+        val guiMoveItem = GuiItem(moveItem) { givePlayerMoveTool(player) }
         pane.addItem(guiMoveItem, 7, 0)
 
         gui.show(player)
+    }
+
+    private fun givePlayerMoveTool(player: Player) {
+        for (item in player.inventory.contents) {
+            if (item == null) continue
+            if (item.itemMeta != null && item.itemMeta == getWarpMoveTool(warp).itemMeta) {
+                return
+            }
+        }
+        player.inventory.addItem(getWarpMoveTool(warp))
     }
 }

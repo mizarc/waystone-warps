@@ -14,9 +14,12 @@ import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location,
-                     private val createWarp: CreateWarp): Menu {
+class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location): Menu, KoinComponent {
+    private val createWarp: CreateWarp by inject()
+
     private var nameAttempt = ""
 
     override fun open(player: Player) {

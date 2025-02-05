@@ -12,10 +12,13 @@ import dev.mizarc.waystonewarps.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
-class WarpIconMenu(private val menuNavigator: MenuNavigator, private val warp: Warp,
-                   private val updateWarpIcon: UpdateWarpIcon): Menu {
+class WarpIconMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+    private val updateWarpIcon: UpdateWarpIcon by inject()
+
     override fun open(player: Player) {
         val gui = FurnaceGui("Set Warp Icon")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }

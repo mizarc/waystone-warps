@@ -5,7 +5,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.domain.warps.Warp
-import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.utils.lore
@@ -13,9 +12,11 @@ import dev.mizarc.waystonewarps.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val warp: Warp,
-    private val updateWarpName: UpdateWarpName): Menu {
+class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+    private val updateWarpName: UpdateWarpName by inject()
     private var nameAttempt = ""
 
     override fun open(player: Player) {
@@ -54,17 +55,15 @@ class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val war
 
             // Stay on menu if the name is already taken
             val result = updateWarpName.execute(warp.id, gui.renameText)
-            when (result) {
+            if (result.isFailure) {
                 nameAttempt = gui.renameText
                 open(player)
                 return@GuiItem
             }
 
-            warp.name = gui.renameText
-            waystoneRepositorySQLite.update(warp)
-            openWarpEditMenu(warp)
-            guiEvent.isCancelled = true
+           menuNavigator.goBack(player)
         }
+
         thirdPane.addItem(confirmGuiItem, 0, 0)
         gui.resultComponent.addPane(thirdPane)
         gui.show(player)
