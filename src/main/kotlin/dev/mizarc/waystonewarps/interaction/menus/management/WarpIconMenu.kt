@@ -5,18 +5,18 @@ import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.utils.lore
 import dev.mizarc.waystonewarps.utils.name
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import kotlin.concurrent.thread
 
 class WarpIconMenu(private val menuNavigator: MenuNavigator, private val warp: Warp,
-                   private val updateWarpIcon: UpdateWarpIcon) {
-    fun open(player: Player) {
+                   private val updateWarpIcon: UpdateWarpIcon): Menu {
+    override fun open(player: Player) {
         val gui = FurnaceGui("Set Warp Icon")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
