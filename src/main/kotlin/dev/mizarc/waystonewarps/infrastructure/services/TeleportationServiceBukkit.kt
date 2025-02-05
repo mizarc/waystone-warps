@@ -10,9 +10,9 @@ import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class TeleportationServiceImpl(private val playerAttributeService: PlayerAttributeService,
-                               private val movementMonitorService: MovementMonitorService,
-                               private val scheduler: Scheduler
+class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
+                                 private val movementMonitorService: MovementMonitorService,
+                                 private val scheduler: Scheduler
 ): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
