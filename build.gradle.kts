@@ -31,6 +31,7 @@ dependencies {
     testImplementation(kotlin("test"))
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
     shadow("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.insert-koin:koin-core:4.0.2")
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.1")
