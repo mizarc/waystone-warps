@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.interaction.menus
+package dev.mizarc.waystonewarps.interaction.menus.use
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
