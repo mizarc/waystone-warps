@@ -42,7 +42,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         storage.connection.executeInsert("INSERT INTO warps (id, playerId, creationTime, name, worldId, " +
                 "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
-            warp.position.x, warp.position.y, warp.position.z, warp.icon.name)
+            warp.position.x, warp.position.y, warp.position.z, warp.icon)
     }
 
     override fun update(warp: Warp) {
@@ -51,7 +51,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         storage.connection.executeUpdate("UPDATE warps SET playerId=?, creationTime=?, name=?, worldId=?, " +
                 "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
             warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
-            warp.position.z, warp.icon.name, warp.id)
+            warp.position.z, warp.icon, warp.id)
         return
     }
 
@@ -79,7 +79,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
                     result.getInt("positionX"),
                     result.getInt("positionY"),
                     result.getInt("positionZ")),
-                Material.valueOf(result.getString("icon")))
+                result.getString("icon"))
         }
     }
 }

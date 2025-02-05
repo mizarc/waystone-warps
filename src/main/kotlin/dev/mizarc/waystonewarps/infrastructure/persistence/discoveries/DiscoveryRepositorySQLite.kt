@@ -16,12 +16,12 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         preload()
     }
 
-    override fun getByWarp(warp: Warp): Set<Discovery> {
+    override fun getByWarp(warpId: UUID): Set<Discovery> {
         val discoverySet: MutableSet<Discovery> = mutableSetOf()
 
         for ((_, discoveriesSet) in discoveries) {
             for (discovery in discoveriesSet) {
-                if (discovery.warpId == warp.id) {
+                if (discovery.warpId == warpId) {
                     discoverySet.add(discovery)
                 }
             }
