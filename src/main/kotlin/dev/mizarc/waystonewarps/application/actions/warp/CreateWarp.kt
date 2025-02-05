@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.application.actions.teleport
+package dev.mizarc.waystonewarps.application.actions.warp
 
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
