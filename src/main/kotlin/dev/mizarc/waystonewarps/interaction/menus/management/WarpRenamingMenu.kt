@@ -7,8 +7,8 @@ import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.utils.lore
-import dev.mizarc.waystonewarps.utils.name
+import dev.mizarc.waystonewarps.interaction.utils.lore
+import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack

@@ -8,8 +8,8 @@ import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.utils.lore
-import dev.mizarc.waystonewarps.utils.name
+import dev.mizarc.waystonewarps.interaction.utils.lore
+import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player

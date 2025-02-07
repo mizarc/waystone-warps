@@ -2,7 +2,7 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
-import dev.mizarc.waystonewarps.application.actions.warp.GetPlayersWithAccessToWarp
+import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.application.services.*
@@ -74,7 +74,7 @@ class WaystoneWarps: JavaPlugin() {
     private fun registerDependencies() {
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService) }
-            single { GetPlayersWithAccessToWarp(discoveryRepository) }
+            single { GetWarpPlayerAccess(discoveryRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
         }
@@ -82,24 +82,11 @@ class WaystoneWarps: JavaPlugin() {
         startKoin { modules(actions) }
     }
 
-    private fun registerDependencies2() {
-        commandManager.registerDependency(Config::class.java, config)
-        commandManager.registerDependency(DatabaseStorage::class.java, storage)
-        commandManager.registerDependency(PlayerStateRepository::class.java, players)
-        commandManager.registerDependency(Teleporter::class.java, teleporter)
-        commandManager.registerDependency(WarpRepositorySQLite::class.java, waystoneRepositorySQLite)
-    }
-
     private fun registerCommands() {
         commandManager.registerCommand(WarpMenuCommand())
     }
 
     private fun registerEvents() {
-        server.pluginManager.registerEvents(PlayerRegistrationListener(homeRepository, players, config, metadata), this)
-        server.pluginManager.registerEvents(TeleportCancelListener(players), this)
-        server.pluginManager.registerEvents(WarpInteractListener(waystoneRepositorySQLite, warpAccessRepository), this)
-        server.pluginManager.registerEvents(WarpDestructionListener(waystoneRepositorySQLite, warpAccessRepository), this)
-        server.pluginManager.registerEvents(WarpMoveToolListener(waystoneRepositorySQLite), this)
-        server.pluginManager.registerEvents(WarpMoveToolRemovalListener(), this)
+        server.pluginManager.registerEvents(WaystoneCreationListener(), this)
     }
 }

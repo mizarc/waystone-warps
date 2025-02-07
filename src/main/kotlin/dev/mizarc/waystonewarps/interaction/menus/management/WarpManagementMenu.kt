@@ -3,13 +3,13 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import dev.mizarc.waystonewarps.application.actions.warp.GetPlayersWithAccessToWarp
+import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.utils.getWarpMoveTool
-import dev.mizarc.waystonewarps.utils.lore
-import dev.mizarc.waystonewarps.utils.name
+import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
+import dev.mizarc.waystonewarps.interaction.utils.lore
+import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -17,7 +17,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
-    private val getPlayersWithAccessToWarp: GetPlayersWithAccessToWarp by inject()
+    private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
 
     override fun open(player: Player) {
         val gui = ChestGui(1, "Warp '${warp.name}'")
@@ -29,7 +29,7 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
         // Add player count icon
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
             .name("Player Count:")
-            .lore("${getPlayersWithAccessToWarp.execute(warp.id).count()}")
+            .lore("${getWarpPlayerAccess.execute(warp.id).count()}")
         val guiPlayerCountItem = GuiItem(playerCountItem) { guiEvent -> guiEvent.isCancelled = true }
         pane.addItem(guiPlayerCountItem, 0, 0)
 
