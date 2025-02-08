@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
@@ -77,6 +78,7 @@ class WaystoneWarps: JavaPlugin() {
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
+            single { GetWarpAtPosition(warpRepository) }
         }
 
         startKoin { modules(actions) }
