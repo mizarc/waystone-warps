@@ -34,14 +34,14 @@ interface PlayerStateRepository {
     /**
      * Registers the player to hold state data.
      *
-     * @param player The player to register.
+     * @param playerState the player state to register.
      */
-    fun add(player: Player)
+    fun add(playerState: PlayerState)
 
     /**
      * Unregisters the player to remove their state data.
      *
-     * @param player The player to unregister.
+     * @param playerId The id of the player to unregister.
      */
-    fun remove(player: OfflinePlayer)
+    fun remove(playerId: UUID)
 }
