@@ -40,7 +40,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     override fun add(warp: Warp) {
         warps[warp.id] = warp
         storage.connection.executeInsert("INSERT INTO warps (id, playerId, creationTime, name, worldId, " +
-                "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
             warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
             warp.position.x, warp.position.y, warp.position.z, warp.icon)
     }
