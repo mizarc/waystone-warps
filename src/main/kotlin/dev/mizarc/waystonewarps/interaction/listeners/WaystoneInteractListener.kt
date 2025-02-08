@@ -16,7 +16,7 @@ import org.bukkit.event.player.PlayerInteractEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WaystoneCreationListener: Listener, KoinComponent {
+class WaystoneInteractListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
 
     @EventHandler
