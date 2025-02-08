@@ -4,6 +4,7 @@ import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import org.bukkit.Material
 import java.time.Instant
 import java.util.*
+import kotlin.concurrent.thread
 
 /**
  * Stores Warp information.
@@ -16,6 +17,10 @@ import java.util.*
  */
 class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
            var position: Position3D, var icon: String) {
+    var breakCount = 3
+
+    private val defaultBreakCount = 3
+    private var breakPeriod = false
 
     /**
      * Compiles a new warp based on the minimum details required.
@@ -27,4 +32,18 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
      */
     constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String) : this(
         UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE")
+
+    /**
+     * Resets the break count after a set period of time.
+     */
+    fun resetBreakCount() {
+        if (!breakPeriod) {
+            thread(start = true) {
+                breakPeriod = true
+                Thread.sleep(10000)
+                breakCount = defaultBreakCount
+                breakPeriod = false
+            }
+        }
+    }
 }
