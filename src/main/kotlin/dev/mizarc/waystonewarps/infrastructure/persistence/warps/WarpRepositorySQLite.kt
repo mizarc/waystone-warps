@@ -61,9 +61,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     private fun createTable() {
-        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
-                "creationTime TEXT NOT NULL, name TEXT, worldId TEXT, positionX INTEGER, positionY INTEGER, " +
-                "positionZ INTEGER, direction INT, icon TEXT);")
+        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, " +
+                "playerId TEXT NOT NULL, creationTime TEXT NOT NULL, name TEXT, worldId TEXT NOT NULL, " +
+                "positionX INTEGER NOT NULL, positionY INTEGER NOT NULL, positionZ INTEGER NOT NULL, icon TEXT);")
     }
 
     private fun preload() {
