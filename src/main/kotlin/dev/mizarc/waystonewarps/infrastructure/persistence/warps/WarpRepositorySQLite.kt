@@ -29,6 +29,10 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         return warps.values.filter { it.playerId == playerId }
     }
 
+    override fun getByName(playerId: UUID, name: String): Warp? {
+        return warps.values.find { it.playerId == playerId && it.name.equals(name, ignoreCase = true) }
+    }
+
     override fun getByPosition(position: Position3D, worldId: UUID): Warp? {
         return warps.values.firstOrNull { it.position == position }
     }
@@ -36,9 +40,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     override fun add(warp: Warp) {
         warps[warp.id] = warp
         storage.connection.executeInsert("INSERT INTO warps (id, playerId, creationTime, name, worldId, " +
-                "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                "positionX, positionY, positionZ, icon) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);",
             warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
-            warp.position.x, warp.position.y, warp.position.z, warp.icon.name)
+            warp.position.x, warp.position.y, warp.position.z, warp.icon)
     }
 
     override fun update(warp: Warp) {
@@ -47,7 +51,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         storage.connection.executeUpdate("UPDATE warps SET playerId=?, creationTime=?, name=?, worldId=?, " +
                 "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
             warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
-            warp.position.z, warp.icon.name, warp.id)
+            warp.position.z, warp.icon, warp.id)
         return
     }
 
@@ -57,9 +61,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     private fun createTable() {
-        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, playerId TEXT NOT NULL, " +
-                "creationTime TEXT NOT NULL, name TEXT, worldId TEXT, positionX INTEGER, positionY INTEGER, " +
-                "positionZ INTEGER, direction INT, icon TEXT);")
+        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, " +
+                "playerId TEXT NOT NULL, creationTime TEXT NOT NULL, name TEXT, worldId TEXT NOT NULL, " +
+                "positionX INTEGER NOT NULL, positionY INTEGER NOT NULL, positionZ INTEGER NOT NULL, icon TEXT);")
     }
 
     private fun preload() {
@@ -75,7 +79,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
                     result.getInt("positionX"),
                     result.getInt("positionY"),
                     result.getInt("positionZ")),
-                Material.valueOf(result.getString("icon")))
+                result.getString("icon"))
         }
     }
 }

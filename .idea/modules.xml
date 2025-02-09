@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Plugins.WaystoneWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/Plugins.WaystoneWarps.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/WaystoneWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/WaystoneWarps.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WorldWideWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/WorldWideWarps.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WorldWideWarps.test.iml" filepath="$PROJECT_DIR$/.idea/modules/WorldWideWarps.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/WaystoneWarps.test.iml" filepath="$PROJECT_DIR$/.idea/modules/WaystoneWarps.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dev.mizarc.WaystoneWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dev.mizarc.WaystoneWarps.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/dev.mizarc.WorldWideWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/dev.mizarc.WorldWideWarps.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/waystone-warps.WaystoneWarps.main.iml" filepath="$PROJECT_DIR$/.idea/modules/waystone-warps.WaystoneWarps.main.iml" />
     </modules>
   </component>

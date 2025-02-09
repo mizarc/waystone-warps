@@ -1,22 +1,27 @@
-package dev.mizarc.waystonewarps.interaction.menus
+package dev.mizarc.waystonewarps.interaction.menus.use
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
+import dev.mizarc.waystonewarps.interaction.menus.Menu
+import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.models.toViewModel
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import dev.mizarc.waystonewarps.Teleporter
-import dev.mizarc.waystonewarps.utils.lore
-import dev.mizarc.waystonewarps.utils.name
+import dev.mizarc.waystonewarps.interaction.utils.lore
+import dev.mizarc.waystonewarps.interaction.utils.name
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import kotlin.math.ceil
 
-class WarpMenu(private val warpAccessRepository: WarpAccessRepository, private val teleporter: Teleporter,
-               private val player: Player) {
-    var page = 1
+class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
+    private val getPlayerWarpAccess: GetPlayerWarpAccess by inject()
+    private var page = 1
 
-    fun openWarpMenu(backCommand: String? = null) {
-        val warps = warpAccessRepository.getByPlayer(player)
+    override fun open(player: Player) {
+        val warps = getPlayerWarpAccess.execute(player.uniqueId)
         val gui = ChestGui(6, "Warps")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
@@ -26,16 +31,9 @@ class WarpMenu(private val warpAccessRepository: WarpAccessRepository, private v
 
         // Add go back/exit item
         val guiExitItem: GuiItem
-        if (backCommand != null) {
-            val exitItem = ItemStack(Material.NETHER_STAR)
-                .name("Go Back")
-            guiExitItem = GuiItem(exitItem) { player.performCommand(backCommand) }
-        }
-        else {
-            val exitItem = ItemStack(Material.NETHER_STAR)
-                .name("Exit")
-            guiExitItem = GuiItem(exitItem) { player.closeInventory() }
-        }
+        val exitItem = ItemStack(Material.NETHER_STAR)
+            .name("Exit")
+        guiExitItem = GuiItem(exitItem) { menuNavigator.goBack(player) }
         controlsPane.addItem(guiExitItem, 0, 0)
 
         // Add prev item
@@ -71,11 +69,16 @@ class WarpMenu(private val warpAccessRepository: WarpAccessRepository, private v
         var xSlot = 0
         var ySlot = 0
         for (warp in warps) {
-            val warpItem = ItemStack(warp.icon)
-                .name(warp.name)
-                .lore("${warp.position.x}, ${warp.position.y}, ${warp.position.z}")
+            val warpModel = warp.toViewModel()
+            val locationText = warpModel.location?.let { location ->
+                "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+            } ?: run {
+                "Location not found"
+            }
+
+            val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)
             val guiWarpItem = GuiItem(warpItem) {guiEvent ->
-                teleporter.teleportWarp(player, warp)
+               // teleporter.teleportWarp(player, warp)
                 player.closeInventory()
                 guiEvent.isCancelled = true
             }

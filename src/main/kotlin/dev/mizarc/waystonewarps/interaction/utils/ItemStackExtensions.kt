@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.utils
+package dev.mizarc.waystonewarps.interaction.utils
 
 import org.bukkit.*
 import org.bukkit.enchantments.Enchantment

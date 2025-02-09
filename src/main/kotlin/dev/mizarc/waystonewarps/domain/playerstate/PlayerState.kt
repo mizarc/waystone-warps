@@ -3,22 +3,15 @@ package dev.mizarc.waystonewarps.domain.playerstate
 import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.entity.Player
+import java.util.UUID
 
 /**
  * Holds temporary player state data.
  *
- * @property player The reference to the player.
+ * @property playerId The id of the player to store state of.
  */
-class PlayerState(val player: OfflinePlayer) {
+class PlayerState(val playerId: UUID) {
     var isTeleporting = false
     var lastTeleportTime = 0
-
-    /**
-     * Gets the online version of the player instance.
-     *
-     * @return The online player instance.
-     */
-    fun getOnlinePlayer(): Player? {
-        return Bukkit.getPlayer(player.uniqueId)
-    }
+    var override = false
 }
