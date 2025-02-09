@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
@@ -8,6 +9,7 @@ import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
+import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
@@ -15,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.infrastructure.persistence.Config
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.services.MessagingServiceBukkit
@@ -35,6 +38,7 @@ class WaystoneWarps: JavaPlugin() {
     // Repositories
     private lateinit var warpRepository: WarpRepository
     private lateinit var discoveryRepository: DiscoveryRepository
+    private lateinit var playerStateRepository: PlayerStateRepository
 
     // Services
     private lateinit var messagingService: MessagingService
@@ -64,6 +68,7 @@ class WaystoneWarps: JavaPlugin() {
     private fun initialiseRepositories() {
         warpRepository = WarpRepositorySQLite(storage)
         discoveryRepository = DiscoveryRepositorySQLite(storage)
+        playerStateRepository = PlayerStateRepositoryMemory()
     }
 
     private fun initialiseServices() {
@@ -79,6 +84,7 @@ class WaystoneWarps: JavaPlugin() {
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
+            single { BreakWarpBlock(warpRepository, playerStateRepository) }
         }
 
         startKoin { modules(actions) }
@@ -89,6 +95,7 @@ class WaystoneWarps: JavaPlugin() {
     }
 
     private fun registerEvents() {
-        server.pluginManager.registerEvents(WaystoneCreationListener(), this)
+        server.pluginManager.registerEvents(WaystoneInteractListener(), this)
+        server.pluginManager.registerEvents(WaystoneDestructionListener(), this)
     }
 }

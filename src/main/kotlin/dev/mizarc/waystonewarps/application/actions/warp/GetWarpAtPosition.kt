@@ -7,6 +7,7 @@ import java.util.UUID
 
 class GetWarpAtPosition(private val warpRepository: WarpRepository) {
     fun execute(position: Position3D, worldId: UUID): Warp? {
-        return warpRepository.getByPosition(position, worldId)
+        val warp = warpRepository.getByPosition(position, worldId) ?: return null
+        return warp
     }
 }
