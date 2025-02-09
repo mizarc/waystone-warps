@@ -5,12 +5,16 @@ import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.results.BreakWarpResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -24,8 +28,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.UUID
-import kotlin.getValue
+import org.w3c.dom.Text
+import java.util.*
 
 class WaystoneDestructionListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
@@ -118,6 +122,21 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     }
 
     private fun triggerSuccess(player: Player, warp: Warp) {
+        // Change lower block back into smooth stone
+        val world = Bukkit.getWorld(warp.worldId) ?: return
+        val location = warp.position.toLocation(world)
+        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
+        bottomBlock.type = Material.SMOOTH_STONE
+
+        // Remove connected block display entities
+        val entities: MutableList<Entity> = location.world.entities
+        for (entity in entities) {
+            val customName = entity.customName() ?: continue
+            if (customName is TextComponent && customName.content() == warp.id.toString()) {
+                entity.remove()
+            }
+        }
+
         // Remove any move objects in player inventory
         for ((index, item) in player.inventory.withIndex()) {
             if (item == null) continue

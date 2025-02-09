@@ -12,6 +12,8 @@ import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
@@ -24,6 +26,7 @@ import org.joml.AxisAngle4f
 import org.joml.Vector3f
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location): Menu, KoinComponent {
     private val createWarp: CreateWarp by inject()
@@ -89,21 +92,21 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
 
     private fun generateCustomModel(warp: Warp) {
         val world = Bukkit.getWorld(warp.worldId) ?: return
-        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
+        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
             0.0f, 0.0f, 0.0f,
             1.0f, 1.0f, 1.0f)
-        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
             0.075f, 0.8f, 0.075f,
             0.85f, 0.85f, 0.85f)
-        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
             0.2f, 0.4f, 0.2f,
             0.6f, 0.6f, 0.6f)
-        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
             0.075f, 1.3f, 0.075f,
             0.85f, 0.85f, 0.85f)
     }
 
-    private fun createBlockDisplay(baseLocation: Location, material: Material,
+    private fun createBlockDisplay(warpId: UUID, baseLocation: Location, material: Material,
                                    offsetX: Float, offsetY: Float, offsetZ: Float,
                                    scaleX: Float, scaleY: Float, scaleZ: Float) {
         // Create BlockData
@@ -116,8 +119,7 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
         val transformation = Transformation(
             Vector3f(offsetX, offsetY, offsetZ), AxisAngle4f(),
             Vector3f(scaleX, scaleY, scaleZ), AxisAngle4f())
-        println(transformation.translation)
-        println(transformation.scale)
         blockDisplay.transformation = transformation
+        blockDisplay.customName(Component.text((warpId.toString())))
     }
 }
