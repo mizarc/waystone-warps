@@ -5,15 +5,23 @@ import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
+import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.entity.BlockDisplay
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.util.Transformation
+import org.joml.AxisAngle4f
+import org.joml.Vector3f
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -54,6 +62,8 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
                 location.toPosition3D(), location.world.uid)
             when (result) {
                 is CreateWarpResult.Success -> {
+                    replaceBottomBlockWithBarrier(result.warp)
+                    generateCustomModel(result.warp)
                     menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, result.warp))
                 }
                 else -> {
@@ -67,5 +77,47 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
         thirdPane.addItem(confirmGuiItem, 0, 0)
         gui.resultComponent.addPane(thirdPane)
         gui.show(player)
+    }
+
+    private fun replaceBottomBlockWithBarrier(warp: Warp) {
+        val world = Bukkit.getWorld(warp.worldId) ?: return
+        val location = warp.position.toLocation(world)
+
+        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
+        bottomBlock.type = Material.BARRIER
+    }
+
+    private fun generateCustomModel(warp: Warp) {
+        val world = Bukkit.getWorld(warp.worldId) ?: return
+        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
+            0.0f, 0.0f, 0.0f,
+            1.0f, 1.0f, 1.0f)
+        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+            0.075f, 0.8f, 0.075f,
+            0.85f, 0.85f, 0.85f)
+        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+            0.2f, 0.4f, 0.2f,
+            0.6f, 0.6f, 0.6f)
+        createBlockDisplay(warp.position.toLocation(world), Material.SMOOTH_STONE,
+            0.075f, 1.3f, 0.075f,
+            0.85f, 0.85f, 0.85f)
+    }
+
+    private fun createBlockDisplay(baseLocation: Location, material: Material,
+                                   offsetX: Float, offsetY: Float, offsetZ: Float,
+                                   scaleX: Float, scaleY: Float, scaleZ: Float) {
+        // Create BlockData
+        val blockData = material.createBlockData()
+        baseLocation.y -= 1
+        val blockDisplay = baseLocation.world.spawnEntity(baseLocation, EntityType.BLOCK_DISPLAY) as BlockDisplay
+        blockDisplay.block = blockData
+
+        // Transform display
+        val transformation = Transformation(
+            Vector3f(offsetX, offsetY, offsetZ), AxisAngle4f(),
+            Vector3f(scaleX, scaleY, scaleZ), AxisAngle4f())
+        println(transformation.translation)
+        println(transformation.scale)
+        blockDisplay.transformation = transformation
     }
 }
