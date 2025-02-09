@@ -8,7 +8,6 @@ import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
@@ -34,21 +33,33 @@ class WaystoneDestructionListener: Listener, KoinComponent {
 
     @EventHandler
     fun onClaimHubDestroy(event: BlockBreakEvent) {
-        if (event.block.type != Material.LODESTONE) return
+        val blockType = event.block.type
 
-        // Trigger a break action for the warp block
-        val result = breakWarpBlock.execute(event.block.location.toPosition3D(), event.block.world.uid)
-        when (result) {
-            is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
-            is BreakWarpResult.Breaking -> {
-                event.player.sendActionBar(
-                    Component.text("Break ${result.breaksRemaining} more times in 10 seconds to destroy this waystone")
-                        .color(TextColor.color(255, 201, 14)))
-                event.isCancelled = true
+        // Check for lodestone or barrier block that is under the lodestone
+        if (blockType == Material.LODESTONE || blockType == Material.BARRIER) {
+
+            // If breaking the barrier block, get the block above
+            val location = if (blockType == Material.LODESTONE) {
+                event.block.location.toPosition3D()
+            } else {
+                event.block.location.clone().apply { y += 1 }.toPosition3D()
             }
-            else -> return
+
+            // Break and perform action based on result
+            val result = breakWarpBlock.execute(location, event.block.world.uid)
+            when (result) {
+                is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
+                is BreakWarpResult.Breaking -> {
+                    event.player.sendActionBar(
+                        Component.text("Break ${result.breaksRemaining} more times in 10 seconds " +
+                                "to destroy this waystone").color(TextColor.color(255, 201, 14)))
+                    event.isCancelled = true
+                }
+                else -> return
+            }
         }
     }
+
 
     @EventHandler
     fun onBlockExplode(event: BlockExplodeEvent) {
