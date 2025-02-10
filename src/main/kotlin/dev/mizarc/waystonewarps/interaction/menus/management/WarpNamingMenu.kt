@@ -30,7 +30,6 @@ import java.util.UUID
 
 class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location): Menu, KoinComponent {
     private val createWarp: CreateWarp by inject()
-
     private var nameAttempt = ""
 
     override fun open(player: Player) {
@@ -65,8 +64,6 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
                 location.toPosition3D(), location.world.uid)
             when (result) {
                 is CreateWarpResult.Success -> {
-                    replaceBottomBlockWithBarrier(result.warp)
-                    generateCustomModel(result.warp)
                     menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, result.warp))
                 }
                 else -> {

@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps.application.actions.warp
 
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
+import dev.mizarc.waystonewarps.application.services.StructureBuilderService
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
@@ -15,7 +16,8 @@ import java.util.*
  * @property playerAttributeService Service for accessing player attributes.
  */
 class CreateWarp(private val warpRepository: WarpRepository,
-                 private val playerAttributeService: PlayerAttributeService) {
+                 private val playerAttributeService: PlayerAttributeService,
+                 private val structureBuilderService: StructureBuilderService) {
 
     /**
      * Executes the warp creation action.
@@ -45,6 +47,7 @@ class CreateWarp(private val warpRepository: WarpRepository,
 
         val newWarp = Warp(worldId, playerId, position3D, name)
         warpRepository.add(newWarp)
+        structureBuilderService.spawnStructure(newWarp)
         return CreateWarpResult.Success(newWarp)
     }
 }

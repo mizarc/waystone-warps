@@ -23,6 +23,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositoryS
 import dev.mizarc.waystonewarps.infrastructure.services.MessagingServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
+import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -44,6 +45,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var messagingService: MessagingService
     private lateinit var movementMonitorService: MovementMonitorService
     private lateinit var playerAttributeService: PlayerAttributeService
+    private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
     private lateinit var scheduler: Scheduler
 
@@ -75,16 +77,17 @@ class WaystoneWarps: JavaPlugin() {
         messagingService = MessagingServiceBukkit()
         movementMonitorService = MovementMonitorServiceBukkit()
         playerAttributeService = PlayerAttributeServiceVault(config, metadata)
+        structureBuilderService = StructureBuilderServiceBukkit()
     }
 
     private fun registerDependencies() {
         val actions = module {
-            single { CreateWarp(warpRepository, playerAttributeService) }
+            single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService) }
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
-            single { BreakWarpBlock(warpRepository, playerStateRepository) }
+            single { BreakWarpBlock(warpRepository, structureBuilderService) }
         }
 
         startKoin { modules(actions) }
