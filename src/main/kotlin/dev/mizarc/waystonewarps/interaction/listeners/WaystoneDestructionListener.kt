@@ -122,20 +122,7 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     }
 
     private fun triggerSuccess(player: Player, warp: Warp) {
-        // Change lower block back into smooth stone
-        val world = Bukkit.getWorld(warp.worldId) ?: return
-        val location = warp.position.toLocation(world)
-        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
-        bottomBlock.type = Material.SMOOTH_STONE
 
-        // Remove connected block display entities
-        val entities: MutableList<Entity> = location.world.entities
-        for (entity in entities) {
-            val customName = entity.customName() ?: continue
-            if (customName is TextComponent && customName.content() == warp.id.toString()) {
-                entity.remove()
-            }
-        }
 
         // Remove any move objects in player inventory
         for ((index, item) in player.inventory.withIndex()) {

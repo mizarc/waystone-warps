@@ -81,45 +81,4 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
         gui.resultComponent.addPane(thirdPane)
         gui.show(player)
     }
-
-    private fun replaceBottomBlockWithBarrier(warp: Warp) {
-        val world = Bukkit.getWorld(warp.worldId) ?: return
-        val location = warp.position.toLocation(world)
-
-        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
-        bottomBlock.type = Material.BARRIER
-    }
-
-    private fun generateCustomModel(warp: Warp) {
-        val world = Bukkit.getWorld(warp.worldId) ?: return
-        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
-            0.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 1.0f)
-        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
-            0.075f, 0.8f, 0.075f,
-            0.85f, 0.85f, 0.85f)
-        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
-            0.2f, 0.4f, 0.2f,
-            0.6f, 0.6f, 0.6f)
-        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE,
-            0.075f, 1.3f, 0.075f,
-            0.85f, 0.85f, 0.85f)
-    }
-
-    private fun createBlockDisplay(warpId: UUID, baseLocation: Location, material: Material,
-                                   offsetX: Float, offsetY: Float, offsetZ: Float,
-                                   scaleX: Float, scaleY: Float, scaleZ: Float) {
-        // Create BlockData
-        val blockData = material.createBlockData()
-        baseLocation.y -= 1
-        val blockDisplay = baseLocation.world.spawnEntity(baseLocation, EntityType.BLOCK_DISPLAY) as BlockDisplay
-        blockDisplay.block = blockData
-
-        // Transform display
-        val transformation = Transformation(
-            Vector3f(offsetX, offsetY, offsetZ), AxisAngle4f(),
-            Vector3f(scaleX, scaleY, scaleZ), AxisAngle4f())
-        blockDisplay.transformation = transformation
-        blockDisplay.customName(Component.text((warpId.toString())))
-    }
 }
