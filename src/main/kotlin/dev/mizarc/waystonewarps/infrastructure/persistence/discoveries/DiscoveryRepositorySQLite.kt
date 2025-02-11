@@ -3,7 +3,6 @@ package dev.mizarc.waystonewarps.infrastructure.persistence.discoveries
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
-import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import java.sql.SQLException
 import java.time.LocalDateTime
@@ -35,7 +34,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
     }
 
     override fun add(discovery: Discovery) {
-        discoveries[discovery.playerId]?.add(discovery)
+        val playerDiscoveries = discoveries.getOrPut(discovery.playerId) { mutableSetOf() }
+        playerDiscoveries.add(discovery)
 
         try {
             storage.connection.executeUpdate("INSERT INTO discoveries (waystoneId, playerId, firstDiscoveredTime, " +
