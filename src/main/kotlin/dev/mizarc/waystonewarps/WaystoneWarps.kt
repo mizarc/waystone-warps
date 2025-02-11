@@ -18,7 +18,7 @@ import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
-import dev.mizarc.waystonewarps.infrastructure.persistence.Config
+import dev.mizarc.waystonewarps.infrastructure.services.ConfigServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
@@ -35,7 +35,6 @@ import org.koin.dsl.module
 class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
-    private val config = Config(this)
 
     // Storage
     private val storage = SQLiteStorage(this)
@@ -50,6 +49,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerAttributeService: PlayerAttributeService
     private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
+    private lateinit var configService: ConfigServiceBukkit
     private lateinit var scheduler: Scheduler
 
     override fun onEnable() {
@@ -79,7 +79,8 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseServices() {
         movementMonitorService = MovementMonitorServiceBukkit()
-        playerAttributeService = PlayerAttributeServiceVault(config, metadata)
+        configService = ConfigServiceBukkit(this.config)
+        playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
         structureBuilderService = StructureBuilderServiceBukkit()
         scheduler = BukkitSchedulerService(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, movementMonitorService, scheduler)
