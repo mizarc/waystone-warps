@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
@@ -22,10 +23,11 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.Discovery
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
-import dev.mizarc.waystonewarps.infrastructure.services.MessagingServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.BukkitSchedulerService
 import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
 import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -44,7 +46,6 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerStateRepository: PlayerStateRepository
 
     // Services
-    private lateinit var messagingService: MessagingService
     private lateinit var movementMonitorService: MovementMonitorService
     private lateinit var playerAttributeService: PlayerAttributeService
     private lateinit var structureBuilderService: StructureBuilderService
@@ -77,10 +78,11 @@ class WaystoneWarps: JavaPlugin() {
     }
 
     private fun initialiseServices() {
-        messagingService = MessagingServiceBukkit()
         movementMonitorService = MovementMonitorServiceBukkit()
         playerAttributeService = PlayerAttributeServiceVault(config, metadata)
         structureBuilderService = StructureBuilderServiceBukkit()
+        scheduler = BukkitSchedulerService(this)
+        teleportationService = TeleportationServiceBukkit(playerAttributeService, movementMonitorService, scheduler)
     }
 
     private fun registerDependencies() {
@@ -93,6 +95,7 @@ class WaystoneWarps: JavaPlugin() {
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
+            single { TeleportPlayer(teleportationService, playerAttributeService)}
         }
 
         startKoin { modules(actions) }
