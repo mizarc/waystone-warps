@@ -5,13 +5,16 @@ import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.results.BreakWarpResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -25,8 +28,8 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.UUID
-import kotlin.getValue
+import org.w3c.dom.Text
+import java.util.*
 
 class WaystoneDestructionListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
@@ -34,21 +37,33 @@ class WaystoneDestructionListener: Listener, KoinComponent {
 
     @EventHandler
     fun onClaimHubDestroy(event: BlockBreakEvent) {
-        if (event.block.type != Material.LODESTONE) return
+        val blockType = event.block.type
 
-        // Trigger a break action for the warp block
-        val result = breakWarpBlock.execute(event.block.location.toPosition3D(), event.block.world.uid)
-        when (result) {
-            is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
-            is BreakWarpResult.Breaking -> {
-                event.player.sendActionBar(
-                    Component.text("Break ${result.breaksRemaining} more times in 10 seconds to destroy this waystone")
-                        .color(TextColor.color(255, 201, 14)))
-                event.isCancelled = true
+        // Check for lodestone or barrier block that is under the lodestone
+        if (blockType == Material.LODESTONE || blockType == Material.BARRIER) {
+
+            // If breaking the barrier block, get the block above
+            val location = if (blockType == Material.LODESTONE) {
+                event.block.location.toPosition3D()
+            } else {
+                event.block.location.clone().apply { y += 1 }.toPosition3D()
             }
-            else -> return
+
+            // Break and perform action based on result
+            val result = breakWarpBlock.execute(location, event.block.world.uid)
+            when (result) {
+                is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
+                is BreakWarpResult.Breaking -> {
+                    event.player.sendActionBar(
+                        Component.text("Break ${result.breaksRemaining} more times in 10 seconds " +
+                                "to destroy this waystone").color(TextColor.color(255, 201, 14)))
+                    event.isCancelled = true
+                }
+                else -> return
+            }
         }
     }
+
 
     @EventHandler
     fun onBlockExplode(event: BlockExplodeEvent) {
@@ -107,6 +122,8 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     }
 
     private fun triggerSuccess(player: Player, warp: Warp) {
+
+
         // Remove any move objects in player inventory
         for ((index, item) in player.inventory.withIndex()) {
             if (item == null) continue

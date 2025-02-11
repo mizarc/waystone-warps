@@ -26,7 +26,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
 
         if (event.action == Action.RIGHT_CLICK_BLOCK && clickedBlock?.type == Material.LODESTONE) {
             val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
-            if (blockBelow.type == Material.SMOOTH_STONE) {
+            if (blockBelow.type == Material.SMOOTH_STONE || blockBelow.type == Material.BARRIER) {
                 val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
                 val menuNavigator = MenuNavigator()
                 if (warp == null) {
@@ -34,7 +34,6 @@ class WaystoneInteractListener: Listener, KoinComponent {
                 } else {
                     menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, warp))
                 }
-
             }
         }
     }
