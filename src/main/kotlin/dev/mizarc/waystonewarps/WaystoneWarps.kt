@@ -5,6 +5,7 @@ import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.warp.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.application.services.*
@@ -60,6 +61,7 @@ class WaystoneWarps: JavaPlugin() {
         registerDependencies()
         registerCommands()
         registerEvents()
+        RefreshAllStructures(warpRepository, structureBuilderService).execute()
         logger.info("WaystoneWarps has been Enabled")
     }
 
