@@ -33,6 +33,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         val offsetLocation = getOffsetLocation(warpLocation, player.yaw)
         offsetLocation.pitch = player.pitch
         offsetLocation.yaw = player.yaw
+        offsetLocation.add(0.0, -2.0, 0.0)
 
         // Teleports the player instantaneously
         removeCostFromInventory(player, cost)
