@@ -4,6 +4,7 @@ import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -28,9 +29,14 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         val cost = playerAttributeService.getTeleportCost(playerId)
         val player = Bukkit.getPlayer(playerId) ?: return Result.failure(Exception("Player not found."))
 
+        // Generate offset location based on player pitch and yaw
+        val offsetLocation = getOffsetLocation(warpLocation, player.yaw)
+        offsetLocation.pitch = player.pitch
+        offsetLocation.yaw = player.yaw
+
         // Teleports the player instantaneously
         removeCostFromInventory(player, cost)
-        player.teleport(warpLocation)
+        player.teleport(offsetLocation)
         return Result.success(Unit)
     }
 
@@ -99,6 +105,18 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             }
         }
     }
+
+    private fun getOffsetLocation(location: Location, playerYaw: Float): Location {
+        return if (playerYaw >= -22.5 && playerYaw < 22.5) location.add(0.0, 0.0, 1.0); // SOUTH
+        else if (playerYaw >= 22.5 && playerYaw < 67.5) location.add(-1.0, 0.0, 1.0); // SOUTH_EAST
+        else if (playerYaw >= 67.5 && playerYaw < 112.5) location.add(-1.0, 0.0, 0.0); // EAST
+        else if (playerYaw >= 112.5 && playerYaw < 157.5) location.add(-1.0, 0.0, -1.0); // NORTH_EAST
+        else if (playerYaw >= 157.5 || playerYaw < -157.5) location.add(0.0, 0.0, -1.0); // NORTH
+        else if (playerYaw >= -157.5 && playerYaw < -112.5) location.add(1.0, 0.0, -1.0); // NORTH_WEST
+        else if (playerYaw >= -112.5 && playerYaw < -67.5) location.add(1.0, 0.0, 0.0); // WEST
+        else location.add(1.0, 0.0, 1.0);
+    }
+
 
     private data class PendingTeleport(
         val taskHandle: TaskHandle,
