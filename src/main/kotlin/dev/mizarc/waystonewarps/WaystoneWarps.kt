@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps
 import co.aikar.commands.PaperCommandManager
 import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.warp.RefreshAllStructures
@@ -84,12 +85,14 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun registerDependencies() {
         val actions = module {
-            single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService) }
+            single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
+                discoveryRepository) }
             single { GetWarpPlayerAccess(discoveryRepository) }
+            single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
-            single { BreakWarpBlock(warpRepository, structureBuilderService) }
+            single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
         }
 
         startKoin { modules(actions) }

@@ -4,6 +4,9 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Optional
+import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import org.bukkit.entity.Player
 
 @CommandAlias("warpmenu")
@@ -11,7 +14,8 @@ import org.bukkit.entity.Player
 class WarpMenuCommand: BaseCommand() {
 
     @Default
-    fun onWarp(player: Player, backCommand: String? = null) {
-        // TODO: Implement command
+    fun onWarp(player: Player, @Optional backCommand: String? = null) {
+        val menuNavigator = MenuNavigator()
+        WarpMenu(menuNavigator).open(player)
     }
 }
