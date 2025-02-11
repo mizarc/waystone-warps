@@ -3,9 +3,12 @@ package dev.mizarc.waystonewarps.application.actions.warp
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
+import dev.mizarc.waystonewarps.domain.discoveries.Discovery
+import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
+import java.time.LocalDateTime
 import java.util.*
 
 /**
@@ -17,7 +20,8 @@ import java.util.*
  */
 class CreateWarp(private val warpRepository: WarpRepository,
                  private val playerAttributeService: PlayerAttributeService,
-                 private val structureBuilderService: StructureBuilderService) {
+                 private val structureBuilderService: StructureBuilderService,
+                 private val discoveryRepository: DiscoveryRepository) {
 
     /**
      * Executes the warp creation action.
@@ -46,7 +50,9 @@ class CreateWarp(private val warpRepository: WarpRepository,
         }
 
         val newWarp = Warp(worldId, playerId, position3D, name)
+        val discovery = Discovery(newWarp.id, playerId, LocalDateTime.now())
         warpRepository.add(newWarp)
+        discoveryRepository.add(discovery)
         structureBuilderService.spawnStructure(newWarp)
         return CreateWarpResult.Success(newWarp)
     }
