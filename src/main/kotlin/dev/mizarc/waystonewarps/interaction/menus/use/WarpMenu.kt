@@ -108,7 +108,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                     },
                     onCanceled = {
                         player.sendActionBar {
-                            Component.text("Cancelled teleportation due to movement")
+                            Component.text("Cancelled teleport due to movement")
                                 .color(PrimaryColourPalette.CANCELLED.color)
                         }
                     }
