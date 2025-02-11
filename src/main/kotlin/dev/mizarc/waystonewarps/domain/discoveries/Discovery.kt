@@ -12,8 +12,8 @@ import java.util.*
  * @param lastVisitedTime Time the waystone was last teleported to.
  * @param isFavourite If the waystone is marked as favourite.
  */
-class Discovery(var warpId: UUID, var playerId: UUID, firstDiscoveredTime: LocalDateTime,
-                lastVisitedTime: LocalDateTime, isFavourite: Boolean) {
+class Discovery(var warpId: UUID, var playerId: UUID, var firstDiscoveredTime: LocalDateTime,
+                var lastVisitedTime: LocalDateTime, var isFavourite: Boolean) {
 
     /**
      * Constructs a discovery using the minimum required details.
