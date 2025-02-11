@@ -3,9 +3,9 @@ package dev.mizarc.waystonewarps.infrastructure.persistence.discoveries
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
-import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import java.sql.SQLException
+import java.time.LocalDateTime
 import java.util.*
 
 class DiscoveryRepositorySQLite(private val storage: Storage<Database>): DiscoveryRepository {
@@ -34,22 +34,26 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
     }
 
     override fun add(discovery: Discovery) {
-        discoveries[discovery.playerId]?.add(discovery)
+        val playerDiscoveries = discoveries.getOrPut(discovery.playerId) { mutableSetOf() }
+        playerDiscoveries.add(discovery)
 
         try {
-            storage.connection.executeUpdate("INSERT INTO discoveries (waystoneId, playerId) VALUES (?,?)",
-                discovery.warpId, discovery.playerId)
+            storage.connection.executeUpdate("INSERT INTO discoveries (waystoneId, playerId, firstDiscoveredTime, " +
+                    "lastVisitedTime, isFavourite) VALUES (?,?,?,?,?)",
+                discovery.warpId, discovery.playerId, discovery.firstDiscoveredTime,
+                discovery.lastVisitedTime, discovery.isFavourite)
         } catch (error: SQLException) {
             error.printStackTrace()
         }
     }
 
-    override fun remove(discovery: Discovery) {
-        discoveries[discovery.playerId]?.remove(discovery)
+    override fun remove(playerId: UUID, warpId: UUID) {
+        val playerDiscoveries = discoveries[playerId]
+        playerDiscoveries?.removeIf { it.warpId == warpId }
 
         try {
             storage.connection.executeUpdate("REMOVE FROM discoveries WHERE waystoneId=? AND playerId=?",
-                discovery.warpId, discovery.playerId)
+                warpId, playerId)
         } catch (error: SQLException) {
             error.printStackTrace()
         }
@@ -60,7 +64,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
      */
     private fun createTable() {
         try {
-            storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (waystoneId TEXT, playerId TEXT);")
+            storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (waystoneId TEXT, " +
+                    "playerId TEXT, firstDiscoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER);")
         } catch (error: SQLException) {
             error.printStackTrace()
         }
@@ -74,8 +79,11 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         for (result in results) {
             val waystoneId = UUID.fromString(result.getString("waystoneId"))
             val playerId = UUID.fromString(result.getString("playerId"))
+            val firstDiscoveredTime = LocalDateTime.parse(result.getString("firstDiscoveredTime"))
+            val lastVisitedTime = LocalDateTime.parse(result.getString("lastVisitedTime"))
+            val isFavourite = result.getInt("isFavourite") != 0
             try {
-                val discovery = Discovery(waystoneId, playerId)
+                val discovery = Discovery(waystoneId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)
                 val foundDiscoveries = discoveries.getOrPut(playerId) { mutableSetOf(discovery) }
                 foundDiscoveries.add(discovery)
             }

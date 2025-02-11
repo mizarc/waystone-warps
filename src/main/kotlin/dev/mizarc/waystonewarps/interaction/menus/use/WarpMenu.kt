@@ -3,21 +3,28 @@ package dev.mizarc.waystonewarps.interaction.menus.use
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
+import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayerImmediately
 import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.models.toViewModel
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import net.kyori.adventure.text.Component
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.ceil
 
 class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
     private val getPlayerWarpAccess: GetPlayerWarpAccess by inject()
+    private val teleportPlayer: TeleportPlayer by inject()
+
     private var page = 1
 
     override fun open(player: Player) {
@@ -78,7 +85,34 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
 
             val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)
             val guiWarpItem = GuiItem(warpItem) {guiEvent ->
-               // teleporter.teleportWarp(player, warp)
+                teleportPlayer.execute(player.uniqueId, warp,
+                    onDelayed = {
+                        player.sendActionBar {
+                            Component.text("Teleporting to ").color(PrimaryColourPalette.INFO.color)
+                                .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
+                                .append(Component.text("... Don't move!").color(PrimaryColourPalette.INFO.color))
+                        }
+                    },
+                    onSuccess = {
+                        player.sendActionBar {
+                            Component.text("Welcome to ").color(PrimaryColourPalette.SUCCESS.color)
+                                .append(Component.text(warp.name).color(AccentColourPalette.SUCCESS.color))
+                                .append(Component.text("!").color(PrimaryColourPalette.SUCCESS.color))
+                        }
+                    },
+                    onFailure = {
+                        player.sendActionBar {
+                            Component.text("Failed to teleport, contact the server administrator")
+                                .color(PrimaryColourPalette.FAILED.color)
+                        }
+                    },
+                    onCanceled = {
+                        player.sendActionBar {
+                            Component.text("Cancelled teleport due to movement")
+                                .color(PrimaryColourPalette.CANCELLED.color)
+                        }
+                    }
+                )
                 player.closeInventory()
                 guiEvent.isCancelled = true
             }
