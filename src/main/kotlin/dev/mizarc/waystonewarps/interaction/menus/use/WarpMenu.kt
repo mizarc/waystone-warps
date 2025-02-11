@@ -86,7 +86,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
             val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)
             val guiWarpItem = GuiItem(warpItem) {guiEvent ->
                 teleportPlayer.execute(player.uniqueId, warp,
-                    onDelayed = {
+                    onPending = {
                         player.sendActionBar {
                             Component.text("Teleporting to ").color(PrimaryColourPalette.INFO.color)
                                 .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
