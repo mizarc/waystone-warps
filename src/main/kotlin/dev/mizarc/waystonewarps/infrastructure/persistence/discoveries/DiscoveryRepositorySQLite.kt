@@ -81,7 +81,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
             val playerId = UUID.fromString(result.getString("playerId"))
             val firstDiscoveredTime = LocalDateTime.parse(result.getString("firstDiscoveredTime"))
             val lastVisitedTime = LocalDateTime.parse(result.getString("lastVisitedTime"))
-            val isFavourite = result.getInt("lastVisitedTime") != 0
+            val isFavourite = result.getInt("isFavourite") != 0
             try {
                 val discovery = Discovery(waystoneId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)
                 val foundDiscoveries = discoveries.getOrPut(playerId) { mutableSetOf(discovery) }
