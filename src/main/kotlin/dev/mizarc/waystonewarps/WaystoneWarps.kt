@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.world.BreakWarpBlock
@@ -99,6 +100,7 @@ class WaystoneWarps: JavaPlugin() {
             single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
             single { TeleportPlayer(teleportationService, playerAttributeService)}
             single { LogPlayerMovement(movementMonitorService) }
+            single { DiscoverWarp(discoveryRepository) }
         }
 
         startKoin { modules(actions) }

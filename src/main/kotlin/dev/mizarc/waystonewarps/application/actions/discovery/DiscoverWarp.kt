@@ -6,7 +6,12 @@ import java.time.Instant
 import java.util.UUID
 
 class DiscoverWarp(private val discoveryRepository: DiscoveryRepository) {
-    fun execute(playerId: UUID, warpId: UUID) {
-        discoveryRepository.add(Discovery(playerId, warpId, Instant.now()))
+    fun execute(playerId: UUID, warpId: UUID): Boolean {
+        if (discoveryRepository.getByWarpAndPlayer(warpId, playerId) != null) {
+            return false
+        }
+
+        discoveryRepository.add(Discovery(warpId, playerId, Instant.now()))
+        return true
     }
 }
