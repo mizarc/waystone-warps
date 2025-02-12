@@ -18,6 +18,10 @@ class ConfigServiceBukkit(val configFile: FileConfiguration): ConfigService {
         return CostType.valueOf(configFile.getString("teleport_cost_type", "ITEM").toString())
     }
 
+    override fun getTeleportCostItem(): String {
+        return configFile.getString("teleport_cost_item", "ENDER_PEARL").toString()
+    }
+
     override fun getTeleportCostAmount(): Int {
         return configFile.getInt("teleport_cost_amount", 3)
     }

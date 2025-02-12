@@ -6,5 +6,6 @@ interface ConfigService {
     fun getWarpLimit(): Int
     fun getTeleportTimer(): Int
     fun getTeleportCostType(): CostType
+    fun getTeleportCostItem(): String
     fun getTeleportCostAmount(): Int
 }
