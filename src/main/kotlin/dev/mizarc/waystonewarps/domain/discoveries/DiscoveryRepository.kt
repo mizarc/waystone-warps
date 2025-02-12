@@ -1,6 +1,5 @@
 package dev.mizarc.waystonewarps.domain.discoveries
 
-import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.UUID
 
 /**

@@ -5,7 +5,6 @@ import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
-import org.bukkit.Material
 import java.time.Instant
 import java.util.*
 

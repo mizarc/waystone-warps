@@ -38,7 +38,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         playerDiscoveries.add(discovery)
 
         try {
-            storage.connection.executeUpdate("INSERT INTO discoveries (waystoneId, playerId, firstDiscoveredTime, " +
+            storage.connection.executeUpdate("INSERT INTO discoveries (warpId, playerId, firstDiscoveredTime, " +
                     "lastVisitedTime, isFavourite) VALUES (?,?,?,?,?)",
                 discovery.warpId, discovery.playerId, discovery.firstDiscoveredTime,
                 discovery.lastVisitedTime, discovery.isFavourite)
@@ -52,7 +52,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         playerDiscoveries?.removeIf { it.warpId == warpId }
 
         try {
-            storage.connection.executeUpdate("REMOVE FROM discoveries WHERE waystoneId=? AND playerId=?",
+            storage.connection.executeUpdate("REMOVE FROM discoveries WHERE warpId=? AND playerId=?",
                 warpId, playerId)
         } catch (error: SQLException) {
             error.printStackTrace()
@@ -64,27 +64,27 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
      */
     private fun createTable() {
         try {
-            storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (waystoneId TEXT, " +
+            storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (warpId TEXT, " +
                     "playerId TEXT, firstDiscoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER," +
-                    "PRIMARY KEY(waystoneId, playerId));")
+                    "PRIMARY KEY(warpId, playerId));")
         } catch (error: SQLException) {
             error.printStackTrace()
         }
     }
 
     /**
-     * Fetches all waystone discoveries from database and saves it to memory.
+     * Fetches all warp discoveries from database and saves it to memory.
      */
     private fun preload() {
         val results = storage.connection.getResults("SELECT * FROM discoveries")
         for (result in results) {
-            val waystoneId = UUID.fromString(result.getString("waystoneId"))
+            val warpId = UUID.fromString(result.getString("warpId"))
             val playerId = UUID.fromString(result.getString("playerId"))
             val firstDiscoveredTime = LocalDateTime.parse(result.getString("firstDiscoveredTime"))
             val lastVisitedTime = LocalDateTime.parse(result.getString("lastVisitedTime"))
             val isFavourite = result.getInt("isFavourite") != 0
             try {
-                val discovery = Discovery(waystoneId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)
+                val discovery = Discovery(warpId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)
                 val foundDiscoveries = discoveries.getOrPut(playerId) { mutableSetOf(discovery) }
                 foundDiscoveries.add(discovery)
             }
