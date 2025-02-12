@@ -5,6 +5,7 @@ import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import java.sql.SQLException
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 
@@ -31,6 +32,10 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
 
     override fun getByPlayer(playerId: UUID): Set<Discovery> {
         return discoveries[playerId] ?: return emptySet()
+    }
+
+    override fun getByWarpAndPlayer(warpId: UUID, playerId: UUID): Discovery? {
+        return discoveries[playerId]?.find { it.warpId == warpId }
     }
 
     override fun add(discovery: Discovery) {
@@ -80,8 +85,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         for (result in results) {
             val warpId = UUID.fromString(result.getString("warpId"))
             val playerId = UUID.fromString(result.getString("playerId"))
-            val firstDiscoveredTime = LocalDateTime.parse(result.getString("firstDiscoveredTime"))
-            val lastVisitedTime = LocalDateTime.parse(result.getString("lastVisitedTime"))
+            val firstDiscoveredTime = Instant.parse(result.getString("firstDiscoveredTime"))
+            val lastVisitedTime = Instant.parse(result.getString("lastVisitedTime"))
             val isFavourite = result.getInt("isFavourite") != 0
             try {
                 val discovery = Discovery(warpId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)

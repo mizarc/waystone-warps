@@ -24,6 +24,15 @@ interface DiscoveryRepository {
     fun getByPlayer(playerId: UUID): Set<Discovery>
 
     /**
+     * Gets the specific discover linked to the warp and player.
+     *
+     * @param playerId Unique id of the player to query.
+     * @param warpId Unique id of the warp to query.
+     * @return Discovery object if found.
+     */
+    fun getByWarpAndPlayer(warpId: UUID, playerId: UUID): Discovery?
+
+    /**
      * Adds a discovery entry that links a player to a warp.
      *
      * @param discovery The discovery to add.
