@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
+import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.application.services.scheduling.Task
@@ -18,17 +19,21 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                                  private val scheduler: SchedulerService): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
-    override fun teleportPlayer(playerId: UUID, warp: Warp): Result<Unit> {
+    override fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult {
+        // Player data
+        val cost = playerAttributeService.getTeleportCost(playerId)
+        val player = Bukkit.getPlayer(playerId) ?: return TeleportResult.FAILED
+
+        // Check for cost
+        val result = hasEnoughItems(player, Material.ENDER_PEARL, 3)
+        if (result) return TeleportResult.INSUFFICIENT_FUNDS
+
         // Location data
-        val world = Bukkit.getWorld(warp.worldId) ?: return Result.failure(Exception("World not found."))
+        val world = Bukkit.getWorld(warp.worldId) ?: return TeleportResult.WORLD_NOT_FOUND
         val warpLocation = warp.position.toLocation(world)
         warpLocation.x += 0.5
         warpLocation.y += 1
         warpLocation.z += 0.5
-
-        // Player data
-        val cost = playerAttributeService.getTeleportCost(playerId)
-        val player = Bukkit.getPlayer(playerId) ?: return Result.failure(Exception("Player not found."))
 
         // Generate offset location based on player pitch and yaw
         val offsetLocation = getOffsetLocation(warpLocation, player.yaw)
@@ -39,11 +44,12 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         // Teleports the player instantaneously
         removeCostFromInventory(player, cost)
         player.teleport(offsetLocation)
-        return Result.success(Unit)
+        return TeleportResult.SUCCESS
     }
 
-    override fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int,
-                                         onSuccess: () -> Unit, onCanceled: () -> Unit): Result<Unit> {
+    override fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int, onSuccess: () -> Unit,
+                                         onPending: () -> Unit, onInsufficientFunds: () -> Unit, onCanceled: () -> Unit,
+                                         onWorldNotFound: () -> Unit, onFailure: () -> Unit) {
         // Cancel existing pending teleport if any
         activeTeleportations[playerId]?.let {
             it.taskHandle.cancel()
@@ -51,15 +57,37 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             it.onCanceled()
         }
 
+        // Get player object
+        val player = Bukkit.getPlayer(playerId)
+        if (player == null) {
+            onFailure()
+            return
+        }
+
+        // Cancel if player doesn't have the funds to teleport
+        val result = hasEnoughItems(player, Material.ENDER_PEARL, 3)
+        if (result) {
+            onInsufficientFunds()
+            return
+        }
+
+        // Instant teleport if player doesn't have a teleport timer
+        if (playerAttributeService.getTeleportTimer(playerId) <= 0) {
+            teleportPlayer(playerId, warp)
+            onSuccess()
+            return
+        }
+
         // Schedule the new teleportation task
         val taskHandle = scheduler.schedule(delaySeconds * 20L) {
             movementMonitorService.stopMonitoringPlayer(playerId)
             activeTeleportations.remove(playerId)
             val teleportResult = teleportPlayer(playerId, warp)
-            if (teleportResult.isSuccess) {
-                onSuccess()
-            } else {
-                // Handle teleportation failure if needed
+            when (teleportResult) {
+                TeleportResult.SUCCESS -> onSuccess()
+                TeleportResult.INSUFFICIENT_FUNDS -> onInsufficientFunds()
+                TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
+                TeleportResult.FAILED -> onFailure()
             }
         }
 
@@ -73,8 +101,6 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
         // Store the pending teleport
         activeTeleportations[playerId] = PendingTeleport(taskHandle, onCanceled)
-
-        return Result.success(Unit)
     }
 
     override fun cancelPendingTeleport(playerId: UUID): Result<Unit> {
@@ -117,6 +143,19 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         else if (playerYaw >= -157.5 && playerYaw < -112.5) location.add(1.0, 0.0, -1.0); // NORTH_WEST
         else if (playerYaw >= -112.5 && playerYaw < -67.5) location.add(1.0, 0.0, 0.0); // WEST
         else location.add(1.0, 0.0, 1.0);
+    }
+
+    private fun hasEnoughItems(player: Player, material: Material, amount: Int): Boolean {
+        var count = 0
+        for (item in player.inventory.contents) {
+            if (item != null && item.type == material) {
+                count += item.amount
+                if (count >= amount) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 

@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.application.actions.teleport
 
+import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.domain.warps.Warp
@@ -8,28 +9,27 @@ import java.util.*
 class TeleportPlayer(private val teleportationService: TeleportationService,
         private val playerAttributeService: PlayerAttributeService) {
 
-    fun execute(playerId: UUID, warp: Warp, onPending: (delaySeconds: Int) -> Unit, onSuccess: () -> Unit,
-                onCanceled: () -> Unit, onFailure: (reason: String) -> Unit) {
+    fun execute(playerId: UUID, warp: Warp, onSuccess: () -> Unit, onPending: () -> Unit,
+                onInsufficientFunds: () -> Unit, onCanceled: () -> Unit, onWorldNotFound: () -> Unit,
+                onFailure: () -> Unit) {
         // Retrieve player settings
         val timer = playerAttributeService.getTeleportTimer(playerId)
 
+        //
+
         // Schedule delayed teleport
         if (timer > 0) {
-            val result = teleportationService.scheduleDelayedTeleport(playerId, warp, timer, onSuccess, onCanceled)
-            if (result.isSuccess) {
-                onPending(timer)
-            } else {
-                onFailure("Failed to schedule delayed teleport")
-            }
-            return
+            teleportationService.scheduleDelayedTeleport(playerId, warp, timer, onSuccess, onPending,
+                onInsufficientFunds, onCanceled, onWorldNotFound, onFailure)
         }
 
         // Instant teleport
         val result = teleportationService.teleportPlayer(playerId, warp)
-        if (result.isSuccess) {
-            onSuccess()
-        } else {
-            onFailure("Failed to teleport")
+        when (result) {
+            TeleportResult.SUCCESS -> onSuccess()
+            TeleportResult.INSUFFICIENT_FUNDS -> onInsufficientFunds()
+            TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
+            TeleportResult.FAILED -> onFailure()
         }
     }
 }
