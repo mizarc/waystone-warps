@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.domain.discoveries
 
+import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
 
@@ -12,8 +13,8 @@ import java.util.*
  * @param lastVisitedTime Time the waystone was last teleported to.
  * @param isFavourite If the waystone is marked as favourite.
  */
-class Discovery(var warpId: UUID, var playerId: UUID, var firstDiscoveredTime: LocalDateTime,
-                var lastVisitedTime: LocalDateTime, var isFavourite: Boolean) {
+class Discovery(var warpId: UUID, var playerId: UUID, var firstDiscoveredTime: Instant,
+                var lastVisitedTime: Instant, var isFavourite: Boolean) {
 
     /**
      * Constructs a discovery using the minimum required details.
@@ -22,6 +23,6 @@ class Discovery(var warpId: UUID, var playerId: UUID, var firstDiscoveredTime: L
      * @param playerId Unique identifier for the player.
      * @param firstDiscoveredTime Time the waystone was discovered.
      */
-    constructor(warpId: UUID, playerId: UUID, firstDiscoveredTime: LocalDateTime): this(
+    constructor(warpId: UUID, playerId: UUID, firstDiscoveredTime: Instant): this(
         warpId, playerId, firstDiscoveredTime, firstDiscoveredTime, false)
 }
