@@ -15,12 +15,11 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
         // Retrieve player settings
         val timer = playerAttributeService.getTeleportTimer(playerId)
 
-        //
-
         // Schedule delayed teleport
         if (timer > 0) {
             teleportationService.scheduleDelayedTeleport(playerId, warp, timer, onSuccess, onPending,
                 onInsufficientFunds, onCanceled, onWorldNotFound, onFailure)
+            return
         }
 
         // Instant teleport
