@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.application.services
 
+import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.*
 
@@ -13,7 +14,7 @@ interface TeleportationService {
      * @param playerId The id of the player to query.
      * @param warp The waystone to teleport to.
      */
-    fun teleportPlayer(playerId: UUID, warp: Warp): Result<Unit>
+    fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult
 
     /**
      * Schedules the teleportation to be done after a set amount of time.
@@ -21,11 +22,15 @@ interface TeleportationService {
      * @param playerId The id of the player.
      * @param warp The waystone to teleport the player to.
      * @param delaySeconds The time it should take to teleport the player.
-     * @param onSuccess The callback to be performed when the teleportation is successful.
+     * @param onSuccess The callback to be performed when the teleportation is done instantaneously.
+     * @param onPending The callback to be performed when the teleportation is pending.
+     * @param onInsufficientFunds The callback to be performed when the player doesn't have enough funds to teleport.
      * @param onCanceled The callback to be performed when the teleportation is cancelled.
+     * @param onFailure The callback to be performed if the teleport fails.
      */
-    fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int,
-                                onSuccess: () -> Unit, onCanceled: () -> Unit): Result<Unit>
+    fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int, onSuccess: () -> Unit,
+                                onPending: () -> Unit, onInsufficientFunds: () -> Unit, onCanceled: () -> Unit,
+                                onWorldNotFound: () -> Unit, onFailure: () -> Unit)
 
     /**
      * Cancels a pending teleport.

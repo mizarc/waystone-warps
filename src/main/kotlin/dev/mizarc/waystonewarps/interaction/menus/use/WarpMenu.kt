@@ -86,7 +86,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
             val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)
             val guiWarpItem = GuiItem(warpItem) {guiEvent ->
                 teleportPlayer.execute(player.uniqueId, warp,
-                    onDelayed = {
+                    onPending = {
                         player.sendActionBar {
                             Component.text("Teleporting to ").color(PrimaryColourPalette.INFO.color)
                                 .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
@@ -104,6 +104,18 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                         player.sendActionBar {
                             Component.text("Failed to teleport, contact the server administrator")
                                 .color(PrimaryColourPalette.FAILED.color)
+                        }
+                    },
+                    onInsufficientFunds = {
+                        player.sendActionBar {
+                            Component.text("Insufficient funds to teleport")
+                                .color(PrimaryColourPalette.CANCELLED.color)
+                        }
+                    },
+                    onWorldNotFound = {
+                        player.sendActionBar {
+                            Component.text("Cannot teleport to a world that does not exist")
+                                .color(PrimaryColourPalette.CANCELLED.color)
                         }
                     },
                     onCanceled = {

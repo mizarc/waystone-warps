@@ -12,6 +12,7 @@ import dev.mizarc.waystonewarps.application.actions.warp.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
 import dev.mizarc.waystonewarps.application.services.*
+import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
@@ -24,18 +25,20 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.Discovery
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
-import dev.mizarc.waystonewarps.infrastructure.services.BukkitSchedulerService
 import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
 import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
-import dev.mizarc.waystonewarps.infrastructure.services.TeleportationServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
+import net.milkbowl.vault.economy.Economy
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
+    private var economy: Economy? = null
 
     // Storage
     private val storage = SQLiteStorage(this)
@@ -50,14 +53,24 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerAttributeService: PlayerAttributeService
     private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
-    private lateinit var configService: ConfigServiceBukkit
-    private lateinit var scheduler: Scheduler
+    private lateinit var configService: ConfigService
+    private lateinit var scheduler: SchedulerService
 
     override fun onEnable() {
         logger.info(Chat::class.java.toString())
-        val serviceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
+
+        // Get Vault metadata
+        val chatServiceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
             .getRegistration(Chat::class.java)!!
-        metadata = serviceProvider.provider
+        metadata = chatServiceProvider.provider
+
+        // Get Vault economy
+        val economyServiceProvider: RegisteredServiceProvider<Economy>? = server.servicesManager
+            .getRegistration(Economy::class.java)
+        if (economyServiceProvider != null) {
+            economy = economyServiceProvider.provider
+        }
+
         commandManager = PaperCommandManager(this)
         initialiseRepositories()
         initialiseServices()
@@ -83,8 +96,9 @@ class WaystoneWarps: JavaPlugin() {
         configService = ConfigServiceBukkit(this.config)
         playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
         structureBuilderService = StructureBuilderServiceBukkit()
-        scheduler = BukkitSchedulerService(this)
-        teleportationService = TeleportationServiceBukkit(playerAttributeService, movementMonitorService, scheduler)
+        scheduler = SchedulerServiceBukkit(this)
+        teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
+            movementMonitorService, scheduler, economy)
     }
 
     private fun registerDependencies() {
