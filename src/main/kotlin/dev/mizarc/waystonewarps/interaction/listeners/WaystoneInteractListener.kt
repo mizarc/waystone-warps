@@ -1,6 +1,6 @@
 package dev.mizarc.waystonewarps.interaction.listeners
 
-import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
+import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
@@ -22,19 +22,25 @@ class WaystoneInteractListener: Listener, KoinComponent {
     @EventHandler
     fun onLodestoneInteract(event: PlayerInteractEvent) {
         val player: Player = event.player
-        val clickedBlock: Block? = event.clickedBlock
+        val clickedBlock: Block = event.clickedBlock ?: return
 
-        if (event.action == Action.RIGHT_CLICK_BLOCK && clickedBlock?.type == Material.LODESTONE) {
-            val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
-            if (blockBelow.type == Material.SMOOTH_STONE || blockBelow.type == Material.BARRIER) {
-                val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
-                val menuNavigator = MenuNavigator()
-                if (warp == null) {
-                    menuNavigator.openMenu(player, WarpNamingMenu(menuNavigator, clickedBlock.location))
-                } else {
-                    menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, warp))
-                }
+        // Check for right click lodestone
+        if (event.action != Action.RIGHT_CLICK_BLOCK || clickedBlock.type != Material.LODESTONE) return
+
+        // Check for smooth stone or barrier below lodestone
+        val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
+        if (blockBelow.type != Material.SMOOTH_STONE && blockBelow.type != Material.BARRIER) return
+
+        // Check for existing warp
+        val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
+        val menuNavigator = MenuNavigator()
+        if (warp == null) {
+            menuNavigator.openMenu(player, WarpNamingMenu(menuNavigator, clickedBlock.location))
+        } else {
+            if (warp.playerId == player.uniqueId) {
+                menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, warp))
             }
+
         }
     }
 }

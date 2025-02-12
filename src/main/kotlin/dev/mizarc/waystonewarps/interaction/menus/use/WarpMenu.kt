@@ -4,8 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
-import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayerImmediately
-import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette

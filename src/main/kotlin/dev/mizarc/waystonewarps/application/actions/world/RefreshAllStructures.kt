@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.application.actions.warp
+package dev.mizarc.waystonewarps.application.actions.world
 
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository

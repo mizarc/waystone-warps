@@ -3,30 +3,19 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
-import dev.mizarc.waystonewarps.domain.warps.Warp
-import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
-import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.entity.BlockDisplay
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.util.Transformation
-import org.joml.AxisAngle4f
-import org.joml.Vector3f
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.UUID
 
 class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location): Menu, KoinComponent {
     private val createWarp: CreateWarp by inject()

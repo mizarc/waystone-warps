@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.application.actions.warp
+package dev.mizarc.waystonewarps.application.actions.world
 
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
