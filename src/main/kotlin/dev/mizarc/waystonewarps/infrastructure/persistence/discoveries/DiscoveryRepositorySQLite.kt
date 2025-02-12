@@ -51,12 +51,12 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         }
     }
 
-    override fun remove(playerId: UUID, warpId: UUID) {
+    override fun remove(warpId: UUID, playerId: UUID) {
         val playerDiscoveries = discoveries[playerId]
         playerDiscoveries?.removeIf { it.warpId == warpId }
 
         try {
-            storage.connection.executeUpdate("REMOVE FROM discoveries WHERE warpId=? AND playerId=?",
+            storage.connection.executeUpdate("DELETE FROM discoveries WHERE warpId=? AND playerId=?",
                 warpId, playerId)
         } catch (error: SQLException) {
             error.printStackTrace()
