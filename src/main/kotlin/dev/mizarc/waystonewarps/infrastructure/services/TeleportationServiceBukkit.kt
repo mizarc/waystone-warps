@@ -1,6 +1,8 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
 import dev.mizarc.waystonewarps.application.services.*
+import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
+import dev.mizarc.waystonewarps.application.services.scheduling.Task
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import org.bukkit.Bukkit
@@ -13,8 +15,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
                                  private val movementMonitorService: MovementMonitorService,
-                                 private val scheduler: Scheduler
-): TeleportationService {
+                                 private val scheduler: SchedulerService): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
     override fun teleportPlayer(playerId: UUID, warp: Warp): Result<Unit> {
@@ -120,7 +121,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
 
     private data class PendingTeleport(
-        val taskHandle: TaskHandle,
+        val taskHandle: Task,
         val onCanceled: () -> Unit
     )
 }
