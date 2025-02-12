@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
 import dev.mizarc.waystonewarps.application.services.ConfigService
+import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
 import org.bukkit.configuration.file.FileConfiguration
 
 class ConfigServiceBukkit(val configFile: FileConfiguration): ConfigService {
@@ -13,11 +14,11 @@ class ConfigServiceBukkit(val configFile: FileConfiguration): ConfigService {
         return configFile.getInt("teleport_timer", 5)
     }
 
-    override fun getTeleportCostType() {
-        TODO("Not yet implemented")
+    override fun getTeleportCostType(): CostType {
+        return CostType.valueOf(configFile.getString("teleport_cost_type", "ITEM").toString())
     }
 
     override fun getTeleportCostAmount(): Int {
-        return configFile.getInt("teleport_cost", 3)
+        return configFile.getInt("teleport_cost_amount", 3)
     }
 }
