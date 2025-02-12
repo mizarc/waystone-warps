@@ -22,7 +22,7 @@ class ConfigServiceBukkit(val configFile: FileConfiguration): ConfigService {
         return configFile.getString("teleport_cost_item", "ENDER_PEARL").toString()
     }
 
-    override fun getTeleportCostAmount(): Int {
-        return configFile.getInt("teleport_cost_amount", 3)
+    override fun getTeleportCostAmount(): Double {
+        return configFile.getDouble("teleport_cost_amount", 3.0)
     }
 }

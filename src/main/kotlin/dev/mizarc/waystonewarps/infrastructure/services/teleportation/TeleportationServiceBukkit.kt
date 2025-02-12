@@ -135,8 +135,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
     }
 
-    private fun hasEnoughItems(player: Player, itemMaterial: Material, teleportCost: Int): Boolean {
-        var count = teleportCost
+    private fun hasEnoughItems(player: Player, itemMaterial: Material, teleportCost: Double): Boolean {
+        var count = teleportCost.toInt()
         for (item in player.inventory.contents.filterNotNull()) {
             if (item.type == itemMaterial) {
                 val removeAmount = minOf(item.amount, count)
@@ -149,8 +149,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         return false
     }
 
-    private fun removeItems(player: Player, itemMaterial: Material, teleportCost: Int) {
-        var count = teleportCost
+    private fun removeItems(player: Player, itemMaterial: Material, teleportCost: Double) {
+        var count = teleportCost.toInt()
         for (item in player.inventory.contents.filterNotNull()) {
             if (item.type == itemMaterial) {
                 val removeAmount = minOf(item.amount, count)
@@ -163,20 +163,20 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
     }
 
-    private fun hasEnoughMoney(player: Player, teleportCost: Int): Boolean {
-        return economy?.has(player, teleportCost.toDouble()) == true
+    private fun hasEnoughMoney(player: Player, teleportCost: Double): Boolean {
+        return economy?.has(player, teleportCost) == true
     }
 
-    private fun subtractMoney(player: Player, teleportCost: Int) {
+    private fun subtractMoney(player: Player, teleportCost: Double) {
         economy?.withdrawPlayer(player, teleportCost.toDouble())
     }
 
-    private fun hasEnoughXp(player: Player, teleportCost: Int): Boolean {
+    private fun hasEnoughXp(player: Player, teleportCost: Double): Boolean {
         return player.level >= teleportCost
     }
 
-    private fun subtractXp(player: Player, teleportCost: Int) {
-        player.giveExpLevels(-teleportCost)
+    private fun subtractXp(player: Player, teleportCost: Double) {
+        player.giveExpLevels(-teleportCost.toInt())
     }
 
     private fun getOffsetLocation(location: Location, playerYaw: Float): Location {
@@ -189,8 +189,6 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         else if (playerYaw >= -112.5 && playerYaw < -67.5) location.add(1.0, 0.0, 0.0) // WEST
         else location.add(1.0, 0.0, 1.0)
     }
-
-
 
 
     private data class PendingTeleport(

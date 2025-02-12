@@ -7,5 +7,5 @@ interface ConfigService {
     fun getTeleportTimer(): Int
     fun getTeleportCostType(): CostType
     fun getTeleportCostItem(): String
-    fun getTeleportCostAmount(): Int
+    fun getTeleportCostAmount(): Double
 }

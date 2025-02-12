@@ -23,7 +23,7 @@ interface PlayerAttributeService {
      * @param playerId The target player's id.
      * @returns The cost amount.
      */
-    fun getTeleportCost(playerId: UUID): Int
+    fun getTeleportCost(playerId: UUID): Double
 
     /**
      * Gets how long it takes for the player to teleport.

@@ -19,11 +19,11 @@ class PlayerAttributeServiceVault(private val configService: ConfigService,
             "waystonewarps.warp_limit", configService.getWarpLimit())
             .takeIf { it > -1 } ?: -1
 
-    override fun getTeleportCost(playerId: UUID): Int =
-        metadata.getPlayerInfoInteger(
+    override fun getTeleportCost(playerId: UUID): Double =
+        metadata.getPlayerInfoDouble(
             Bukkit.getServer().worlds[0].name, Bukkit.getPlayer(playerId),
-            "waystonewarps.teleport_cost", configService.getTeleportCostAmount())
-            .takeIf { it > -1 } ?: -1
+            "waystonewarps.teleport_cost", configService.getTeleportCostAmount()
+            ).takeIf { it > -1.0 } ?: -1.0
 
     override fun getTeleportTimer(playerId: UUID): Int =
         metadata.getPlayerInfoInteger(
