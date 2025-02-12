@@ -65,7 +65,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
     private fun createTable() {
         try {
             storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (waystoneId TEXT, " +
-                    "playerId TEXT, firstDiscoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER);")
+                    "playerId TEXT, firstDiscoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER," +
+                    "PRIMARY KEY(waystoneId, playerId));")
         } catch (error: SQLException) {
             error.printStackTrace()
         }
