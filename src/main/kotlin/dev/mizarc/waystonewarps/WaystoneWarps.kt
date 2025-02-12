@@ -28,15 +28,17 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositoryS
 import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
 import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
-import dev.mizarc.waystonewarps.infrastructure.services.TeleportationServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
+import net.milkbowl.vault.economy.Economy
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
+    private var economy: Economy? = null
 
     // Storage
     private val storage = SQLiteStorage(this)
@@ -56,9 +58,19 @@ class WaystoneWarps: JavaPlugin() {
 
     override fun onEnable() {
         logger.info(Chat::class.java.toString())
-        val serviceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
+
+        // Get Vault metadata
+        val chatServiceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
             .getRegistration(Chat::class.java)!!
-        metadata = serviceProvider.provider
+        metadata = chatServiceProvider.provider
+
+        // Get Vault economy
+        val economyServiceProvider: RegisteredServiceProvider<Economy>? = server.servicesManager
+            .getRegistration(Economy::class.java)
+        if (economyServiceProvider != null) {
+            economy = economyServiceProvider.provider
+        }
+
         commandManager = PaperCommandManager(this)
         initialiseRepositories()
         initialiseServices()
@@ -85,7 +97,8 @@ class WaystoneWarps: JavaPlugin() {
         playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
         structureBuilderService = StructureBuilderServiceBukkit()
         scheduler = SchedulerServiceBukkit(this)
-        teleportationService = TeleportationServiceBukkit(playerAttributeService, movementMonitorService, scheduler)
+        teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
+            movementMonitorService, scheduler, economy)
     }
 
     private fun registerDependencies() {

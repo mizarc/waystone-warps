@@ -1,32 +1,36 @@
-package dev.mizarc.waystonewarps.infrastructure.services
+package dev.mizarc.waystonewarps.infrastructure.services.teleportation
 
 import dev.mizarc.waystonewarps.application.results.TeleportResult
-import dev.mizarc.waystonewarps.application.services.*
+import dev.mizarc.waystonewarps.application.services.ConfigService
+import dev.mizarc.waystonewarps.application.services.MovementMonitorService
+import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
+import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.application.services.scheduling.Task
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
+import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
-import org.bukkit.inventory.ItemStack
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
+                                 private val configService: ConfigService,
                                  private val movementMonitorService: MovementMonitorService,
-                                 private val scheduler: SchedulerService): TeleportationService {
+                                 private val scheduler: SchedulerService,
+                                 private val economy: Economy?): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
     override fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult {
         // Player data
-        val cost = playerAttributeService.getTeleportCost(playerId)
         val player = Bukkit.getPlayer(playerId) ?: return TeleportResult.FAILED
 
         // Check for cost
-        val result = hasEnoughItems(player, Material.ENDER_PEARL, 3)
-        if (result) return TeleportResult.INSUFFICIENT_FUNDS
+        val result = hasCost(player)
+        if (!result) return TeleportResult.INSUFFICIENT_FUNDS
 
         // Location data
         val world = Bukkit.getWorld(warp.worldId) ?: return TeleportResult.WORLD_NOT_FOUND
@@ -42,7 +46,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         offsetLocation.add(0.0, -2.0, 0.0)
 
         // Teleports the player instantaneously
-        removeCostFromInventory(player, cost)
+        deductCost(player)
         player.teleport(offsetLocation)
         return TeleportResult.SUCCESS
     }
@@ -65,8 +69,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Cancel if player doesn't have the funds to teleport
-        val result = hasEnoughItems(player, Material.ENDER_PEARL, 3)
-        if (result) {
+        val result = hasCost(player)
+        if (!result) {
             onInsufficientFunds()
             return
         }
@@ -101,6 +105,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
         // Store the pending teleport
         activeTeleportations[playerId] = PendingTeleport(taskHandle, onCanceled)
+        onPending()
     }
 
     override fun cancelPendingTeleport(playerId: UUID): Result<Unit> {
@@ -112,51 +117,80 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         return Result.success(Unit)
     }
 
-    private fun hasCostAmount(player: Player, teleportCost: Int): Boolean {
-        // Doesn't compile without non-null assertion for some reason. Don't remove it.
-        val count = player.inventory.contents!!.sumOf { item ->
-            if (item?.type == Material.ENDER_PEARL) item.amount else 0
+    private fun hasCost(player: Player): Boolean {
+        val teleportCost = playerAttributeService.getTeleportCost(player.uniqueId)
+        return when (configService.getTeleportCostType()) {
+            CostType.ITEM -> hasEnoughItems(player, Material.valueOf(configService.getTeleportCostItem()), teleportCost)
+            CostType.MONEY -> hasEnoughMoney(player, teleportCost)
+            CostType.XP -> hasEnoughXp(player, teleportCost)
         }
-        return count >= teleportCost
     }
 
-    private fun removeCostFromInventory(player: Player, teleportCost: Int) {
+    private fun deductCost(player: Player) {
+        val teleportCost = playerAttributeService.getTeleportCost(player.uniqueId)
+        when (configService.getTeleportCostType()) {
+            CostType.ITEM -> removeItems(player, Material.valueOf(configService.getTeleportCostItem()), teleportCost)
+            CostType.MONEY -> subtractMoney(player, teleportCost)
+            CostType.XP -> subtractXp(player, teleportCost)
+        }
+    }
+
+    private fun hasEnoughItems(player: Player, itemMaterial: Material, teleportCost: Int): Boolean {
         var count = teleportCost
-        // Doesn't compile without non-null assertion for some reason. Don't remove it.
-        player.inventory.contents!!.forEach {
-            if (it?.type == Material.ENDER_PEARL) {
-                val remaining = player.inventory.removeItem(ItemStack(Material.ENDER_PEARL, teleportCost))
-                count -= remaining[0]?.amount ?: teleportCost
+        for (item in player.inventory.contents.filterNotNull()) {
+            if (item.type == itemMaterial) {
+                val removeAmount = minOf(item.amount, count)
+                count -= removeAmount
                 if (count <= 0) {
-                    return
-                }
-            }
-        }
-    }
-
-    private fun getOffsetLocation(location: Location, playerYaw: Float): Location {
-        return if (playerYaw >= -22.5 && playerYaw < 22.5) location.add(0.0, 0.0, 1.0); // SOUTH
-        else if (playerYaw >= 22.5 && playerYaw < 67.5) location.add(-1.0, 0.0, 1.0); // SOUTH_EAST
-        else if (playerYaw >= 67.5 && playerYaw < 112.5) location.add(-1.0, 0.0, 0.0); // EAST
-        else if (playerYaw >= 112.5 && playerYaw < 157.5) location.add(-1.0, 0.0, -1.0); // NORTH_EAST
-        else if (playerYaw >= 157.5 || playerYaw < -157.5) location.add(0.0, 0.0, -1.0); // NORTH
-        else if (playerYaw >= -157.5 && playerYaw < -112.5) location.add(1.0, 0.0, -1.0); // NORTH_WEST
-        else if (playerYaw >= -112.5 && playerYaw < -67.5) location.add(1.0, 0.0, 0.0); // WEST
-        else location.add(1.0, 0.0, 1.0);
-    }
-
-    private fun hasEnoughItems(player: Player, material: Material, amount: Int): Boolean {
-        var count = 0
-        for (item in player.inventory.contents) {
-            if (item != null && item.type == material) {
-                count += item.amount
-                if (count >= amount) {
                     return true
                 }
             }
         }
         return false
     }
+
+    private fun removeItems(player: Player, itemMaterial: Material, teleportCost: Int) {
+        var count = teleportCost
+        for (item in player.inventory.contents.filterNotNull()) {
+            if (item.type == itemMaterial) {
+                val removeAmount = minOf(item.amount, count)
+                item.amount -= removeAmount
+                count -= removeAmount
+                if (count <= 0) {
+                    break
+                }
+            }
+        }
+    }
+
+    private fun hasEnoughMoney(player: Player, teleportCost: Int): Boolean {
+        return economy?.has(player, teleportCost.toDouble()) == true
+    }
+
+    private fun subtractMoney(player: Player, teleportCost: Int) {
+        economy?.withdrawPlayer(player, teleportCost.toDouble())
+    }
+
+    private fun hasEnoughXp(player: Player, teleportCost: Int): Boolean {
+        return player.level >= teleportCost
+    }
+
+    private fun subtractXp(player: Player, teleportCost: Int) {
+        player.giveExpLevels(-teleportCost)
+    }
+
+    private fun getOffsetLocation(location: Location, playerYaw: Float): Location {
+        return if (playerYaw >= -22.5 && playerYaw < 22.5) location.add(0.0, 0.0, 1.0) // SOUTH
+        else if (playerYaw >= 22.5 && playerYaw < 67.5) location.add(-1.0, 0.0, 1.0) // SOUTH_EAST
+        else if (playerYaw >= 67.5 && playerYaw < 112.5) location.add(-1.0, 0.0, 0.0) // EAST
+        else if (playerYaw >= 112.5 && playerYaw < 157.5) location.add(-1.0, 0.0, -1.0) // NORTH_EAST
+        else if (playerYaw >= 157.5 || playerYaw < -157.5) location.add(0.0, 0.0, -1.0) // NORTH
+        else if (playerYaw >= -157.5 && playerYaw < -112.5) location.add(1.0, 0.0, -1.0) // NORTH_WEST
+        else if (playerYaw >= -112.5 && playerYaw < -67.5) location.add(1.0, 0.0, 0.0) // WEST
+        else location.add(1.0, 0.0, 1.0)
+    }
+
+
 
 
     private data class PendingTeleport(
