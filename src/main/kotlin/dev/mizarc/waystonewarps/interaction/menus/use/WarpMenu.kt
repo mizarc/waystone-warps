@@ -106,6 +106,18 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                                 .color(PrimaryColourPalette.FAILED.color)
                         }
                     },
+                    onInsufficientFunds = {
+                        player.sendActionBar {
+                            Component.text("Insufficient funds to teleport")
+                                .color(PrimaryColourPalette.CANCELLED.color)
+                        }
+                    },
+                    onWorldNotFound = {
+                        player.sendActionBar {
+                            Component.text("Cannot teleport to a world that does not exist")
+                                .color(PrimaryColourPalette.CANCELLED.color)
+                        }
+                    },
                     onCanceled = {
                         player.sendActionBar {
                             Component.text("Cancelled teleport due to movement")
