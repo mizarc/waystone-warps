@@ -27,12 +27,12 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin): StructureBuilde
         val location = warp.position.toLocation(world)
         location.block.type = Material.LODESTONE
 
-        // Needs to be a 1 tick delay here because Bukkit is ass and spits out a stupid POI data mismatch error
+        // Needs to be a 2 tick delay here because Bukkit is ass and spits out a stupid POI data mismatch error
         object : BukkitRunnable() {
             override fun run() {
                 world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.BARRIER
             }
-        }.runTaskLater(plugin, 1L)
+        }.runTaskLater(plugin, 2L)
 
         // Generate custom model
         createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
