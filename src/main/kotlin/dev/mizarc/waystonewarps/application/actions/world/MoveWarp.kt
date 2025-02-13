@@ -15,7 +15,7 @@ class MoveWarp(private val warpRepository: WarpRepository,
             return MoveWarpResult.NOT_OWNER
         }
 
-        structureBuilderService.despawnStructure(warp)
+        structureBuilderService.destroyStructure(warp)
         warp.position = position
         structureBuilderService.spawnStructure(warp)
         warpRepository.update(warp)
