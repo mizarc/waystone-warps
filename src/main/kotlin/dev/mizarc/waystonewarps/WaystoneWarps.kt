@@ -97,7 +97,7 @@ class WaystoneWarps: JavaPlugin() {
         movementMonitorService = MovementMonitorServiceBukkit()
         configService = ConfigServiceBukkit(this.config)
         playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
-        structureBuilderService = StructureBuilderServiceBukkit()
+        structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, scheduler, economy)

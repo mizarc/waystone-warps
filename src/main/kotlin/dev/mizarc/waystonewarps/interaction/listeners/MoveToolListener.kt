@@ -5,8 +5,6 @@ import dev.mizarc.waystonewarps.application.results.MoveWarpResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.TextColor
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
@@ -22,10 +20,11 @@ class MoveToolListener: Listener, KoinComponent {
 
     @EventHandler
     fun onClaimMoveBlockPlace(event: BlockPlaceEvent) {
-
+        // Check to see if item in hand is the warp mover
         val warpId = event.itemInHand.itemMeta.persistentDataContainer.get(
             NamespacedKey("waystonewarps","warp"), PersistentDataType.STRING) ?: return
 
+        // Check if block above is clear
         val aboveLocation = event.block.location.clone()
         aboveLocation.add(0.0, 1.0, 0.0)
         if (event.block.world.getBlockAt(aboveLocation).type != Material.AIR) {
@@ -36,9 +35,8 @@ class MoveToolListener: Listener, KoinComponent {
             return
         }
 
-        val result = moveWarp.execute(event.player.uniqueId, UUID.fromString(warpId),
-            aboveLocation.toPosition3D())
-
+        // Try to move warp
+        val result = moveWarp.execute(event.player.uniqueId, UUID.fromString(warpId), aboveLocation.toPosition3D())
         when (result) {
             MoveWarpResult.SUCCESS -> {
                 event.player.sendActionBar(

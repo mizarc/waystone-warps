@@ -12,19 +12,27 @@ import org.bukkit.World
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
-import java.util.UUID
+import java.util.*
 
-class StructureBuilderServiceBukkit: StructureBuilderService {
+class StructureBuilderServiceBukkit(private val plugin: Plugin): StructureBuilderService {
 
     override fun spawnStructure(warp: Warp) {
         // Replace bottom block with barrier
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
         location.block.type = Material.LODESTONE
-        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.BARRIER
+
+        // Needs to be a 1 tick delay here because Bukkit is ass and spits out a stupid POI data mismatch error
+        object : BukkitRunnable() {
+            override fun run() {
+                world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.BARRIER
+            }
+        }.runTaskLater(plugin, 1L)
 
         // Generate custom model
         createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
