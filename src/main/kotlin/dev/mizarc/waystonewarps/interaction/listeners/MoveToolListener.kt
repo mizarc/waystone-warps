@@ -22,7 +22,7 @@ class MoveToolListener: Listener, KoinComponent {
 
     @EventHandler
     fun onClaimMoveBlockPlace(event: BlockPlaceEvent) {
-        event.isCancelled = false
+
         val warpId = event.itemInHand.itemMeta.persistentDataContainer.get(
             NamespacedKey("waystonewarps","warp"), PersistentDataType.STRING) ?: return
 
@@ -30,8 +30,9 @@ class MoveToolListener: Listener, KoinComponent {
         aboveLocation.add(0.0, 1.0, 0.0)
         if (event.block.world.getBlockAt(aboveLocation).type != Material.AIR) {
             event.player.sendActionBar(
-                Component.text("No space to more warp here!")
+                Component.text("No space to move warp here!")
                     .color(PrimaryColourPalette.FAILED.color))
+            event.isCancelled = true
             return
         }
 
@@ -48,11 +49,13 @@ class MoveToolListener: Listener, KoinComponent {
                 event.player.sendActionBar(
                     Component.text("You don't own this warp!")
                         .color(PrimaryColourPalette.FAILED.color))
+                event.isCancelled = true
             }
             MoveWarpResult.WARP_NOT_FOUND -> {
                 event.player.sendActionBar(
                     Component.text("The warp you're trying to move can't be found!")
                         .color(PrimaryColourPalette.FAILED.color))
+                event.isCancelled = true
             }
         }
     }
