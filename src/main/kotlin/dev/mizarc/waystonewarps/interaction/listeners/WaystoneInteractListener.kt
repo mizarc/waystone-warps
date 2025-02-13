@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.inventory.EquipmentSlot
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -27,6 +28,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
     @EventHandler
     fun onLodestoneInteract(event: PlayerInteractEvent) {
         val player: Player = event.player
+        if (event.hand == EquipmentSlot.OFF_HAND) return
         val clickedBlock: Block = event.clickedBlock ?: return
 
         // Check for right click lodestone
