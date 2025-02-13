@@ -3,7 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
-import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator

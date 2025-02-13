@@ -1,6 +1,5 @@
 package dev.mizarc.waystonewarps.domain.discoveries
 
-import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.UUID
 
 /**
@@ -23,6 +22,15 @@ interface DiscoveryRepository {
      * @return The set of warps that the player has discovered.
      */
     fun getByPlayer(playerId: UUID): Set<Discovery>
+
+    /**
+     * Gets the specific discover linked to the warp and player.
+     *
+     * @param playerId Unique id of the player to query.
+     * @param warpId Unique id of the warp to query.
+     * @return Discovery object if found.
+     */
+    fun getByWarpAndPlayer(warpId: UUID, playerId: UUID): Discovery?
 
     /**
      * Adds a discovery entry that links a player to a warp.

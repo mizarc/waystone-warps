@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.application.actions.warp
+package dev.mizarc.waystonewarps.application.actions.world
 
 import dev.mizarc.waystonewarps.application.results.BreakWarpResult
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
@@ -26,7 +26,7 @@ class BreakWarpBlock(private val warpRepository: WarpRepository,
         warpRepository.remove(warp.id)
         val discoveries = discoveryRepository.getByWarp(warp.id)
         for (discovery in discoveries) {
-            discoveryRepository.remove(discovery.playerId, discovery.warpId)
+            discoveryRepository.remove(discovery.warpId, discovery.playerId)
         }
         structureBuilderService.despawnStructure(warp)
         return BreakWarpResult.Success(warp)

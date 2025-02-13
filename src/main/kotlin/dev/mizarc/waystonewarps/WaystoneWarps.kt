@@ -1,16 +1,17 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
-import dev.mizarc.waystonewarps.application.actions.warp.BreakWarpBlock
-import dev.mizarc.waystonewarps.application.actions.warp.CreateWarp
-import dev.mizarc.waystonewarps.application.actions.warp.GetPlayerWarpAccess
-import dev.mizarc.waystonewarps.application.actions.warp.GetWarpAtPosition
-import dev.mizarc.waystonewarps.application.actions.warp.GetWarpPlayerAccess
-import dev.mizarc.waystonewarps.application.actions.warp.RefreshAllStructures
-import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpIcon
-import dev.mizarc.waystonewarps.application.actions.warp.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.world.BreakWarpBlock
+import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
+import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
+import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
+import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
+import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
@@ -113,6 +114,7 @@ class WaystoneWarps: JavaPlugin() {
             single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
             single { TeleportPlayer(teleportationService, playerAttributeService)}
             single { LogPlayerMovement(movementMonitorService) }
+            single { DiscoverWarp(discoveryRepository) }
         }
 
         startKoin { modules(actions) }
