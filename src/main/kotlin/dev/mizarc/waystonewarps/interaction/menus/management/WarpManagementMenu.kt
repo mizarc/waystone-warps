@@ -54,7 +54,7 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
             .name("Move Warp")
             .lore("Place the provided item where you want to move the warp")
         val guiMoveItem = GuiItem(moveItem) { givePlayerMoveTool(player) }
-        pane.addItem(guiMoveItem, 7, 0)
+        pane.addItem(guiMoveItem, 8, 0)
 
         gui.show(player)
     }

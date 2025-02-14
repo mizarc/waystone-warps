@@ -12,6 +12,7 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAcces
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
@@ -96,7 +97,7 @@ class WaystoneWarps: JavaPlugin() {
         movementMonitorService = MovementMonitorServiceBukkit()
         configService = ConfigServiceBukkit(this.config)
         playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
-        structureBuilderService = StructureBuilderServiceBukkit()
+        structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, scheduler, economy)
@@ -115,6 +116,7 @@ class WaystoneWarps: JavaPlugin() {
             single { TeleportPlayer(teleportationService, playerAttributeService)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
+            single { MoveWarp(warpRepository, structureBuilderService) }
         }
 
         startKoin { modules(actions) }
@@ -128,5 +130,7 @@ class WaystoneWarps: JavaPlugin() {
         server.pluginManager.registerEvents(WaystoneInteractListener(), this)
         server.pluginManager.registerEvents(WaystoneDestructionListener(), this)
         server.pluginManager.registerEvents(PlayerMovementListener(), this)
+        server.pluginManager.registerEvents(MoveToolListener(), this)
+        server.pluginManager.registerEvents(ToolRemovalListener(), this)
     }
 }

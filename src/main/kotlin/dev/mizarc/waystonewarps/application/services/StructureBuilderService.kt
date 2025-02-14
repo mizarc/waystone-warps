@@ -12,7 +12,12 @@ interface StructureBuilderService {
     fun spawnStructure(warp: Warp)
 
     /**
+     * Reverts the structure back into its base components
+     */
+    fun revertStructure(warp: Warp)
+
+    /**
      * Destroys the waystone structure in the world.
      */
-    fun despawnStructure(warp: Warp)
+    fun destroyStructure(warp: Warp)
 }
