@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
@@ -26,6 +27,7 @@ import dev.mizarc.waystonewarps.infrastructure.services.ConfigServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
+import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
@@ -43,7 +45,7 @@ class WaystoneWarps: JavaPlugin() {
     private var economy: Economy? = null
 
     // Storage
-    private val storage = SQLiteStorage(this)
+    private lateinit var storage: Storage<Database>
 
     // Repositories
     private lateinit var warpRepository: WarpRepository
@@ -72,8 +74,12 @@ class WaystoneWarps: JavaPlugin() {
         if (economyServiceProvider != null) {
             economy = economyServiceProvider.provider
         }
+        // Create plugin folder
+        if (!dataFolder.exists()) dataFolder.mkdir()
 
+        storage = SQLiteStorage(this)
         commandManager = PaperCommandManager(this)
+        saveDefaultConfig()
         initialiseRepositories()
         initialiseServices()
         registerDependencies()
@@ -95,7 +101,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseServices() {
         movementMonitorService = MovementMonitorServiceBukkit()
-        configService = ConfigServiceBukkit(this.config)
+        configService = ConfigServiceBukkit(this, this.config)
         playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
         structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
