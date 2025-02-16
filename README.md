@@ -9,7 +9,7 @@ Here are some of the cool features you can expect:
 - **Teleportation Fees** - Let your players work for it! Change teleportation costs between xp, items, or even a provided economy plugin.
 
 ## Project status
-Alpha. Still finalising a stable enough build.
+Beta. Safe to run on testing servers, but would not recommend for production due to frequent breaking changes.
 
 ## Installation
 Download the latest release (.jar file) from the releases tab and place it in your server's plugins folder. 
