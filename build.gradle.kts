@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "dev.mizarc"
-version = "0.1-SNAPSHOT"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
