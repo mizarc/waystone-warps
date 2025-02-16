@@ -22,6 +22,8 @@ metadata provider. [LuckPerms](https://luckperms.net/) is a recommended plugin f
 To establish a waystone warp, place down a lodestone on top of a smooth stone block, then right click the lodestone. This opens up a creation menu where you are able to 
 name your warp. Once the waystone warp is established, you will be presented with various options to do with warp management.
 
+To teleport to claims, use the `/warpmenu` command. A commandless way to handle this will be implemented later, don't worry.
+
 ## Per Player Claims Limits
 Ensure that you have a Vault provider installed to set limits as described out in the installation section. Each Vault 
 provider plugin has its own way of implementing this feature. As LuckPerms is the recommended provider, instructions 
