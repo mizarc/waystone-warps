@@ -23,19 +23,17 @@ import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
-import dev.mizarc.waystonewarps.infrastructure.services.ConfigServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
-import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
-import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
-import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
+import org.bukkit.Bukkit
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -61,36 +59,38 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var scheduler: SchedulerService
 
     override fun onEnable() {
-        logger.info(Chat::class.java.toString())
-
-        // Get Vault metadata
-        val chatServiceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
-            .getRegistration(Chat::class.java)!!
-        metadata = chatServiceProvider.provider
-
-        // Get Vault economy
-        val economyServiceProvider: RegisteredServiceProvider<Economy>? = server.servicesManager
-            .getRegistration(Economy::class.java)
-        if (economyServiceProvider != null) {
-            economy = economyServiceProvider.provider
-        }
         // Create plugin folder
         if (!dataFolder.exists()) dataFolder.mkdir()
 
+        // Get storage type
         storage = SQLiteStorage(this)
+
+        // Get command manager
         commandManager = PaperCommandManager(this)
+
+        // Initialise everything else
         saveDefaultConfig()
+        initialiseVaultDependency()
         initialiseRepositories()
         initialiseServices()
         registerDependencies()
         registerCommands()
         registerEvents()
         RefreshAllStructures(warpRepository, structureBuilderService).execute()
+
         logger.info("WaystoneWarps has been Enabled")
     }
 
     override fun onDisable() {
         logger.info("WaystoneWarps has been Disabled")
+    }
+
+    private fun initialiseVaultDependency() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            server.servicesManager.getRegistration(Chat::class.java)?.let { metadata = it.provider }
+            server.servicesManager.getRegistration(Economy::class.java)?.let {economy = it.provider}
+            logger.info(Chat::class.java.toString())
+        }
     }
 
     private fun initialiseRepositories() {
@@ -102,7 +102,11 @@ class WaystoneWarps: JavaPlugin() {
     private fun initialiseServices() {
         movementMonitorService = MovementMonitorServiceBukkit()
         configService = ConfigServiceBukkit(this, this.config)
-        playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
+        playerAttributeService = if (::metadata.isInitialized) {
+            PlayerAttributeServiceVault(configService, metadata)
+        } else {
+            PlayerAttributeServiceSimple(configService)
+        }
         structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
