@@ -8,10 +8,6 @@ import java.io.File
 
 class ConfigServiceBukkit(private val plugin: Plugin, private val configFile: FileConfiguration): ConfigService {
 
-    init {
-        createDefaultConfig()
-    }
-
     override fun getWarpLimit(): Int {
         return configFile.getInt("warp_limit", 3)
     }
@@ -30,12 +26,5 @@ class ConfigServiceBukkit(private val plugin: Plugin, private val configFile: Fi
 
     override fun getTeleportCostAmount(): Double {
         return configFile.getDouble("teleport_cost_amount", 3.0)
-    }
-
-    private fun createDefaultConfig() {
-        val configFile = File(plugin.dataFolder, "config.yml")
-        if (!configFile.exists()) {
-            plugin.saveResource("config.yml", false)
-        }
     }
 }
