@@ -9,7 +9,7 @@ class SQLiteStorage(plugin: Plugin): Storage<Database> {
     override val connection: Database
 
     init {
-        val options = DatabaseOptions.builder().sqlite(plugin.dataFolder.toString() + "/claims.db").build()
+        val options = DatabaseOptions.builder().sqlite(plugin.dataFolder.toString() + "/storage.db").build()
         connection = PooledDatabaseOptions.builder().options(options).createHikariDatabase()
     }
 }
