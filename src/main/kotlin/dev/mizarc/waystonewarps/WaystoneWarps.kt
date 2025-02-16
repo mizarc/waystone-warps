@@ -63,7 +63,7 @@ class WaystoneWarps: JavaPlugin() {
         if (!dataFolder.exists()) dataFolder.mkdir()
 
         // Get storage type
-        storage = SQLiteStorage(this)
+        storage = SQLiteStorage(this.dataFolder)
 
         // Get command manager
         commandManager = PaperCommandManager(this)

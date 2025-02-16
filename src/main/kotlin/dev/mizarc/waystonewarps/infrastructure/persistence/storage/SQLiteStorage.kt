@@ -3,13 +3,13 @@ package dev.mizarc.waystonewarps.infrastructure.persistence.storage
 import co.aikar.idb.Database
 import co.aikar.idb.DatabaseOptions
 import co.aikar.idb.PooledDatabaseOptions
-import org.bukkit.plugin.Plugin
+import java.io.File
 
-class SQLiteStorage(plugin: Plugin): Storage<Database> {
+class SQLiteStorage(dataFolder: File): Storage<Database> {
     override val connection: Database
 
     init {
-        val options = DatabaseOptions.builder().sqlite(plugin.dataFolder.toString() + "/storage.db").build()
+        val options = DatabaseOptions.builder().sqlite("$dataFolder/storage.sqlite").build()
         connection = PooledDatabaseOptions.builder().options(options).createHikariDatabase()
     }
 }
