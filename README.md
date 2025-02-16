@@ -24,6 +24,9 @@ name your warp. Once the waystone warp is established, you will be presented wit
 
 To teleport to claims, use the `/warpmenu` command. A commandless way to handle this will be implemented later, don't worry.
 
+## Permissions
+- worldwidewarps.command.warpmenu - Allows the use of the `warpmenu` command to open up the menu that allows players to teleport to warps.
+
 ## Per Player Claims Limits
 Ensure that you have a Vault provider installed to set limits as described out in the installation section. Each Vault 
 provider plugin has its own way of implementing this feature. As LuckPerms is the recommended provider, instructions 
