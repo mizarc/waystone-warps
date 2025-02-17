@@ -28,7 +28,7 @@ class BreakWarpBlock(private val warpRepository: WarpRepository,
         for (discovery in discoveries) {
             discoveryRepository.remove(discovery.warpId, discovery.playerId)
         }
-        structureBuilderService.despawnStructure(warp)
+        structureBuilderService.revertStructure(warp)
         return BreakWarpResult.Success(warp)
     }
 }

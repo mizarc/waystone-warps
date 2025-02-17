@@ -8,7 +8,7 @@ class RefreshAllStructures(private val warpRepository: WarpRepository,
     fun execute() {
         val warps = warpRepository.getAll()
         for (warp in warps) {
-            structureBuilderService.despawnStructure(warp)
+            structureBuilderService.destroyStructure(warp)
             structureBuilderService.spawnStructure(warp)
         }
     }

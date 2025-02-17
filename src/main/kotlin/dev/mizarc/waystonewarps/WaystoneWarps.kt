@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
+import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
@@ -12,27 +13,26 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAcces
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import net.milkbowl.vault.chat.Chat
-import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
-import dev.mizarc.waystonewarps.infrastructure.services.ConfigServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
+import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
-import dev.mizarc.waystonewarps.infrastructure.services.MovementMonitorServiceBukkit
-import dev.mizarc.waystonewarps.infrastructure.services.PlayerAttributeServiceVault
-import dev.mizarc.waystonewarps.infrastructure.services.StructureBuilderServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
+import org.bukkit.Bukkit
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -42,7 +42,7 @@ class WaystoneWarps: JavaPlugin() {
     private var economy: Economy? = null
 
     // Storage
-    private val storage = SQLiteStorage(this)
+    private lateinit var storage: Storage<Database>
 
     // Repositories
     private lateinit var warpRepository: WarpRepository
@@ -58,32 +58,38 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var scheduler: SchedulerService
 
     override fun onEnable() {
-        logger.info(Chat::class.java.toString())
+        // Create plugin folder
+        if (!dataFolder.exists()) dataFolder.mkdir()
 
-        // Get Vault metadata
-        val chatServiceProvider: RegisteredServiceProvider<Chat> = server.servicesManager
-            .getRegistration(Chat::class.java)!!
-        metadata = chatServiceProvider.provider
+        // Get storage type
+        storage = SQLiteStorage(this.dataFolder)
 
-        // Get Vault economy
-        val economyServiceProvider: RegisteredServiceProvider<Economy>? = server.servicesManager
-            .getRegistration(Economy::class.java)
-        if (economyServiceProvider != null) {
-            economy = economyServiceProvider.provider
-        }
-
+        // Get command manager
         commandManager = PaperCommandManager(this)
+
+        // Initialise everything else
+        saveDefaultConfig()
+        initialiseVaultDependency()
         initialiseRepositories()
         initialiseServices()
         registerDependencies()
         registerCommands()
         registerEvents()
         RefreshAllStructures(warpRepository, structureBuilderService).execute()
+
         logger.info("WaystoneWarps has been Enabled")
     }
 
     override fun onDisable() {
         logger.info("WaystoneWarps has been Disabled")
+    }
+
+    private fun initialiseVaultDependency() {
+        if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
+            server.servicesManager.getRegistration(Chat::class.java)?.let { metadata = it.provider }
+            server.servicesManager.getRegistration(Economy::class.java)?.let {economy = it.provider}
+            logger.info(Chat::class.java.toString())
+        }
     }
 
     private fun initialiseRepositories() {
@@ -94,9 +100,13 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseServices() {
         movementMonitorService = MovementMonitorServiceBukkit()
-        configService = ConfigServiceBukkit(this.config)
-        playerAttributeService = PlayerAttributeServiceVault(configService, metadata)
-        structureBuilderService = StructureBuilderServiceBukkit()
+        configService = ConfigServiceBukkit(this, this.config)
+        playerAttributeService = if (::metadata.isInitialized) {
+            PlayerAttributeServiceVault(configService, metadata)
+        } else {
+            PlayerAttributeServiceSimple(configService)
+        }
+        structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, scheduler, economy)
@@ -115,6 +125,7 @@ class WaystoneWarps: JavaPlugin() {
             single { TeleportPlayer(teleportationService, playerAttributeService)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
+            single { MoveWarp(warpRepository, structureBuilderService) }
         }
 
         startKoin { modules(actions) }
@@ -128,5 +139,7 @@ class WaystoneWarps: JavaPlugin() {
         server.pluginManager.registerEvents(WaystoneInteractListener(), this)
         server.pluginManager.registerEvents(WaystoneDestructionListener(), this)
         server.pluginManager.registerEvents(PlayerMovementListener(), this)
+        server.pluginManager.registerEvents(MoveToolListener(), this)
+        server.pluginManager.registerEvents(ToolRemovalListener(), this)
     }
 }

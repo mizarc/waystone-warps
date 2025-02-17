@@ -8,22 +8,31 @@ import net.kyori.adventure.text.TextComponent
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.World
 import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
+import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.util.Transformation
 import org.joml.AxisAngle4f
 import org.joml.Vector3f
-import java.util.UUID
+import java.util.*
 
-class StructureBuilderServiceBukkit: StructureBuilderService {
+class StructureBuilderServiceBukkit(private val plugin: Plugin): StructureBuilderService {
 
     override fun spawnStructure(warp: Warp) {
         // Replace bottom block with barrier
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
-        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
-        bottomBlock.type = Material.BARRIER
+        location.block.type = Material.LODESTONE
+
+        // Needs to be a 2 tick delay here because Bukkit is ass and spits out a stupid POI data mismatch error
+        object : BukkitRunnable() {
+            override fun run() {
+                world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.BARRIER
+            }
+        }.runTaskLater(plugin, 2L)
 
         // Generate custom model
         createBlockDisplay(warp.id, warp.position.toLocation(world), Material.SMOOTH_STONE_SLAB,
@@ -40,21 +49,19 @@ class StructureBuilderServiceBukkit: StructureBuilderService {
             0.85f, 0.85f, 0.85f)
     }
 
-    override fun despawnStructure(warp: Warp) {
-        // Change lower block back into smooth stone
+    override fun revertStructure(warp: Warp) {
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
-        val bottomBlock = world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
-        bottomBlock.type = Material.SMOOTH_STONE
+        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.SMOOTH_STONE
+        removeBlockDisplay(warp, world)
+    }
 
-        // Remove connected block display entities
-        val entities: MutableList<Entity> = location.world.entities
-        for (entity in entities) {
-            val customName = entity.customName() ?: continue
-            if (customName is TextComponent && customName.content() == warp.id.toString()) {
-                entity.remove()
-            }
-        }
+    override fun destroyStructure(warp: Warp) {
+        val world = Bukkit.getWorld(warp.worldId) ?: return
+        val location = warp.position.toLocation(world)
+        location.block.type = Material.AIR
+        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.AIR
+        removeBlockDisplay(warp, world)
     }
 
     private fun createBlockDisplay(warpId: UUID, baseLocation: Location, material: Material,
@@ -72,5 +79,15 @@ class StructureBuilderServiceBukkit: StructureBuilderService {
             Vector3f(scaleX, scaleY, scaleZ), AxisAngle4f())
         blockDisplay.transformation = transformation
         blockDisplay.customName(Component.text((warpId.toString())))
+    }
+
+    private fun removeBlockDisplay(warp: Warp, world: World) {
+        val entities: MutableList<Entity> = world.entities
+        for (entity in entities) {
+            val customName = entity.customName() ?: continue
+            if (customName is TextComponent && customName.content() == warp.id.toString()) {
+                entity.remove()
+            }
+        }
     }
 }
