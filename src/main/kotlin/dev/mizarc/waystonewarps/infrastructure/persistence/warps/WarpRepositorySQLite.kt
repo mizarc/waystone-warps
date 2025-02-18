@@ -62,7 +62,8 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     private fun createTable() {
         storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, " +
                 "playerId TEXT NOT NULL, creationTime TEXT NOT NULL, name TEXT, worldId TEXT NOT NULL, " +
-                "positionX INTEGER NOT NULL, positionY INTEGER NOT NULL, positionZ INTEGER NOT NULL, icon TEXT);")
+                "positionX INTEGER NOT NULL, positionY INTEGER NOT NULL, positionZ INTEGER NOT NULL, icon TEXT, " +
+                "block TEXT, isLocked INTEGER);")
     }
 
     private fun preload() {
@@ -78,7 +79,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
                     result.getInt("positionX"),
                     result.getInt("positionY"),
                     result.getInt("positionZ")),
-                result.getString("icon"))
+                result.getString("icon"),
+                result.getString("block"),
+                result.getInt("isLocked") != 0)
         }
     }
 }

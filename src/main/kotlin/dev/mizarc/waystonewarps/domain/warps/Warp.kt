@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
  * @property icon The name of the material to use as an icon.
  */
 class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
-           var position: Position3D, var icon: String) {
+           var position: Position3D, var icon: String, block: String, isLocked: Boolean) {
     var breakCount = 3
 
     private val defaultBreakCount = 3
@@ -31,7 +31,7 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
      * @param name The name of the claim.
      */
     constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String) : this(
-        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE")
+        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", "LODESTONE", false)
 
     /**
      * Resets the break count after a set period of time.
