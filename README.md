@@ -1,3 +1,5 @@
+![Banner](branding/banner.png)
+
 # Waystone Warps
 
 Transform your travels with the Waystone Warps plugin! Craft and place waystones to set up teleportation points throughout your world. Discover new waystones placed by others as you explore and easily teleport between them. Streamline your journey across the world knowing you can always teleport back home in a snap, or simply visit your friends in an instant.
