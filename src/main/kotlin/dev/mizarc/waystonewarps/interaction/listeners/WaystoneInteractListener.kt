@@ -44,6 +44,12 @@ class WaystoneInteractListener: Listener, KoinComponent {
 
         // Create new warp if not found, open management menu if owner, discover otherwise
         warp?.let {
+            // Check if warp is locked and alert if no access
+            if (warp.isLocked && warp.playerId != player.uniqueId) {
+                player.sendActionBar(Component.text("Warp is set to private").color(PrimaryColourPalette.FAILED.color))
+                return
+            }
+
             if (it.playerId == player.uniqueId) {
                 menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, it))
             } else {
