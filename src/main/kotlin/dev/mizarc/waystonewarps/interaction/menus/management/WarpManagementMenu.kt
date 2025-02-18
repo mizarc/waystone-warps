@@ -4,12 +4,14 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -18,6 +20,7 @@ import org.koin.core.component.inject
 
 class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
+    private val toggleLock: ToggleLock by inject()
 
     override fun open(player: Player) {
         val gui = ChestGui(1, "Warp '${warp.name}'")
@@ -26,32 +29,48 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
         val pane = StaticPane(0, 0, 9, 1)
         gui.addPane(pane)
 
+        // Add privacy modes
+        val privacyIcon: ItemStack = if (warp.isLocked) {
+            ItemStack(Material.LEVER)
+                .name("§rAccess is §cPRIVATE")
+                .lore("Only whitelisted players can discover and teleport.")
+        } else {
+            ItemStack(Material.REDSTONE_TORCH)
+                .name("§rAccess is §aPUBLIC")
+                .lore("All players can discover and teleport.")
+        }
+        val guiPrivacyItem = GuiItem(privacyIcon) {
+            toggleLock.execute(warp.id)
+            open(player)
+        }
+        pane.addItem(guiPrivacyItem, 0, 0)
+
         // Add player count icon
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
-            .name("Player Count:")
+            .name("§rPlayer Count:")
             .lore("${getWarpPlayerAccess.execute(warp.id).count()}")
         val guiPlayerCountItem = GuiItem(playerCountItem) { guiEvent -> guiEvent.isCancelled = true }
-        pane.addItem(guiPlayerCountItem, 0, 0)
+        pane.addItem(guiPlayerCountItem, 1, 0)
 
         // Add icon editor button
         val iconEditorItem = ItemStack(Material.valueOf(warp.icon))
-            .name("Edit Warp Icon")
+            .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {
             menuNavigator.openMenu(player, WarpIconMenu(menuNavigator, warp)) }
-        pane.addItem(guiIconEditorItem, 2, 0)
+        pane.addItem(guiIconEditorItem, 4, 0)
 
         // Add renaming icon
         val renamingItem = ItemStack(Material.NAME_TAG)
-            .name("Rename Warp")
+            .name("§rRename Warp")
             .lore("Renames this warp")
         val guiRenamingItem = GuiItem(renamingItem) {
             menuNavigator.openMenu(player, WarpRenamingMenu(menuNavigator, warp)) }
-        pane.addItem(guiRenamingItem, 3, 0)
+        pane.addItem(guiRenamingItem, 5, 0)
 
         // Add move icon
         val moveItem = ItemStack(Material.PISTON)
-            .name("Move Warp")
+            .name("§rMove Warp")
             .lore("Place the provided item where you want to move the warp")
         val guiMoveItem = GuiItem(moveItem) { givePlayerMoveTool(player) }
         pane.addItem(guiMoveItem, 8, 0)
