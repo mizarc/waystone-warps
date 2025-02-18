@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
  * @property icon The name of the material to use as an icon.
  */
 class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
-           var position: Position3D, var icon: String, block: String, isLocked: Boolean) {
+           var position: Position3D, var icon: String, var block: String, var isLocked: Boolean) {
     var breakCount = 3
 
     private val defaultBreakCount = 3
