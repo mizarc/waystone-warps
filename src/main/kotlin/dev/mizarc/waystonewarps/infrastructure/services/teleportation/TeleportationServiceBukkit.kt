@@ -32,6 +32,9 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         val result = hasCost(player)
         if (!result) return TeleportResult.INSUFFICIENT_FUNDS
 
+        // Check for lock
+        if (warp.isLocked && warp.playerId != playerId) return TeleportResult.LOCKED
+
         // Location data
         val world = Bukkit.getWorld(warp.worldId) ?: return TeleportResult.WORLD_NOT_FOUND
         val warpLocation = warp.position.toLocation(world)
@@ -53,7 +56,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
     override fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int, onSuccess: () -> Unit,
                                          onPending: () -> Unit, onInsufficientFunds: () -> Unit, onCanceled: () -> Unit,
-                                         onWorldNotFound: () -> Unit, onFailure: () -> Unit) {
+                                         onWorldNotFound: () -> Unit, onLocked: () -> Unit, onFailure: () -> Unit) {
         // Cancel existing pending teleport if any
         activeTeleportations[playerId]?.let {
             it.taskHandle.cancel()
@@ -75,6 +78,12 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             return
         }
 
+        // Cancel if locked
+        if (warp.isLocked && warp.playerId != playerId) {
+            onLocked()
+            return
+        }
+
         // Instant teleport if player doesn't have a teleport timer
         if (playerAttributeService.getTeleportTimer(playerId) <= 0) {
             teleportPlayer(playerId, warp)
@@ -91,6 +100,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                 TeleportResult.SUCCESS -> onSuccess()
                 TeleportResult.INSUFFICIENT_FUNDS -> onInsufficientFunds()
                 TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
+                TeleportResult.LOCKED -> onLocked()
                 TeleportResult.FAILED -> onFailure()
             }
         }

@@ -4,5 +4,6 @@ enum class TeleportResult {
     SUCCESS,
     INSUFFICIENT_FUNDS,
     WORLD_NOT_FOUND,
+    LOCKED,
     FAILED
 }
