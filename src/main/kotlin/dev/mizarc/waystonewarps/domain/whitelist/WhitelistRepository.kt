@@ -1,6 +1,5 @@
 package dev.mizarc.waystonewarps.domain.whitelist
 
-import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.util.UUID
 
 interface WhitelistRepository {
@@ -36,7 +35,7 @@ interface WhitelistRepository {
     fun remove(warpId: UUID, playerId: UUID)
 
     /**
-     * Removes all player permissions from a given claim.
+     * Removes all whitelists for a given warp.
      *
      * @param warpId Unique identifier of the warp.
      */
