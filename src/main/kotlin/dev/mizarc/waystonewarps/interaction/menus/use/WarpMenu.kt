@@ -129,7 +129,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                         },
                         onLocked = {
                             player.sendActionBar {
-                                Component.text("Warp has been locked before teleport could complete")
+                                Component.text("Cannot teleport to a warp that is now locked")
                                     .color(PrimaryColourPalette.CANCELLED.color)
                             }
                         },
