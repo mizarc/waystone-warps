@@ -11,14 +11,14 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
 
     fun execute(playerId: UUID, warp: Warp, onSuccess: () -> Unit, onPending: () -> Unit,
                 onInsufficientFunds: () -> Unit, onCanceled: () -> Unit, onWorldNotFound: () -> Unit,
-                onFailure: () -> Unit) {
+                onLocked: () -> Unit, onFailure: () -> Unit) {
         // Retrieve player settings
         val timer = playerAttributeService.getTeleportTimer(playerId)
 
         // Schedule delayed teleport
         if (timer > 0) {
             teleportationService.scheduleDelayedTeleport(playerId, warp, timer, onSuccess, onPending,
-                onInsufficientFunds, onCanceled, onWorldNotFound, onFailure)
+                onInsufficientFunds, onCanceled, onWorldNotFound, onLocked, onFailure)
             return
         }
 
@@ -28,6 +28,7 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
             TeleportResult.SUCCESS -> onSuccess()
             TeleportResult.INSUFFICIENT_FUNDS -> onInsufficientFunds()
             TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
+            TeleportResult.LOCKED -> onLocked()
             TeleportResult.FAILED -> onFailure()
         }
     }

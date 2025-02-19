@@ -89,7 +89,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                     "&cLOCKED",
                 )
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(lore)
-                guiWarpItem = GuiItem(warpItem) {guiEvent -> guiEvent.isCancelled = true }
+                guiWarpItem = GuiItem(warpItem) { open(player) }
             }
             else {
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)
@@ -124,6 +124,12 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
                         onWorldNotFound = {
                             player.sendActionBar {
                                 Component.text("Cannot teleport to a world that does not exist")
+                                    .color(PrimaryColourPalette.FAILED.color)
+                            }
+                        },
+                        onLocked = {
+                            player.sendActionBar {
+                                Component.text("Warp has been locked before teleport could complete")
                                     .color(PrimaryColourPalette.CANCELLED.color)
                             }
                         },
