@@ -14,6 +14,11 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
         preload()
     }
 
+    override fun isWhitelisted(warpId: UUID, playerId: UUID): Boolean {
+        return whitelistMap[warpId]?.contains(playerId) == true
+    }
+
+
     override fun getByWarp(warpId: UUID): List<UUID> {
         return whitelistMap[warpId]?.toList() ?: emptyList()
     }

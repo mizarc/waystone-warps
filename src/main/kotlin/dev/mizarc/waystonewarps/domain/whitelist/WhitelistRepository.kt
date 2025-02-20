@@ -4,6 +4,15 @@ import java.util.UUID
 
 interface WhitelistRepository {
     /**
+     * Checks if the player is whitelisted.
+     *
+     * @param warpId Unique identifier of the warp.
+     * @param playerId Unique identifier of the player.
+     * @return True if the player is whitelisted.
+     */
+    fun isWhitelisted(warpId: UUID, playerId: UUID): Boolean
+
+    /**
      * Gets all players that are whitelist access to a warp.
      *
      * @param warpId Unique identifier of the warp.
