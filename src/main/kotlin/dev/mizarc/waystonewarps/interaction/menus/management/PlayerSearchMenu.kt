@@ -14,7 +14,6 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 
 class PlayerSearchMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu {
-    private var playerDoesNotExist = false
 
     override fun open() {
         // Create menu
@@ -30,27 +29,10 @@ class PlayerSearchMenu(private val player: Player, private val menuNavigator: Me
         firstPane.addItem(guiHeadItem, 0, 0)
         gui.firstItemComponent.addPane(firstPane)
 
-        // Add message menu item if name is already taken
-        if (playerDoesNotExist) {
-            val secondPane = StaticPane(0, 0, 1, 1)
-            val paperItem = ItemStack(Material.PAPER)
-                .name("That player does not exist")
-                .lore("Only players who have logged in to the server at least once will appear.")
-            val guiPaperItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
-            secondPane.addItem(guiPaperItem, 0, 0)
-            gui.secondItemComponent.addPane(secondPane)
-        }
-
         // Add confirm menu item.
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR).name("Confirm")
         val confirmGuiItem = GuiItem(confirmItem) { _ ->
-            val player = Bukkit.getOfflinePlayer(gui.renameText)
-            if (!player.hasPlayedBefore()) {
-                playerDoesNotExist = true
-                open()
-                return@GuiItem
-            }
             menuNavigator.goBackWithData(gui.renameText)
         }
         thirdPane.addItem(confirmGuiItem, 0, 0)
