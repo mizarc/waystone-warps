@@ -136,6 +136,7 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
             single { AddToWhitelist(whitelistRepository) }
+            single { this@WaystoneWarps }
         }
 
         startKoin { modules(actions) }
