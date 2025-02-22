@@ -42,7 +42,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         }
         val guiPrivacyItem = GuiItem(privacyIcon) {
             toggleLock.execute(warp.id)
-            open(player)
+            open()
         }
         pane.addItem(guiPrivacyItem, 0, 0)
 
@@ -50,7 +50,9 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
             .name("§rPlayer Count:")
             .lore("${getWarpPlayerAccess.execute(warp.id).count()}")
-        val guiPlayerCountItem = GuiItem(playerCountItem) { guiEvent -> guiEvent.isCancelled = true }
+        val guiPlayerCountItem = GuiItem(playerCountItem) {
+            menuNavigator.openMenu(WarpPlayerMenu(player, menuNavigator, warp))
+        }
         pane.addItem(guiPlayerCountItem, 1, 0)
 
         // Add icon editor button

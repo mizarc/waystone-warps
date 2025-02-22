@@ -69,7 +69,7 @@ class WarpIconMenu(private val player: Player,
             }
 
             // Go back to edit menu
-            menuNavigator.goBack(player)
+            menuNavigator.goBack()
         }
         outputPane.addItem(confirmGuiItem, 0, 0)
         gui.outputComponent.addPane(outputPane)

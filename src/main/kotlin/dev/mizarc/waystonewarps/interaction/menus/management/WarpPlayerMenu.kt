@@ -2,10 +2,13 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
+import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Mask
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
@@ -18,19 +21,18 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import kotlin.getValue
 
-class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): KoinComponent {
+
+class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
+                     private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val getPlayerWhitelistForWarp: GetWhitelistedPlayers by inject()
 
-    private lateinit var player: Player
     private var viewMode = 0  // 0 = Discovered, 1 = Whitelisted, 2 = All
     private var page = 0
+    private var playerNameSearch: String = ""
 
-    fun open(player: Player) {
-        this.player = player
-
+    override fun open() {
         // Create player access menu
         val gui = ChestGui(6, "Player Access")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -53,15 +55,27 @@ class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp:
         gui.show(player)
     }
 
-    private fun addControlsSection(gui: ChestGui): StaticPane {
-        // Add divider
-        val dividerPane = StaticPane(0, 1, 9, 1)
-        gui.addPane(dividerPane)
-        val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
-        for (slot in 0..8) {
-            val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
-            dividerPane.addItem(guiDividerItem, slot, 0)
+    override fun passData(data: Any?) {
+        if (data is String) {
+            playerNameSearch = data
         }
+    }
+
+    private fun addControlsSection(gui: ChestGui): StaticPane {
+        // Add outline
+        val outlinePane = OutlinePane(0, 1, 9, 5)
+        val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
+        val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
+        outlinePane.applyMask(Mask(
+            "111111111",
+            "100000001",
+            "100000001",
+            "100000001",
+            "111111111"
+        ))
+        outlinePane.addItem(guiDividerItem)
+        outlinePane.setRepeat(true)
+        gui.addPane(outlinePane)
 
         // Add controls pane
         val controlsPane = StaticPane(0, 0, 9, 1)
@@ -77,7 +91,7 @@ class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp:
             0 -> ItemStack(Material.SUGAR)
                 .name("Discovered")
                 .lore("Listing players with access to this warp")
-            1 -> ItemStack(Material.GLOWSTONE)
+            1 -> ItemStack(Material.GLOWSTONE_DUST)
                 .name("Whitelisted")
                 .lore("Listing players who are whitelisted")
             else -> ItemStack(Material.REDSTONE)
@@ -86,7 +100,7 @@ class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp:
         }
         val guiViewModeItem = GuiItem(viewModeItem) {
             viewMode = (viewMode + 1) % 3 // Cycle through 0, 1, 2
-            open(player)
+            open()
         }
         controlsPane.addItem(guiViewModeItem, 2, 0)
 

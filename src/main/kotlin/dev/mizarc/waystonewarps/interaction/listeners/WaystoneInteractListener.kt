@@ -51,7 +51,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
             }
 
             if (it.playerId == player.uniqueId) {
-                menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, it))
+                menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
             } else {
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
@@ -64,6 +64,6 @@ class WaystoneInteractListener: Listener, KoinComponent {
                         .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
                 }
             }
-        } ?: menuNavigator.openMenu(player, WarpNamingMenu(menuNavigator, clickedBlock.location))
+        } ?: menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
     }
 }
