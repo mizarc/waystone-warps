@@ -15,11 +15,12 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+class WarpRenamingMenu(private val player: Player, private val menuNavigator: MenuNavigator,
+                       private val warp: Warp): Menu, KoinComponent {
     private val updateWarpName: UpdateWarpName by inject()
     private var nameAttempt = ""
 
-    override fun open(player: Player) {
+    override fun open() {
         // Create homes menu
         val gui = AnvilGui("Renaming Warp")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -49,7 +50,7 @@ class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val war
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             // Go back to edit menu if the name hasn't changed
             if (gui.renameText == warp.name) {
-                menuNavigator.goBack(player)
+                menuNavigator.goBack()
                 return@GuiItem
             }
 
@@ -57,11 +58,11 @@ class WarpRenamingMenu(private val menuNavigator: MenuNavigator, private val war
             val result = updateWarpName.execute(warp.id, gui.renameText)
             if (result.isFailure) {
                 nameAttempt = gui.renameText
-                open(player)
+                open()
                 return@GuiItem
             }
 
-           menuNavigator.goBack(player)
+           menuNavigator.goBack()
         }
 
         thirdPane.addItem(confirmGuiItem, 0, 0)

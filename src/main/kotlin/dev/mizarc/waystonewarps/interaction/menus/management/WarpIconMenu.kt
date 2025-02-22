@@ -16,10 +16,11 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
-class WarpIconMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+class WarpIconMenu(private val player: Player,
+                   private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
     private val updateWarpIcon: UpdateWarpIcon by inject()
 
-    override fun open(player: Player) {
+    override fun open() {
         val gui = FurnaceGui("Set Warp Icon")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 

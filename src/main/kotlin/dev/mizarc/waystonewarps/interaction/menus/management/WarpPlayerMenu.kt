@@ -69,7 +69,7 @@ class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp:
 
         // Add go back item
         val exitItem = ItemStack(Material.NETHER_STAR).name("Go Back")
-        val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack(player) }
+        val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
         // Add view mode item
@@ -93,7 +93,8 @@ class WarpPlayerMenu(private val menuNavigator: MenuNavigator, private val warp:
         // Add search button
         val searchItem = ItemStack(Material.NAME_TAG)
         val guiSearchItem = GuiItem(searchItem) {
-            // Pass
+            val playerSearchMenu = PlayerSearchMenu(player, menuNavigator)
+            menuNavigator.openMenu(playerSearchMenu)
         }
         controlsPane.addItem(guiSearchItem, 3, 0)
 

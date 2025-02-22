@@ -17,11 +17,12 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val location: Location): Menu, KoinComponent {
+class WarpNamingMenu(private val player: Player, private val menuNavigator: MenuNavigator,
+                     private val location: Location): Menu, KoinComponent {
     private val createWarp: CreateWarp by inject()
     private var nameAttempt = ""
 
-    override fun open(player: Player) {
+    override fun open() {
         // Create homes menu
         val gui = AnvilGui("Naming Warp")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -53,11 +54,11 @@ class WarpNamingMenu(private val menuNavigator: MenuNavigator, private val locat
                 location.toPosition3D(), location.world.uid)
             when (result) {
                 is CreateWarpResult.Success -> {
-                    menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, result.warp))
+                    menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, result.warp))
                 }
                 else -> {
                     nameAttempt = gui.renameText
-                    open(player)
+                    open()
                 }
             }
         }

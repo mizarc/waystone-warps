@@ -1,6 +1,5 @@
 package dev.mizarc.waystonewarps.interaction.menus
 
-import org.bukkit.entity.Player
 import kotlin.collections.ArrayDeque
 
 /**
@@ -15,12 +14,11 @@ class MenuNavigator {
      * Opening menus this way stores it to the navigation stack, which is
      * required for menus to understand how to go back when prompted for it.
      *
-     * @param player The target player.
      * @param menu The menu to open.
      */
-   fun openMenu(player: Player, menu: Menu) {
+   fun openMenu(menu: Menu) {
         menuStack.addFirst(menu)
-        menu.open(player)
+        menu.open()
     }
 
     /**
@@ -28,24 +26,28 @@ class MenuNavigator {
      *
      * This closes the currently displayed menu and moves the menu display back
      * a step in the stack when prompted for it.
-     *
-     * @param player The target player.
      */
-    fun goBack(player: Player) {
-        if (menuStack.isNotEmpty()) {
-            menuStack.removeFirst()
-            if (menuStack.isNotEmpty()) {
-                menuStack.first().open(player)
-            }
-        }
+    fun goBack() {
+        navigateBack()
     }
 
     /**
      * Clears the entire menu stack.
      *
-     * @param player The target player.
+     * This can be used to ensure that going back will instead close out of the
+     * menu.
      */
-    fun clearMenuStack(player: Player) {
+    fun clearMenuStack() {
         menuStack.clear()
+    }
+
+    private fun navigateBack(data: Any? = null) {
+        if (menuStack.isNotEmpty()) {
+            menuStack.removeFirst()
+            if (menuStack.isNotEmpty()) {
+                menuStack.first().passData(data)
+                menuStack.first().open()
+            }
+        }
     }
 }
