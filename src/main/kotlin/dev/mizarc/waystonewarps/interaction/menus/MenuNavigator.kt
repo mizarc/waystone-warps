@@ -32,6 +32,20 @@ class MenuNavigator {
     }
 
     /**
+     * Opens the previous menu in the navigation stack while also passing data.
+     *
+     * This closes the currently displayed menu and moves the menu display back
+     * a step in the stack when prompted for it, it also accepts a data type of
+     * any that can be used by the previously opened menu (e.g. passing search
+     * data)
+     *
+     * @param data Data type of any to pass to the previous menu.
+     */
+    fun goBackWithData(data: Any?) {
+        navigateBack(data)
+    }
+
+    /**
      * Clears the entire menu stack.
      *
      * This can be used to ensure that going back will instead close out of the
