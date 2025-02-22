@@ -6,6 +6,6 @@ import java.util.UUID
 class GetWarpPlayerAccess(private val discoveryRepository: DiscoveryRepository) {
     fun execute(warpId: UUID): List<UUID> {
         val discoveries = discoveryRepository.getByWarp(warpId)
-        return discoveries.map { it.warpId }
+        return discoveries.map { it.playerId }
     }
 }
