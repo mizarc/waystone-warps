@@ -10,11 +10,12 @@ import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
-import dev.mizarc.waystonewarps.application.actions.whitelist.AddToWhitelist
+import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
@@ -135,7 +136,8 @@ class WaystoneWarps: JavaPlugin() {
             single { MoveWarp(warpRepository, structureBuilderService) }
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
-            single { AddToWhitelist(whitelistRepository) }
+            single { ToggleWhitelist(whitelistRepository) }
+            single { RevokeDiscovery(discoveryRepository) }
         }
 
         startKoin { modules(actions) }
