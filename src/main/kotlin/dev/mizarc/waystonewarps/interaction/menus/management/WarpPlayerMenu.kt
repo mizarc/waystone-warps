@@ -13,6 +13,7 @@ import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import org.apache.commons.lang3.mutable.Mutable
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
@@ -45,9 +46,9 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Switch what players to display depending on view mode
         val playerPane = when (viewMode) {
-            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
-            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
-            2 -> displayPlayers(Bukkit.getOnlinePlayers().toList())
+            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }, warp)
+            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }, warp)
+            2 -> displayPlayers(Bukkit.getOnlinePlayers().toList(), warp)
             else -> StaticPane(1, 2, 7, 3)
         }
         gui.addPane(playerPane)
@@ -115,15 +116,33 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>): StaticPane {
+    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp): StaticPane {
         val playerPane = StaticPane(1, 2, 7, 3)
         var xSlot = 0
         var ySlot = 0
 
+        val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
+        val discovered = getWarpPlayerAccess.execute(warp.id)
+
+        val stockLore = listOf(
+            "Left Click to toggle whitelist",
+            "Right click to revoke access",
+        )
+
         for (foundPlayer in players) {
+            val customLore = stockLore.toMutableList()
+            if (foundPlayer.uniqueId in discovered) {
+                customLore.add(0, "§bDiscovered")
+            }
+            if (foundPlayer.uniqueId in whitelisted) {
+                customLore.add(0, "§aWhitelisted")
+            }
+
+
             // Create player menu item
             val playerItem = createHead(foundPlayer)
                 .name("${foundPlayer.name}")
+                .lore(customLore)
             val guiPlayerItem = GuiItem(playerItem) {
                 // Pass
             }
