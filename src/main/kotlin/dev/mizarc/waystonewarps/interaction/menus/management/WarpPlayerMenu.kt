@@ -37,11 +37,6 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     private var page = 0
     private var playerNameSearch: String = ""
 
-    enum class DisplayType {
-        DISCOVERED,
-        WHITELISTED
-    }
-
     override fun open() {
         // Create player access menu
         val gui = ChestGui(6, "Player Access")
@@ -62,7 +57,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         }.filter { it.uniqueId != warp.playerId }
 
         // Filter and display the players
-        val playerPane = displayPlayers(players, warp, gui, if (viewMode == 0) DisplayType.DISCOVERED else DisplayType.WHITELISTED)
+        val playerPane = displayPlayers(players, warp, gui)
         gui.addPane(playerPane)
 
         gui.show(player)
@@ -111,8 +106,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 .name("Online Players")
                 .lore("Listing all players on the server")
         }
-        val guiViewModeItem = GuiItem(viewModeItem) {
-            viewMode = (viewMode + 1) % 3 // Cycle through 0, 1, 2
+        val guiViewModeItem = GuiItem(viewModeItem) { guiEvent ->
+            // Cycle through 0, 1, 2
+            viewMode = when (guiEvent.isLeftClick) {
+                true -> (viewMode + 1) % 3 // Cycle forwards on left click
+                false -> (viewMode - 1 + 3) % 3 // Cycle backwards on right click
+            }
             open()
         }
         controlsPane.addItem(guiViewModeItem, 2, 0)
@@ -128,8 +127,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp,
-                               gui: Gui, displayType: DisplayType? = null): StaticPane {
+    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): StaticPane {
         val playerPane = StaticPane(1, 2, 7, 3)
         var xSlot = 0
         var ySlot = 0
@@ -168,7 +166,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                         customLore.add(0, "§aWhitelisted")
                     } else {
                         customLore.remove("§aWhitelisted")
-                        if (displayType == DisplayType.WHITELISTED) {
+                        if (viewMode == 1) {
                             playerPane.removeItem(guiPlayerItem)
                         }
                     }
@@ -183,7 +181,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                         "Revoke ${foundPlayer.name}'s access?"
                     ) {
                         revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
-                        if (displayType == DisplayType.DISCOVERED) {
+                        if (viewMode == 0) {
                             playerPane.removeItem(guiPlayerItem)
                         }
                     })
