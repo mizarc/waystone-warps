@@ -12,8 +12,8 @@ import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 
-class ConfirmationMenu<T>(val menuNavigator: MenuNavigator, val player: Player,
-                       val title: String, val callbackAction: () -> T): Menu {
+class ConfirmationMenu(val menuNavigator: MenuNavigator, val player: Player,
+                       val title: String, val callbackAction: () -> Unit): Menu {
     override fun open() {
         // Create menu
         val gui = HopperGui(title)

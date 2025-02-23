@@ -37,6 +37,11 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     private var page = 0
     private var playerNameSearch: String = ""
 
+    enum class DisplayType {
+        DISCOVERED,
+        WHITELISTED
+    }
+
     override fun open() {
         // Create player access menu
         val gui = ChestGui(6, "Player Access")
@@ -51,9 +56,9 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         // Switch what players to display depending on view mode
         val playerPane = when (viewMode) {
             0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) },
-                warp, gui)
+                warp, gui, DisplayType.DISCOVERED)
             1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) },
-                warp, gui)
+                warp, gui, DisplayType.WHITELISTED)
             2 -> displayPlayers(Bukkit.getOnlinePlayers().toList(),
                 warp, gui)
             else -> StaticPane(1, 2, 7, 3)
@@ -123,7 +128,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): StaticPane {
+    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp,
+                               gui: Gui, displayType: DisplayType? = null): StaticPane {
         val playerPane = StaticPane(1, 2, 7, 3)
         var xSlot = 0
         var ySlot = 0
@@ -137,6 +143,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         )
 
         for (foundPlayer in players) {
+            // Modify lore text depending on if the player has discovered this warp or is whitelisted
             val customLore = stockLore.toMutableList()
             if (foundPlayer.uniqueId in discovered) {
                 customLore.add(0, "§bDiscovered")
@@ -149,22 +156,37 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             val playerItem = createHead(foundPlayer)
                 .name("${foundPlayer.name}")
                 .lore(customLore)
-            val guiPlayerItem = GuiItem(playerItem) { guiEvent ->
+
+            // Define actions on clickable player head icon
+            lateinit var guiPlayerItem: GuiItem
+            guiPlayerItem = GuiItem(playerItem) { guiEvent ->
+
+                // Toggles whitelist state
                 if (guiEvent.isLeftClick) {
                     val result = toggleWhitelist.execute(warp.id, foundPlayer.uniqueId)
                     if (result) {
                         customLore.add(0, "§aWhitelisted")
                     } else {
                         customLore.remove("§aWhitelisted")
+                        if (displayType == DisplayType.WHITELISTED) {
+                            playerPane.removeItem(guiPlayerItem)
+                        }
                     }
                     playerItem.lore()
                     playerItem.lore(customLore)
                     gui.update()
                 }
+
+                // Opens confirmation menu to ask to revoke access
                 else if (guiEvent.isRightClick) {
-                    menuNavigator.openMenu(ConfirmationMenu<Boolean>(menuNavigator, player,
+                    menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player,
                         "Revoke ${foundPlayer.name}'s access?"
-                    ) { revokeDiscovery.execute(foundPlayer.uniqueId, warp.id) })
+                    ) {
+                        revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
+                        if (displayType == DisplayType.DISCOVERED) {
+                            playerPane.removeItem(guiPlayerItem)
+                        }
+                    })
                 }
             }
 
