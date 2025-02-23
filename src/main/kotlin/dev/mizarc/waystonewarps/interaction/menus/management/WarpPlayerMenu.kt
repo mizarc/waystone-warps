@@ -45,8 +45,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Switch what players to display depending on view mode
         val playerPane = when (viewMode) {
-            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).mapNotNull { Bukkit.getPlayer(it) })
-            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).mapNotNull { Bukkit.getPlayer(it) })
+            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
+            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
             2 -> displayPlayers(Bukkit.getOnlinePlayers().toList())
             else -> StaticPane(1, 2, 7, 3)
         }
