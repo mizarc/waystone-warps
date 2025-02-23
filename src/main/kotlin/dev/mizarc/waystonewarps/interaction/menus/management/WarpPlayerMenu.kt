@@ -2,18 +2,20 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
+import com.github.stefvanschie.inventoryframework.gui.type.util.Gui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
+import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
-import org.apache.commons.lang3.mutable.Mutable
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
@@ -28,6 +30,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                      private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val getPlayerWhitelistForWarp: GetWhitelistedPlayers by inject()
+    private val toggleWhitelist: ToggleWhitelist by inject()
+    private val revokeDiscovery: RevokeDiscovery by inject()
 
     private var viewMode = 0  // 0 = Discovered, 1 = Whitelisted, 2 = All
     private var page = 0
@@ -46,9 +50,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Switch what players to display depending on view mode
         val playerPane = when (viewMode) {
-            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }, warp)
-            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }, warp)
-            2 -> displayPlayers(Bukkit.getOnlinePlayers().toList(), warp)
+            0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) },
+                warp, gui)
+            1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) },
+                warp, gui)
+            2 -> displayPlayers(Bukkit.getOnlinePlayers().toList(),
+                warp, gui)
             else -> StaticPane(1, 2, 7, 3)
         }
         gui.addPane(playerPane)
@@ -116,7 +123,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp): StaticPane {
+    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): StaticPane {
         val playerPane = StaticPane(1, 2, 7, 3)
         var xSlot = 0
         var ySlot = 0
@@ -138,13 +145,27 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 customLore.add(0, "§aWhitelisted")
             }
 
-
             // Create player menu item
             val playerItem = createHead(foundPlayer)
                 .name("${foundPlayer.name}")
                 .lore(customLore)
-            val guiPlayerItem = GuiItem(playerItem) {
-                // Pass
+            val guiPlayerItem = GuiItem(playerItem) { guiEvent ->
+                if (guiEvent.isLeftClick) {
+                    val result = toggleWhitelist.execute(warp.id, foundPlayer.uniqueId)
+                    if (result) {
+                        customLore.add(0, "§aWhitelisted")
+                    } else {
+                        customLore.remove("§aWhitelisted")
+                    }
+                    playerItem.lore()
+                    playerItem.lore(customLore)
+                    gui.update()
+                }
+                else if (guiEvent.isRightClick) {
+                    menuNavigator.openMenu(ConfirmationMenu<Boolean>(menuNavigator, player,
+                        "Revoke ${foundPlayer.name}'s access?"
+                    ) { revokeDiscovery.execute(foundPlayer.uniqueId, warp.id) })
+                }
             }
 
             // Add player menu item
