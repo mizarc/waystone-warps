@@ -41,6 +41,7 @@ fun ItemStack.lore(vararg text: String): ItemStack {
 }
 
 fun ItemStack.lore(text: List<String>): ItemStack {
+    this.clearLore()
     text.forEach { this.lore(it) }
     return this
 }
