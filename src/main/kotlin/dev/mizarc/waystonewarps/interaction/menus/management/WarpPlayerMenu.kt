@@ -5,7 +5,6 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
-import dev.mizarc.waystonewarps.WaystoneWarps
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.domain.warps.Warp
@@ -22,14 +21,12 @@ import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.concurrent.CompletableFuture
 
 
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
                      private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val getPlayerWhitelistForWarp: GetWhitelistedPlayers by inject()
-    private val plugin: WaystoneWarps by inject()
 
     private var viewMode = 0  // 0 = Discovered, 1 = Whitelisted, 2 = All
     private var page = 0
@@ -47,20 +44,15 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         gui.addPane(controlsPane)
 
         // Switch what players to display depending on view mode
-        val playerPaneFutures = when (viewMode) {
+        val playerPane = when (viewMode) {
             0 -> displayPlayers(getWarpPlayerAccess.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
             1 -> displayPlayers(getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) })
             2 -> displayPlayers(Bukkit.getOnlinePlayers().toList())
-            else -> CompletableFuture.completedFuture(StaticPane(1, 2, 7, 3))
+            else -> StaticPane(1, 2, 7, 3)
         }
+        gui.addPane(playerPane)
 
-        playerPaneFutures.thenAccept { playerPane ->
-            gui.addPane(playerPane)
-            gui.show(player)
-        }.exceptionally { ex ->
-            ex.printStackTrace()
-            null
-        }
+        gui.show(player)
     }
 
     override fun passData(data: Any?) {
@@ -123,37 +115,29 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>): CompletableFuture<StaticPane> {
+    private fun displayPlayers(players: List<OfflinePlayer>): StaticPane {
         val playerPane = StaticPane(1, 2, 7, 3)
         var xSlot = 0
         var ySlot = 0
 
-        val futures = players.map { player ->
-            createHead(player, plugin).thenApply { playerHead ->
-                Pair(playerHead, player.name)
+        for (foundPlayer in players) {
+            // Create player menu item
+            val playerItem = createHead(foundPlayer)
+                .name("${foundPlayer.name}")
+            val guiPlayerItem = GuiItem(playerItem) {
+                // Pass
+            }
+
+            // Add player menu item
+            playerPane.addItem(guiPlayerItem, xSlot, ySlot)
+
+            // Increment slot
+            xSlot += 1
+            if (xSlot > 7) {
+                xSlot = 0
+                ySlot += 1
             }
         }
-
-        return CompletableFuture.allOf(*futures.toTypedArray())
-            .thenApply {
-                // Process all fetched player heads
-                futures.map { it.join() }.forEach { (playerHead, playerName) ->
-                    val playerItem = playerHead.name(playerName ?: "Unknown Player")
-                    val guiPlayerItem = GuiItem(playerItem) {
-                        // Pass
-                    }
-
-                    // Add player menu item
-                    playerPane.addItem(guiPlayerItem, xSlot, ySlot)
-
-                    // Increment slot
-                    xSlot += 1
-                    if (xSlot > 7) {
-                        xSlot = 0
-                        ySlot += 1
-                    }
-                }
-                playerPane
-            }
+        return playerPane
     }
 }
