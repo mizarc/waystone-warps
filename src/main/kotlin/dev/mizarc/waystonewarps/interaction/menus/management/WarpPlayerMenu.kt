@@ -103,7 +103,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 .name("Whitelisted")
                 .lore("Listing players who are whitelisted")
             else -> ItemStack(Material.REDSTONE)
-                .name("Online Players")
+                .name("Online")
                 .lore("Listing all players on the server")
         }
         val guiViewModeItem = GuiItem(viewModeItem) { guiEvent ->
