@@ -49,7 +49,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         // Add player count icon
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
             .name("§rPlayer Count:")
-            .lore("${getWarpPlayerAccess.execute(warp.id).count()}")
+            .lore("${getWarpPlayerAccess.execute(warp.id).count() - 1}")
         val guiPlayerCountItem = GuiItem(playerCountItem) {
             menuNavigator.openMenu(WarpPlayerMenu(player, menuNavigator, warp))
         }
