@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.interaction.menus.management
 
+import com.destroystokyo.paper.profile.PlayerProfile
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui
@@ -16,14 +17,24 @@ import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import io.papermc.paper.persistence.PersistentDataContainerView
+import me.xdrop.fuzzywuzzy.FuzzySearch
+import org.bukkit.BanEntry
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
+import org.bukkit.Statistic
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.time.Duration
+import java.time.Instant
+import java.util.Date
+import java.util.UUID
 
 
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
@@ -56,10 +67,20 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             else -> emptyList()
         }.filter { it.uniqueId != warp.playerId }
 
-        // Filter and display the players
-        val playerPane = displayPlayers(players, warp, gui)
-        gui.addPane(playerPane)
+        // Filter by player name if specified
+        val filteredPlayers = if (playerNameSearch.isNotBlank()) {
+            val playerNames = players.mapNotNull { it.name }
+            val searchResults = FuzzySearch.extractAll(playerNameSearch, playerNames)
+                .filter { it.score >= 60 }
+                .take(21)
+            searchResults.mapNotNull { result -> players.find { it.name == result.string } }
+        } else {
+            players
+        }
 
+        // Display to GUI
+        val playerPane = displayPlayers(filteredPlayers, warp, gui)
+        gui.addPane(playerPane)
         gui.show(player)
     }
 
