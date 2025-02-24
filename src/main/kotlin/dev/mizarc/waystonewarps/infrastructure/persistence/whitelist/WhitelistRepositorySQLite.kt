@@ -32,6 +32,8 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
 
     override fun add(whitelist: Whitelist) {
         whitelistMap.computeIfAbsent(whitelist.warpId) { HashSet() }.add(whitelist.playerId)
+        storage.connection.executeInsert("INSERT INTO whitelist (warpId, playerId) VALUES (?, ?);",
+            whitelist.warpId, whitelist.playerId)
     }
 
     override fun remove(warpId: UUID, playerId: UUID) {
@@ -39,18 +41,20 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
         if (whitelistMap[warpId]?.isEmpty() == true) {
             whitelistMap.remove(warpId)
         }
+        storage.connection.executeUpdate("DELETE FROM warps WHERE warpId=? AND playerId=?", warpId, playerId)
     }
 
     override fun removeByWarp(warpId: UUID) {
         whitelistMap.remove(warpId)
+        storage.connection.executeUpdate("DELETE FROM warps WHERE warpId=?", warpId)
     }
 
     private fun createTable() {
         storage.connection.executeUpdate("""
             CREATE TABLE IF NOT EXISTS whitelist (
-                warp_id UUID NOT NULL,
-                player_id UUID NOT NULL,
-                PRIMARY KEY (warp_id, player_id)
+                warpId UUID NOT NULL,
+                playerId UUID NOT NULL,
+                PRIMARY KEY (warpId, playerId)
             );"""
         )
     }
