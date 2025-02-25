@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
+import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
@@ -23,6 +24,7 @@ import kotlin.math.ceil
 class WarpMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu, KoinComponent {
     private val getPlayerWarpAccess: GetPlayerWarpAccess by inject()
     private val teleportPlayer: TeleportPlayer by inject()
+    private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
 
     private var page = 1
 
@@ -83,7 +85,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             }
 
             var guiWarpItem: GuiItem
-            if (warp.isLocked) {
+            if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 val lore = listOf(
                     locationText,
                     "&cLOCKED",

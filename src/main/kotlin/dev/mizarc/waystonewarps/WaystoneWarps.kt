@@ -117,7 +117,7 @@ class WaystoneWarps: JavaPlugin() {
         structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
-            movementMonitorService, scheduler, economy)
+            movementMonitorService, whitelistRepository, scheduler, economy)
     }
 
     private fun registerDependencies() {
