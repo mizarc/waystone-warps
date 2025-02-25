@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.gui.type.util.Gui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
@@ -17,24 +18,15 @@ import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
-import io.papermc.paper.persistence.PersistentDataContainerView
 import me.xdrop.fuzzywuzzy.FuzzySearch
-import org.bukkit.BanEntry
 import org.bukkit.Bukkit
-import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.OfflinePlayer
-import org.bukkit.Statistic
-import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.time.Duration
-import java.time.Instant
-import java.util.Date
-import java.util.UUID
 
 
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
@@ -45,7 +37,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     private val revokeDiscovery: RevokeDiscovery by inject()
 
     private var viewMode = 0  // 0 = Discovered, 1 = Whitelisted, 2 = All
-    private var page = 0
+    private var page = 1
     private var playerNameSearch: String = ""
 
     override fun open() {
@@ -56,8 +48,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
 
         // Add controls pane
-        val controlsPane = addControlsSection(gui)
-        gui.addPane(controlsPane)
+        addControlsSection(gui)
 
         // Switch what players to display depending on view mode, exclude player who owns the warp
         val players = when (viewMode) {
@@ -78,8 +69,17 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             players
         }
 
-        // Display to GUI
+        // Pane of players
         val playerPane = displayPlayers(filteredPlayers, warp, gui)
+
+        // Add paginator pane
+        addPaginator(gui, playerPane.pages, page) { newPage ->
+            page = newPage
+            playerPane.page = page
+        }
+
+        // Display to GUI
+
         gui.addPane(playerPane)
         gui.show(player)
     }
@@ -107,7 +107,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         gui.addPane(outlinePane)
 
         // Add controls pane
-        val controlsPane = StaticPane(0, 0, 9, 1)
+        val controlsPane = StaticPane(0, 0, 6, 1)
         gui.addPane(controlsPane)
 
         // Add go back item
@@ -148,10 +148,68 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         return controlsPane
     }
 
-    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): StaticPane {
-        val playerPane = StaticPane(1, 2, 7, 3)
-        var xSlot = 0
-        var ySlot = 0
+    private fun addPaginator(gui: ChestGui, totalPages: Int, page: Int, updateContent: (Int) -> Unit) {
+        var currentPage = page // Make currentPage mutable
+        val paginatorPane = StaticPane(6, 0, 3, 1)
+
+        fun updatePaginator() {
+            paginatorPane.clear()
+
+            // Update page number item
+            val pageNumberItem = ItemStack(Material.PAPER).apply {
+                itemMeta = itemMeta?.apply {
+                    setDisplayName("Page $currentPage of $totalPages")
+                }
+            }
+            val guiPageNumberItem = GuiItem(pageNumberItem)
+            // Clear previous page number
+            paginatorPane.addItem(guiPageNumberItem, 1, 0)
+
+            // Update left arrow
+            val prevItem: ItemStack
+            val guiPrevItem: GuiItem
+            if (currentPage <= 1) {
+                prevItem = ItemStack(Material.ARROW).name("Prev")
+                guiPrevItem = GuiItem(prevItem)
+            } else {
+                prevItem = ItemStack(Material.SPECTRAL_ARROW).name("Prev")
+                guiPrevItem = GuiItem(prevItem) {
+                    currentPage--
+                    updateContent(currentPage)
+                    updatePaginator()
+                    gui.update()
+                }
+            }
+            paginatorPane.addItem(guiPrevItem, 0, 0)
+
+            // Update right arrow
+            val nextItem: ItemStack
+            val guiNextItem: GuiItem
+            if (currentPage >= totalPages) {
+                nextItem = ItemStack(Material.ARROW).name("Next")
+                guiNextItem = GuiItem(nextItem)
+            } else {
+                nextItem = ItemStack(Material.SPECTRAL_ARROW).name("Next")
+                guiNextItem = GuiItem(nextItem) {
+                    currentPage++
+                    updateContent(currentPage)
+                    updatePaginator()
+                    gui.update()
+                }
+            }
+            paginatorPane.addItem(guiNextItem, 2, 0)
+
+            gui.update()
+        }
+
+        updatePaginator()
+        gui.addPane(paginatorPane)
+    }
+
+    private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): PaginatedPane {
+        val playerPane = PaginatedPane(1, 2, 7, 3)
+        var currentPagePane = OutlinePane(0, 0, 7, 3)
+        var playerCounter = 0
 
         val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
         val discovered = getWarpPlayerAccess.execute(warp.id)
@@ -188,7 +246,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                     } else {
                         customLore.remove("§aWhitelisted")
                         if (viewMode == 1) {
-                            playerPane.removeItem(guiPlayerItem)
+                            currentPagePane.removeItem(guiPlayerItem)
                         }
                     }
                     playerItem.lore()
@@ -203,22 +261,29 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                     ) {
                         revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
                         if (viewMode == 0) {
-                            playerPane.removeItem(guiPlayerItem)
+                            currentPagePane.removeItem(guiPlayerItem)
                         }
                     })
                 }
             }
 
             // Add player menu item
-            playerPane.addItem(guiPlayerItem, xSlot, ySlot)
+            currentPagePane.addItem(guiPlayerItem)
+            playerCounter++
 
-            // Increment slot
-            xSlot += 1
-            if (xSlot > 7) {
-                xSlot = 0
-                ySlot += 1
+            // Check if the current page is full (21 players)
+            if (playerCounter >= 21) {
+                playerPane.addPage(currentPagePane)
+                currentPagePane = OutlinePane(1, 2, 7, 3)
+                playerCounter = 0
             }
         }
+
+        // Add the last page if it's not empty
+        if (playerCounter > 0) {
+            playerPane.addPage(currentPagePane)
+        }
+
         return playerPane
     }
 }
