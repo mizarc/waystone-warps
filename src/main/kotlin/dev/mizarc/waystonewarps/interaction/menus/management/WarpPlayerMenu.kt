@@ -281,7 +281,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             // Check if the current page is full (21 players)
             if (playerCounter >= 21) {
                 playerPane.addPage(currentPagePane)
-                currentPagePane = OutlinePane(1, 2, 7, 3)
+                currentPagePane = OutlinePane(0, 0, 7, 3)
                 playerCounter = 0
             }
         }
