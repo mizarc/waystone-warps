@@ -133,6 +133,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 true -> (viewMode + 1) % 3 // Cycle forwards on left click
                 false -> (viewMode - 1 + 3) % 3 // Cycle backwards on right click
             }
+            page = 1
             open()
         }
         controlsPane.addItem(guiViewModeItem, 2, 0)
@@ -144,6 +145,16 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             menuNavigator.openMenu(playerSearchMenu)
         }
         controlsPane.addItem(guiSearchItem, 3, 0)
+
+        if (playerNameSearch.isNotEmpty()) {
+            val clearSearchItem = ItemStack(Material.MAGMA_CREAM).name("Clear Search")
+            val guiClearSearchItem = GuiItem(clearSearchItem) {
+                playerNameSearch = ""
+                page = 1
+                open()
+            }
+            controlsPane.addItem(guiClearSearchItem, 4, 0)
+        }
 
         return controlsPane
     }
