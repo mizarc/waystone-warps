@@ -138,7 +138,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         controlsPane.addItem(guiViewModeItem, 2, 0)
 
         // Add search button
-        val searchItem = ItemStack(Material.NAME_TAG)
+        val searchItem = ItemStack(Material.NAME_TAG).name("Search")
         val guiSearchItem = GuiItem(searchItem) {
             val playerSearchMenu = PlayerSearchMenu(player, menuNavigator)
             menuNavigator.openMenu(playerSearchMenu)
