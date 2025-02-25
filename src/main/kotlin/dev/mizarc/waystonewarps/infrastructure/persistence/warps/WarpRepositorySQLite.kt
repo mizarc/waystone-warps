@@ -48,9 +48,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         warps.remove(warp.id)
         warps[warp.id] = warp
         storage.connection.executeUpdate("UPDATE warps SET playerId=?, creationTime=?, name=?, worldId=?, " +
-                "positionX=?, positionY=?, positionZ=?, icon=? WHERE id=?",
+                "positionX=?, positionY=?, positionZ=?, icon=?, block=?, isLocked=? WHERE id=?",
             warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
-            warp.position.z, warp.icon, warp.id)
+            warp.position.z, warp.icon, warp.block, warp.isLocked, warp.id)
         return
     }
 
