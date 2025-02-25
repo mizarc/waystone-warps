@@ -32,7 +32,7 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
 
     override fun add(whitelist: Whitelist) {
         whitelistMap.computeIfAbsent(whitelist.warpId) { HashSet() }.add(whitelist.playerId)
-        storage.connection.executeInsert("INSERT INTO whitelist (warpId, playerId, createdAt) " +
+        storage.connection.executeInsert("INSERT INTO whitelist (warpId, playerId, creationTime) " +
                 "VALUES (?, ?, CURRENT_TIMESTAMP);",
             whitelist.warpId, whitelist.playerId)
     }
@@ -55,7 +55,7 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
             CREATE TABLE IF NOT EXISTS whitelist (
                 warpId TEXT NOT NULL,
                 playerId TEXT NOT NULL,
-                createdAt NUMERIC NOT NULL,
+                creationTime NUMERIC NOT NULL,
                 PRIMARY KEY (warpId, playerId)
             );"""
         )
