@@ -14,5 +14,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Whitelist can be toggled by left-clicking the player icon in the same menu.
 - Being whitelisted allows players to still discover and teleport to a waystone set to private mode.
 
+### Changes
+- Text input in menus now defaults to blank.
+
 ## [0.1.0]
 - Initial Pre-Release for Minecraft 1.21.4. Watch out for bugs!
