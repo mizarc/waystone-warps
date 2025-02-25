@@ -1,5 +1,9 @@
 package dev.mizarc.waystonewarps.interaction.utils
 
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -18,7 +22,7 @@ fun ItemStack.amount(amount: Int): ItemStack {
 
 fun ItemStack.name(name: String): ItemStack {
     val meta = itemMeta
-    meta!!.setDisplayName(name)
+    meta.itemName(Component.text(name))
     itemMeta = meta
     return this
 }
