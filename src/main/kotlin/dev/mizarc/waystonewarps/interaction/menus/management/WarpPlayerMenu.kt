@@ -262,7 +262,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 }
 
                 // Opens confirmation menu to ask to revoke access
-                else if (guiEvent.isRightClick) {
+                else if (guiEvent.isRightClick && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)) {
                     menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player,
                         "Revoke ${foundPlayer.name}'s access?"
                     ) {
