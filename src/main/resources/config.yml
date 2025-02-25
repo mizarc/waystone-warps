@@ -2,4 +2,4 @@ warp_limit: 3
 teleport_timer: 5
 teleport_cost_type: ITEM
 teleport_cost_item: ENDER_PEARL
-teleport_cost: 4
+teleport_cost_amount: 4
