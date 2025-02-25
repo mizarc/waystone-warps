@@ -220,17 +220,14 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
         val discovered = getWarpPlayerAccess.execute(warp.id)
-
-        val stockLore = listOf(
-            "Left Click to toggle whitelist",
-            "Right click to revoke access",
-        )
+        val stockLore = listOf("Left Click to toggle whitelist")
 
         for (foundPlayer in players) {
             // Modify lore text depending on if the player has discovered this warp or is whitelisted
             val customLore = stockLore.toMutableList()
             if (foundPlayer.uniqueId in discovered) {
                 customLore.add(0, "§bDiscovered")
+                customLore.add("Right click to revoke access",)
             }
             if (foundPlayer.uniqueId in whitelisted) {
                 customLore.add(0, "§aWhitelisted")
