@@ -5,9 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
-import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -24,7 +22,7 @@ class PlayerSearchMenu(private val player: Player, private val menuNavigator: Me
 
         // Add lodestone menu item
         val firstPane = StaticPane(0, 0, 1, 1)
-        val headItem = ItemStack(Material.PLAYER_HEAD).name("Player")
+        val headItem = ItemStack(Material.PLAYER_HEAD).name("")
         val guiHeadItem = GuiItem(headItem) { guiEvent -> guiEvent.isCancelled = true }
         firstPane.addItem(guiHeadItem, 0, 0)
         gui.firstItemComponent.addPane(firstPane)
