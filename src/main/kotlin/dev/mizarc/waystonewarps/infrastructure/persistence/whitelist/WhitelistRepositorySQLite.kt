@@ -62,8 +62,8 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
     private fun preload() {
         val results = storage.connection.getResults("SELECT * FROM whitelist;")
         for (result in results) {
-            val warpId = UUID.fromString(result.getString("warp_id"))
-            val playerId = UUID.fromString(result.getString("player_id"))
+            val warpId = UUID.fromString(result.getString("warpId"))
+            val playerId = UUID.fromString(result.getString("playerId"))
             whitelistMap.computeIfAbsent(warpId) { HashSet() }.add(playerId)
         }
     }
