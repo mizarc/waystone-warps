@@ -41,19 +41,19 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
         if (whitelistMap[warpId]?.isEmpty() == true) {
             whitelistMap.remove(warpId)
         }
-        storage.connection.executeUpdate("DELETE FROM warps WHERE warpId=? AND playerId=?", warpId, playerId)
+        storage.connection.executeUpdate("DELETE FROM whitelist WHERE warpId=? AND playerId=?", warpId, playerId)
     }
 
     override fun removeByWarp(warpId: UUID) {
         whitelistMap.remove(warpId)
-        storage.connection.executeUpdate("DELETE FROM warps WHERE warpId=?", warpId)
+        storage.connection.executeUpdate("DELETE FROM whitelist WHERE warpId=?", warpId)
     }
 
     private fun createTable() {
         storage.connection.executeUpdate("""
             CREATE TABLE IF NOT EXISTS whitelist (
-                warpId UUID NOT NULL,
-                playerId UUID NOT NULL,
+                warpId TEXT NOT NULL,
+                playerId TEXT NOT NULL,
                 PRIMARY KEY (warpId, playerId)
             );"""
         )
