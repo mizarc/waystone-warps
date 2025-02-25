@@ -75,7 +75,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         // Add paginator pane
         addPaginator(gui, playerPane.pages.coerceAtLeast(1), page) { newPage ->
             page = newPage
-            playerPane.page = page
+            playerPane.page = page - 1 // Subtract 1 since pages start at 0
         }
 
         // Display to GUI
@@ -145,6 +145,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         }
         controlsPane.addItem(guiSearchItem, 3, 0)
 
+        // Add clear search button
         if (playerNameSearch.isNotEmpty()) {
             val clearSearchItem = ItemStack(Material.MAGMA_CREAM).name("Clear Search")
             val guiClearSearchItem = GuiItem(clearSearchItem) {
