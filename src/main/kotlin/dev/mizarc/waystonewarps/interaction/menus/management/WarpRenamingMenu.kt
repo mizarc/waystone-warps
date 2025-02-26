@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.results.UpdateWarpNameResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
@@ -18,7 +19,6 @@ import org.koin.core.component.inject
 class WarpRenamingMenu(private val player: Player, private val menuNavigator: MenuNavigator,
                        private val warp: Warp): Menu, KoinComponent {
     private val updateWarpName: UpdateWarpName by inject()
-    private var nameAttempt = ""
 
     override fun open() {
         // Create homes menu
@@ -35,14 +35,8 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
         gui.firstItemComponent.addPane(firstPane)
 
         // Add message menu item if name is already taken
-        if (nameAttempt != "") {
-            val secondPane = StaticPane(0, 0, 1, 1)
-            val paperItem = ItemStack(Material.PAPER)
-                .name("That name has already been taken")
-            val guiPaperItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
-            secondPane.addItem(guiPaperItem, 0, 0)
-            gui.secondItemComponent.addPane(secondPane)
-        }
+        val secondPane = StaticPane(0, 0, 1, 1)
+        gui.secondItemComponent.addPane(secondPane)
 
         // Add confirm menu item.
         val thirdPane = StaticPane(0, 0, 1, 1)
@@ -54,15 +48,28 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
                 return@GuiItem
             }
 
-            // Stay on menu if the name is already taken
-            val result = updateWarpName.execute(warp.id, gui.renameText)
-            if (result.isFailure) {
-                nameAttempt = gui.renameText
-                open()
-                return@GuiItem
+            // Attempt renaming
+            val result = updateWarpName.execute(warp.id, player.uniqueId, gui.renameText)
+            when (result) {
+                UpdateWarpNameResult.SUCCESS -> menuNavigator.goBack()
+                UpdateWarpNameResult.WARP_NOT_FOUND -> {
+                    val paperItem = ItemStack(Material.PAPER)
+                        .name("The warp you are trying to rename does not exist anymore")
+                    val guiPaperItem = GuiItem(paperItem)
+                    secondPane.addItem(guiPaperItem, 0, 0)
+                    lodestoneItem.name(gui.renameText)
+                    gui.update()
+                }
+                UpdateWarpNameResult.NAME_ALREADY_TAKEN -> {
+                    val paperItem = ItemStack(Material.PAPER)
+                        .name("That name has already been taken")
+                    val guiPaperItem = GuiItem(paperItem)
+                    secondPane.addItem(guiPaperItem, 0, 0)
+                    lodestoneItem.name(gui.renameText)
+                    gui.update()
+                }
+                UpdateWarpNameResult.NAME_BLANK -> menuNavigator.goBack()
             }
-
-           menuNavigator.goBack()
         }
 
         thirdPane.addItem(confirmGuiItem, 0, 0)
