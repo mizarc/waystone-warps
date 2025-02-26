@@ -42,9 +42,9 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         playerDiscoveries.add(discovery)
 
         try {
-            storage.connection.executeUpdate("INSERT INTO discoveries (warpId, playerId, firstDiscoveredTime, " +
+            storage.connection.executeUpdate("INSERT INTO discoveries (warpId, playerId, discoveredTime, " +
                     "lastVisitedTime, isFavourite) VALUES (?,?,?,?,?)",
-                discovery.warpId, discovery.playerId, discovery.firstDiscoveredTime,
+                discovery.warpId, discovery.playerId, discovery.discoveredTime,
                 discovery.lastVisitedTime, discovery.isFavourite)
         } catch (error: SQLException) {
             error.printStackTrace()
@@ -69,7 +69,7 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
     private fun createTable() {
         try {
             storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS discoveries (warpId TEXT, " +
-                    "playerId TEXT, firstDiscoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER," +
+                    "playerId TEXT, discoveredTime TEXT, lastVisitedTime TEXT, isFavourite INTEGER," +
                     "PRIMARY KEY(warpId, playerId));")
         } catch (error: SQLException) {
             error.printStackTrace()
@@ -84,11 +84,11 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         for (result in results) {
             val warpId = UUID.fromString(result.getString("warpId"))
             val playerId = UUID.fromString(result.getString("playerId"))
-            val firstDiscoveredTime = Instant.parse(result.getString("firstDiscoveredTime"))
+            val discoveredTime = Instant.parse(result.getString("discoveredTime"))
             val lastVisitedTime = Instant.parse(result.getString("lastVisitedTime"))
             val isFavourite = result.getInt("isFavourite") != 0
             try {
-                val discovery = Discovery(warpId, playerId, firstDiscoveredTime, lastVisitedTime, isFavourite)
+                val discovery = Discovery(warpId, playerId, discoveredTime, lastVisitedTime, isFavourite)
                 val foundDiscoveries = discoveries.getOrPut(playerId) { mutableSetOf(discovery) }
                 foundDiscoveries.add(discovery)
             }

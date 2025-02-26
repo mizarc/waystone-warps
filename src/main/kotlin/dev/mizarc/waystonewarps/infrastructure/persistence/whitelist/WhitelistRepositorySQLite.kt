@@ -4,6 +4,7 @@ import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.whitelist.Whitelist
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
+import java.time.Instant
 import java.util.UUID
 
 class WhitelistRepositorySQLite(private val storage: Storage<Database>): WhitelistRepository {
@@ -33,8 +34,8 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
     override fun add(whitelist: Whitelist) {
         whitelistMap.computeIfAbsent(whitelist.warpId) { HashSet() }.add(whitelist.playerId)
         storage.connection.executeInsert("INSERT INTO whitelist (warpId, playerId, creationTime) " +
-                "VALUES (?, ?, CURRENT_TIMESTAMP);",
-            whitelist.warpId, whitelist.playerId)
+                "VALUES (?, ?, ?);",
+            whitelist.warpId, whitelist.playerId, Instant.now())
     }
 
     override fun remove(warpId: UUID, playerId: UUID) {
@@ -55,7 +56,7 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
             CREATE TABLE IF NOT EXISTS whitelist (
                 warpId TEXT NOT NULL,
                 playerId TEXT NOT NULL,
-                creationTime NUMERIC NOT NULL,
+                creationTime TEXT NOT NULL,
                 PRIMARY KEY (warpId, playerId)
             );"""
         )
