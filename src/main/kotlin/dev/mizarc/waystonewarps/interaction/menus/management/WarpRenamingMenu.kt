@@ -20,10 +20,20 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
                        private val warp: Warp): Menu, KoinComponent {
     private val updateWarpName: UpdateWarpName by inject()
 
+    private var name = ""
+    private var isConfirming = false
+
     override fun open() {
         // Create homes menu
         val gui = AnvilGui("Renaming Warp")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
+        gui.setOnNameInputChanged { newName ->
+            if (!isConfirming) {
+                name = newName
+            } else {
+                isConfirming = false
+            }
+        }
 
         // Add lodestone menu item
         val firstPane = StaticPane(0, 0, 1, 1)
@@ -43,13 +53,13 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
         val confirmItem = ItemStack(Material.NETHER_STAR).name("Confirm")
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             // Go back to edit menu if the name hasn't changed
-            if (gui.renameText == warp.name) {
+            if (name == warp.name) {
                 menuNavigator.goBack()
                 return@GuiItem
             }
 
             // Attempt renaming
-            val result = updateWarpName.execute(warp.id, player.uniqueId, gui.renameText)
+            val result = updateWarpName.execute(warp.id, player.uniqueId, name)
             when (result) {
                 UpdateWarpNameResult.SUCCESS -> menuNavigator.goBack()
                 UpdateWarpNameResult.WARP_NOT_FOUND -> {
@@ -57,15 +67,22 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
                         .name("The warp you are trying to rename does not exist anymore")
                     val guiPaperItem = GuiItem(paperItem)
                     secondPane.addItem(guiPaperItem, 0, 0)
-                    lodestoneItem.name(gui.renameText)
+                    lodestoneItem.name(name)
+                    isConfirming = true
                     gui.update()
                 }
                 UpdateWarpNameResult.NAME_ALREADY_TAKEN -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name("That name has already been taken")
-                    val guiPaperItem = GuiItem(paperItem)
+                    val guiPaperItem = GuiItem(paperItem) {guiEvent ->
+                        secondPane.removeItem(0, 0)
+                        lodestoneItem.name(name)
+                        isConfirming = true
+                        gui.update()
+                    }
                     secondPane.addItem(guiPaperItem, 0, 0)
-                    lodestoneItem.name(gui.renameText)
+                    lodestoneItem.name(name)
+                    isConfirming = true
                     gui.update()
                 }
                 UpdateWarpNameResult.NAME_BLANK -> menuNavigator.goBack()
