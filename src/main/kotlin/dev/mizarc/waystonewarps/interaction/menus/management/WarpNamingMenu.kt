@@ -61,7 +61,13 @@ class WarpNamingMenu(private val player: Player, private val menuNavigator: Menu
                 is CreateWarpResult.LimitExceeded -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name("You've already hit your maximum warp limit")
-                    val guiPaperItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
+                    val guiPaperItem = GuiItem(paperItem) {guiEvent ->
+                        guiEvent.isCancelled = true
+                        secondPane.removeItem(0, 0)
+                        lodestoneItem.name(name)
+                        isConfirming = true
+                        gui.update()
+                    }
                     secondPane.addItem(guiPaperItem, 0, 0)
                     lodestoneItem.name(name)
                     isConfirming = true
@@ -70,7 +76,13 @@ class WarpNamingMenu(private val player: Player, private val menuNavigator: Menu
                 is CreateWarpResult.NameAlreadyExists -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name("That name has already been taken")
-                    val guiPaperItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
+                    val guiPaperItem = GuiItem(paperItem) {guiEvent ->
+                        guiEvent.isCancelled = true
+                        secondPane.removeItem(0, 0)
+                        lodestoneItem.name(name)
+                        isConfirming = true
+                        gui.update()
+                    }
                     secondPane.addItem(guiPaperItem, 0, 0)
                     lodestoneItem.name(name)
                     isConfirming = true
@@ -79,7 +91,13 @@ class WarpNamingMenu(private val player: Player, private val menuNavigator: Menu
                 is CreateWarpResult.NameCannotBeBlank -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name("Name cannot be blank")
-                    val guiPaperItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
+                    val guiPaperItem = GuiItem(paperItem) {guiEvent ->
+                        guiEvent.isCancelled = true
+                        secondPane.removeItem(0, 0)
+                        lodestoneItem.name(name)
+                        isConfirming = true
+                        gui.update()
+                    }
                     lodestoneItem.name("")
                     secondPane.addItem(guiPaperItem, 0, 0)
                     gui.update()
