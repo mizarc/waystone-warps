@@ -14,6 +14,10 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Whitelist can be toggled by left-clicking the player icon in the same menu.
 - Being whitelisted allows players to still discover and teleport to a waystone set to private mode.
 - Error message output in text input menus can now be dismissed by clicking on them.
+- Teleport area is cleared out on teleport to prevent suffocation.
+- Teleport area has a platform built on teleport to replace missing or hollow blocks to prevent falling.
+- Fluids are prevented from flowing into the teleport zone, as they can fill in the space after the blocks are cleared out.
+- Falling blocks are broken as they fall in to prevent filling the space back in with blocks after the existing blocks are cleared out.
 
 ### Changes
 - Text input in menus now defaults to blank.
