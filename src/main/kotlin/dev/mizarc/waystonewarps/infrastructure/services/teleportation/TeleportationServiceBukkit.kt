@@ -14,6 +14,7 @@ import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -53,6 +54,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
         // Teleports the player instantaneously
         deductCost(player)
+        clearArea(warp.position.toLocation(world))
         player.teleport(offsetLocation)
         return TeleportResult.SUCCESS
     }
@@ -208,4 +210,24 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         val taskHandle: Task,
         val onCanceled: () -> Unit
     )
+
+    private fun clearArea(location: Location) {
+
+        // Loop through the blocks in the specified range
+        for (x in -1..1) {
+            for (y in -1..0) { // Only 2 blocks tall
+                for (z in -1..1) {
+                    // Skip the center block itself
+                    if (x == 0 && y == 0 && z == 0) continue
+
+                    val block = location.world.getBlockAt(location.blockX + x, location.blockY+ y, location.blockZ + z)
+
+                    // Break the block and drop its items naturally
+                    if (!block.type.isAir) {
+                        block.breakNaturally()
+                    }
+                }
+            }
+        }
+    }
 }
