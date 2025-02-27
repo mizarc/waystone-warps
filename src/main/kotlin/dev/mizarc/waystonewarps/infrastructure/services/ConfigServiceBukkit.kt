@@ -2,11 +2,12 @@ package dev.mizarc.waystonewarps.infrastructure.services
 
 import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
+import org.bukkit.Material
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.plugin.Plugin
 import java.io.File
 
-class ConfigServiceBukkit(private val plugin: Plugin, private val configFile: FileConfiguration): ConfigService {
+class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigService {
 
     override fun getWarpLimit(): Int {
         return configFile.getInt("warp_limit", 3)
@@ -26,5 +27,9 @@ class ConfigServiceBukkit(private val plugin: Plugin, private val configFile: Fi
 
     override fun getTeleportCostAmount(): Double {
         return configFile.getDouble("teleport_cost_amount", 3.0)
+    }
+
+    override fun getPlatformReplaceBlocks(): Set<String> {
+        return configFile.getStringList("platform_replace_blocks").toSet()
     }
 }
