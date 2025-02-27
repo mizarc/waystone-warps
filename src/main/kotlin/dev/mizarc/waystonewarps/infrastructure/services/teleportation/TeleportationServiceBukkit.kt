@@ -218,7 +218,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             for (y in -1..0) { // Only 2 blocks tall
                 for (z in -1..1) {
                     // Skip the center block itself
-                    if (x == 0 && y == 0 && z == 0) continue
+                    if ((x == 0 && y == 0 && z == 0) || (x == 0 && y == -1 && z == 0)) continue
 
                     val block = location.world.getBlockAt(location.blockX + x, location.blockY+ y, location.blockZ + z)
 
