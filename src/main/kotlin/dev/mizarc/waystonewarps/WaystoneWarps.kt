@@ -108,7 +108,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseServices() {
         movementMonitorService = MovementMonitorServiceBukkit()
-        configService = ConfigServiceBukkit(this, this.config)
+        configService = ConfigServiceBukkit(this.config)
         playerAttributeService = if (::metadata.isInitialized) {
             PlayerAttributeServiceVault(configService, metadata)
         } else {

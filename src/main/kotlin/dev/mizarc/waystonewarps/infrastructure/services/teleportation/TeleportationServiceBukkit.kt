@@ -14,7 +14,6 @@ import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -237,7 +236,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             for (z in -1..1) {
                 val block = location.world.getBlockAt(location.blockX + x, location.blockY - 2, location.blockZ + z)
 
-                if (block.type.isAir) {
+                if (block.type in configService.getPlatformReplaceBlocks().map { it -> Material.valueOf(it) }) {
+                    block.breakNaturally()
                     block.type = Material.COBBLESTONE // Replace with the desired material
                 }
             }
