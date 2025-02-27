@@ -224,7 +224,6 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                     // Break the block and drop its items naturally
                     if (!block.type.isAir) {
                         block.breakNaturally()
-                        block.type = Material.STRUCTURE_VOID
                     }
                 }
             }
