@@ -8,6 +8,7 @@ import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.application.services.scheduling.Task
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -20,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap
 class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
                                  private val configService: ConfigService,
                                  private val movementMonitorService: MovementMonitorService,
+                                 private val whitelistRepository: WhitelistRepository,
                                  private val scheduler: SchedulerService,
                                  private val economy: Economy?): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
@@ -33,7 +35,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         if (!result) return TeleportResult.INSUFFICIENT_FUNDS
 
         // Check for lock
-        if (warp.isLocked && warp.playerId != playerId) return TeleportResult.LOCKED
+        if (warp.isLocked && warp.playerId != playerId && !whitelistRepository.isWhitelisted(warp.id, playerId))
+            return TeleportResult.LOCKED
 
         // Location data
         val world = Bukkit.getWorld(warp.worldId) ?: return TeleportResult.WORLD_NOT_FOUND
@@ -79,7 +82,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Cancel if locked
-        if (warp.isLocked && warp.playerId != playerId) {
+        if (warp.isLocked && warp.playerId != playerId && !whitelistRepository.isWhitelisted(warp.id, playerId)) {
             onLocked()
             return
         }

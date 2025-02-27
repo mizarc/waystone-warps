@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps.interaction.listeners
 
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
+import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
@@ -24,6 +25,7 @@ import org.koin.core.component.inject
 class WaystoneInteractListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val discoverWarp: DiscoverWarp by inject()
+    private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
 
     @EventHandler
     fun onLodestoneInteract(event: PlayerInteractEvent) {
@@ -45,13 +47,14 @@ class WaystoneInteractListener: Listener, KoinComponent {
         // Create new warp if not found, open management menu if owner, discover otherwise
         warp?.let {
             // Check if warp is locked and alert if no access
-            if (warp.isLocked && warp.playerId != player.uniqueId) {
+            if (warp.isLocked && warp.playerId != player.uniqueId
+                    && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 player.sendActionBar(Component.text("Warp is set to private").color(PrimaryColourPalette.FAILED.color))
                 return
             }
 
             if (it.playerId == player.uniqueId) {
-                menuNavigator.openMenu(player, WarpManagementMenu(menuNavigator, it))
+                menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
             } else {
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
@@ -64,6 +67,6 @@ class WaystoneInteractListener: Listener, KoinComponent {
                         .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
                 }
             }
-        } ?: menuNavigator.openMenu(player, WarpNamingMenu(menuNavigator, clickedBlock.location))
+        } ?: menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
     }
 }

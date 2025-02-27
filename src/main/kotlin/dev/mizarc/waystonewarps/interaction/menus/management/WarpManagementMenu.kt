@@ -18,11 +18,12 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+class WarpManagementMenu(private val player: Player, private val menuNavigator: MenuNavigator,
+                         private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val toggleLock: ToggleLock by inject()
 
-    override fun open(player: Player) {
+    override fun open() {
         val gui = ChestGui(1, "Warp '${warp.name}'")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
@@ -41,15 +42,17 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
         }
         val guiPrivacyItem = GuiItem(privacyIcon) {
             toggleLock.execute(warp.id)
-            open(player)
+            open()
         }
         pane.addItem(guiPrivacyItem, 0, 0)
 
         // Add player count icon
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
-            .name("§rPlayer Count:")
-            .lore("${getWarpPlayerAccess.execute(warp.id).count()}")
-        val guiPlayerCountItem = GuiItem(playerCountItem) { guiEvent -> guiEvent.isCancelled = true }
+            .name("§rDiscovered Players:")
+            .lore("${getWarpPlayerAccess.execute(warp.id).count() - 1}")
+        val guiPlayerCountItem = GuiItem(playerCountItem) {
+            menuNavigator.openMenu(WarpPlayerMenu(player, menuNavigator, warp))
+        }
         pane.addItem(guiPlayerCountItem, 1, 0)
 
         // Add icon editor button
@@ -57,7 +60,7 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
             .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {
-            menuNavigator.openMenu(player, WarpIconMenu(menuNavigator, warp)) }
+            menuNavigator.openMenu(WarpIconMenu(player, menuNavigator, warp)) }
         pane.addItem(guiIconEditorItem, 4, 0)
 
         // Add renaming icon
@@ -65,7 +68,7 @@ class WarpManagementMenu(private val menuNavigator: MenuNavigator, private val w
             .name("§rRename Warp")
             .lore("Renames this warp")
         val guiRenamingItem = GuiItem(renamingItem) {
-            menuNavigator.openMenu(player, WarpRenamingMenu(menuNavigator, warp)) }
+            menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp)) }
         pane.addItem(guiRenamingItem, 5, 0)
 
         // Add move icon

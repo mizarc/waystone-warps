@@ -5,6 +5,7 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
+import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
@@ -20,13 +21,14 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.ceil
 
-class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
+class WarpMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu, KoinComponent {
     private val getPlayerWarpAccess: GetPlayerWarpAccess by inject()
     private val teleportPlayer: TeleportPlayer by inject()
+    private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
 
     private var page = 1
 
-    override fun open(player: Player) {
+    override fun open() {
         val warps = getPlayerWarpAccess.execute(player.uniqueId)
         val gui = ChestGui(6, "Warps")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -39,7 +41,7 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
         val guiExitItem: GuiItem
         val exitItem = ItemStack(Material.NETHER_STAR)
             .name("Exit")
-        guiExitItem = GuiItem(exitItem) { menuNavigator.goBack(player) }
+        guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
         // Add prev item
@@ -83,13 +85,13 @@ class WarpMenu(private val menuNavigator: MenuNavigator): Menu, KoinComponent {
             }
 
             var guiWarpItem: GuiItem
-            if (warp.isLocked) {
+            if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 val lore = listOf(
                     locationText,
                     "&cLOCKED",
                 )
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(lore)
-                guiWarpItem = GuiItem(warpItem) { open(player) }
+                guiWarpItem = GuiItem(warpItem) { open() }
             }
             else {
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(locationText)

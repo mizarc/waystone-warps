@@ -7,7 +7,17 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ## [Latest]
 
 ### Added
-- Waystones can now be locked, disallowing discovery and teleportation to the public
+- Waystones can now be locked, disallowing discovery and teleportation to the public by toggling the torch icon.
+- There's now a paginated menu where you can view players, listed by discovery, whitelisted, or all online players.
+- Player search menu can now be used to narrow down the list of players.
+- Access to teleport to the warp can be revoked via the new player menu by right-clicking their icon, which opens up a confirmation prompt.
+- Whitelist can be toggled by left-clicking the player icon in the same menu.
+- Being whitelisted allows players to still discover and teleport to a waystone set to private mode.
+- Error message output in text input menus can now be dismissed by clicking on them.
+
+### Changes
+- Text input in menus now defaults to blank.
+- Text input keeps the existing text in the box when the confirmation button is pressed and an error appears.
 
 ## [0.1.0]
 - Initial Pre-Release for Minecraft 1.21.4. Watch out for bugs!

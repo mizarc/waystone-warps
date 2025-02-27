@@ -10,16 +10,20 @@ import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
+import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
+import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
@@ -28,6 +32,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerSta
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
+import dev.mizarc.waystonewarps.infrastructure.persistence.whitelist.WhitelistRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
@@ -49,6 +54,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var warpRepository: WarpRepository
     private lateinit var discoveryRepository: DiscoveryRepository
     private lateinit var playerStateRepository: PlayerStateRepository
+    private lateinit var whitelistRepository: WhitelistRepository
 
     // Services
     private lateinit var movementMonitorService: MovementMonitorService
@@ -97,6 +103,7 @@ class WaystoneWarps: JavaPlugin() {
         warpRepository = WarpRepositorySQLite(storage)
         discoveryRepository = DiscoveryRepositorySQLite(storage)
         playerStateRepository = PlayerStateRepositoryMemory()
+        whitelistRepository = WhitelistRepositorySQLite(storage)
     }
 
     private fun initialiseServices() {
@@ -110,7 +117,7 @@ class WaystoneWarps: JavaPlugin() {
         structureBuilderService = StructureBuilderServiceBukkit(this)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
-            movementMonitorService, scheduler, economy)
+            movementMonitorService, whitelistRepository, scheduler, economy)
     }
 
     private fun registerDependencies() {
@@ -128,6 +135,9 @@ class WaystoneWarps: JavaPlugin() {
             single { DiscoverWarp(discoveryRepository) }
             single { MoveWarp(warpRepository, structureBuilderService) }
             single { ToggleLock(warpRepository) }
+            single { GetWhitelistedPlayers(whitelistRepository) }
+            single { ToggleWhitelist(whitelistRepository) }
+            single { RevokeDiscovery(discoveryRepository) }
         }
 
         startKoin { modules(actions) }

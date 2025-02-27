@@ -37,6 +37,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.10.19")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
+    implementation("me.xdrop:fuzzywuzzy:1.3.1")
 }
 
 java {
