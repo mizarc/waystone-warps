@@ -2,21 +2,29 @@ package dev.mizarc.waystonewarps.interaction.menus.use
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
+import com.github.stefvanschie.inventoryframework.gui.type.util.Gui
+import com.github.stefvanschie.inventoryframework.pane.OutlinePane
+import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Mask
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
+import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.menus.management.ConfirmationMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.models.toViewModel
+import dev.mizarc.waystonewarps.interaction.utils.createHead
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import net.kyori.adventure.text.Component
+import org.bukkit.OfflinePlayer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.math.ceil
@@ -44,38 +52,93 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
         guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
-        // Add prev item
-        val prevItem = ItemStack(Material.ARROW)
-            .name("Prev")
-        val guiPrevItem = GuiItem(prevItem) { guiEvent -> guiEvent.isCancelled = true }
-        controlsPane.addItem(guiPrevItem, 6, 0)
-
-        // Add page item
-        val pageItem = ItemStack(Material.PAPER)
-            .name("Page $page of ${ceil(warps.count() / 36.0).toInt()}")
-        val guiPageItem = GuiItem(pageItem) { guiEvent -> guiEvent.isCancelled = true }
-        controlsPane.addItem(guiPageItem, 7, 0)
-
-        // Add next item
-        val nextItem = ItemStack(Material.ARROW)
-            .name("Next")
-        val guiNextItem = GuiItem(nextItem) { guiEvent -> guiEvent.isCancelled = true }
-        controlsPane.addItem(guiNextItem, 8, 0)
-
-        // Add divider
-        val dividerPane = StaticPane(0, 1, 9, 1)
-        gui.addPane(dividerPane)
+        // Add outline
+        val outlinePane = OutlinePane(0, 1, 9, 5)
         val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
-        for (slot in 0..8) {
-            val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
-            dividerPane.addItem(guiDividerItem, slot, 0)
+        val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
+        outlinePane.applyMask(Mask(
+            "111111111",
+            "100000001",
+            "100000001",
+            "100000001",
+            "111111111"
+        ))
+        outlinePane.addItem(guiDividerItem)
+        outlinePane.setRepeat(true)
+        gui.addPane(outlinePane)
+
+        // Display warps
+        val warpPane = displayWarps(getPlayerWarpAccess.execute(player.uniqueId))
+        gui.addPane(warpPane)
+
+        // Add warp paginator
+        addPaginator(gui, warpPane.pages.coerceAtLeast(1), page) { newPage ->
+            page = newPage
+            warpPane.page = page - 1 // Subtract 1 since pages start at 0
         }
 
-        // Add list of warps
-        val warpsPane = StaticPane(0, 2, 9, 4)
-        gui.addPane(warpsPane)
-        var xSlot = 0
-        var ySlot = 0
+        gui.show(player)
+    }
+
+    private fun addPaginator(gui: ChestGui, totalPages: Int, page: Int, updateContent: (Int) -> Unit) {
+        var currentPage = page // Make currentPage mutable
+        val paginatorPane = StaticPane(6, 0, 3, 1)
+
+        fun updatePaginator() {
+            paginatorPane.clear()
+
+            // Update page number item
+            val pageNumberItem = ItemStack(Material.PAPER).name("Page $currentPage of $totalPages")
+            val guiPageNumberItem = GuiItem(pageNumberItem)
+            // Clear previous page number
+            paginatorPane.addItem(guiPageNumberItem, 1, 0)
+
+            // Update left arrow
+            val prevItem: ItemStack
+            val guiPrevItem: GuiItem
+            if (currentPage <= 1) {
+                prevItem = ItemStack(Material.ARROW).name("Prev")
+                guiPrevItem = GuiItem(prevItem)
+            } else {
+                prevItem = ItemStack(Material.SPECTRAL_ARROW).name("Prev")
+                guiPrevItem = GuiItem(prevItem) {
+                    currentPage--
+                    updateContent(currentPage)
+                    updatePaginator()
+                    gui.update()
+                }
+            }
+            paginatorPane.addItem(guiPrevItem, 0, 0)
+
+            // Update right arrow
+            val nextItem: ItemStack
+            val guiNextItem: GuiItem
+            if (currentPage >= totalPages) {
+                nextItem = ItemStack(Material.ARROW).name("Next")
+                guiNextItem = GuiItem(nextItem)
+            } else {
+                nextItem = ItemStack(Material.SPECTRAL_ARROW).name("Next")
+                guiNextItem = GuiItem(nextItem) {
+                    currentPage++
+                    updateContent(currentPage)
+                    updatePaginator()
+                    gui.update()
+                }
+            }
+            paginatorPane.addItem(guiNextItem, 2, 0)
+
+            gui.update()
+        }
+
+        updatePaginator()
+        gui.addPane(paginatorPane)
+    }
+
+    private fun displayWarps(warps: List<Warp>): PaginatedPane {
+        val playerPane = PaginatedPane(1, 2, 7, 3)
+        var currentPagePane = OutlinePane(0, 0, 7, 3)
+        var playerCounter = 0
+
         for (warp in warps) {
             val warpModel = warp.toViewModel()
             val locationText = warpModel.location?.let { location ->
@@ -147,16 +210,23 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
                 }
             }
 
-            warpsPane.addItem(guiWarpItem, xSlot, ySlot)
+            // Add player menu item
+            currentPagePane.addItem(guiWarpItem)
+            playerCounter++
 
-            // Increment slot
-            xSlot += 1
-            if (xSlot > 8) {
-                xSlot = 0
-                ySlot += 1
+            // Check if the current page is full (21 players)
+            if (playerCounter >= 21) {
+                playerPane.addPage(currentPagePane)
+                currentPagePane = OutlinePane(0, 0, 7, 3)
+                playerCounter = 0
             }
         }
 
-        gui.show(player)
+        // Add the last page if it's not empty
+        if (playerCounter > 0) {
+            playerPane.addPage(currentPagePane)
+        }
+
+        return playerPane
     }
 }
