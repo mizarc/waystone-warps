@@ -51,6 +51,27 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         }
     }
 
+    override fun update(discovery: Discovery) {
+        val playerDiscoveries = discoveries[discovery.playerId] ?: return
+        // Find the existing discovery in the set
+        val existingDiscovery = playerDiscoveries.find { it.warpId == discovery.warpId }
+        println("brah")
+        if (existingDiscovery != null) {
+            // Remove the old entry and add the updated one
+            println("ah?")
+            playerDiscoveries.remove(existingDiscovery)
+            playerDiscoveries.add(discovery)
+        } else {
+            // Add the new discovery if it doesn't already exist
+            playerDiscoveries.add(discovery)
+        }
+
+        storage.connection.executeUpdate("UPDATE discoveries SET lastVisitedTime=?, isFavourite=? " +
+                "WHERE warpId=? AND playerId=?",
+            discovery.lastVisitedTime, discovery.isFavourite, discovery.warpId, discovery.playerId)
+        return
+    }
+
     override fun remove(warpId: UUID, playerId: UUID) {
         val playerDiscoveries = discoveries[playerId]
         playerDiscoveries?.removeIf { it.warpId == warpId }

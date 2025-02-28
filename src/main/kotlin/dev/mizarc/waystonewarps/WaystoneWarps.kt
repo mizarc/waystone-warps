@@ -131,7 +131,7 @@ class WaystoneWarps: JavaPlugin() {
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
-            single { TeleportPlayer(teleportationService, playerAttributeService)}
+            single { TeleportPlayer(teleportationService, playerAttributeService, discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
             single { MoveWarp(warpRepository, structureBuilderService) }

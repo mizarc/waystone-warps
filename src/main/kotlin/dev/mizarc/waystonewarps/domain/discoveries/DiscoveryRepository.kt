@@ -40,6 +40,13 @@ interface DiscoveryRepository {
     fun add(discovery: Discovery)
 
     /**
+     * Updates the data of an existing discovery.
+     *
+     * @param discovery The discovery to update.
+     */
+    fun update(discovery: Discovery)
+
+    /**
      * Removes the discovery link between a player and the warp.
      *
      * @param playerId Unique id of the player.
