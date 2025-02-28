@@ -1,7 +1,22 @@
+# The amount of waystone warps a player is allowed to create.
 warp_limit: 3
+
+# The time it takes for the teleport to occur.
 teleport_timer: 5
+
+# The type of cost that is required for teleportation. This can be set to:
+# - ITEM
+# - XP
+# - MONEY
 teleport_cost_type: ITEM
+
+# If the cost type is set to item, this value will be used to determine what
+# item to consume on teleport.
 teleport_cost_item: ENDER_PEARL
+
+# The amount it costs to teleport, this is the amount of item if set to item,
+# amount of xp levels if set to xp, and the amount of money if set to money.
+# Decimals can be used for money type.
 teleport_cost_amount: 4
 
 # Blocks that will be replaced with a solid platform when teleport to a waystone
