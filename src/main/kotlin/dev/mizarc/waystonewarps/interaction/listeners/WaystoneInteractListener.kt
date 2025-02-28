@@ -49,6 +49,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
         val menuNavigator = MenuNavigator(player)
 
         // Create new warp if not found, open management menu if owner, discover otherwise
+        event.isCancelled = true
         warp?.let {
             // Check if warp is locked and alert if no access
             if (warp.isLocked && warp.playerId != player.uniqueId
