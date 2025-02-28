@@ -15,7 +15,7 @@ class WarpMenuCommand: BaseCommand() {
 
     @Default
     fun onWarp(player: Player, @Optional backCommand: String? = null) {
-        val menuNavigator = MenuNavigator()
+        val menuNavigator = MenuNavigator(player)
         WarpMenu(player, menuNavigator).open()
     }
 }

@@ -36,15 +36,20 @@ class WaystoneInteractListener: Listener, KoinComponent {
         // Check for right click lodestone
         if (event.action != Action.RIGHT_CLICK_BLOCK || clickedBlock.type != Material.LODESTONE) return
 
+        // Check for holding compass
+        val itemInHand = event.player.inventory.itemInMainHand
+        if (itemInHand.type == Material.COMPASS) return
+
         // Check for smooth stone or barrier below lodestone
         val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
         if (blockBelow.type != Material.SMOOTH_STONE && blockBelow.type != Material.BARRIER) return
 
         // Check for existing warp
         val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
-        val menuNavigator = MenuNavigator()
+        val menuNavigator = MenuNavigator(player)
 
         // Create new warp if not found, open management menu if owner, discover otherwise
+        event.isCancelled = true
         warp?.let {
             // Check if warp is locked and alert if no access
             if (warp.isLocked && warp.playerId != player.uniqueId

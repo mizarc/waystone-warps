@@ -1,11 +1,12 @@
 package dev.mizarc.waystonewarps.interaction.menus
 
+import org.bukkit.entity.Player
 import kotlin.collections.ArrayDeque
 
 /**
  * A menu hook to store navigated menus and allow for backwards travel.
  */
-class MenuNavigator {
+class MenuNavigator(private val player: Player) {
     private val menuStack = ArrayDeque<Menu>()
 
     /**
@@ -61,6 +62,8 @@ class MenuNavigator {
             if (menuStack.isNotEmpty()) {
                 menuStack.first().passData(data)
                 menuStack.first().open()
+            } else {
+                player.closeInventory()
             }
         }
     }

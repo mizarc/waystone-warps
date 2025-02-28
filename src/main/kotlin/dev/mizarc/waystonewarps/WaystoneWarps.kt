@@ -156,5 +156,6 @@ class WaystoneWarps: JavaPlugin() {
         server.pluginManager.registerEvents(MoveToolListener(), this)
         server.pluginManager.registerEvents(ToolRemovalListener(), this)
         server.pluginManager.registerEvents(TeleportZoneProtectionListener(), this)
+        server.pluginManager.registerEvents(WarpItemListener(), this)
     }
 }

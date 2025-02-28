@@ -19,10 +19,13 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Fluids are prevented from flowing into the teleport zone, as they can fill in the space after the blocks are cleared out.
 - Falling blocks are broken as they fall in to prevent filling the space back in with blocks after the existing blocks are cleared out.
 - Players are now given Resistance 5 on teleport for temporary invulnerability.
+- Warp menu can now be opened by right-clicking a compass.
 
 ### Changes
 - Text input in menus now defaults to blank.
 - Text input keeps the existing text in the box when the confirmation button is pressed and an error appears.
+- Warp list menu makes use of a new pagination system.
+- Actions are now cancelled when interacting with a waystone with item in hand.
 
 ## [0.1.0]
 - Initial Pre-Release for Minecraft 1.21.4. Watch out for bugs!
