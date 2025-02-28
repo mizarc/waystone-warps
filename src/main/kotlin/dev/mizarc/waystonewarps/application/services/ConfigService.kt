@@ -8,4 +8,5 @@ interface ConfigService {
     fun getTeleportCostType(): CostType
     fun getTeleportCostItem(): String
     fun getTeleportCostAmount(): Double
+    fun getPlatformReplaceBlocks(): Set<String>
 }

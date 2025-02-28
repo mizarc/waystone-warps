@@ -53,6 +53,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
         // Teleports the player instantaneously
         deductCost(player)
+        clearArea(warp.position.toLocation(world))
+        buildPlatform(warp.position.toLocation(world))
         player.teleport(offsetLocation)
         return TeleportResult.SUCCESS
     }
@@ -208,4 +210,36 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         val taskHandle: Task,
         val onCanceled: () -> Unit
     )
+
+    private fun clearArea(location: Location) {
+        // Loop through the blocks in the specified range
+        for (x in -1..1) {
+            for (y in -1..0) { // Only 2 blocks tall
+                for (z in -1..1) {
+                    // Skip the center block itself
+                    if ((x == 0 && y == 0 && z == 0) || (x == 0 && y == -1 && z == 0)) continue
+
+                    val block = location.world.getBlockAt(location.blockX + x, location.blockY + y, location.blockZ + z)
+
+                    // Break the block and drop its items naturally
+                    if (!block.type.isAir) {
+                        block.breakNaturally()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun buildPlatform(location: Location) {
+        for (x in -1..1) {
+            for (z in -1..1) {
+                val block = location.world.getBlockAt(location.blockX + x, location.blockY - 2, location.blockZ + z)
+
+                if (block.type in configService.getPlatformReplaceBlocks().map { it -> Material.valueOf(it) }) {
+                    block.breakNaturally()
+                    block.type = Material.COBBLESTONE // Replace with the desired material
+                }
+            }
+        }
+    }
 }
