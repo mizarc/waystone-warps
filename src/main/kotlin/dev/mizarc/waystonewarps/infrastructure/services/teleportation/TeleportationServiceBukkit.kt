@@ -15,6 +15,8 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
@@ -55,6 +57,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         deductCost(player)
         clearArea(warp.position.toLocation(world))
         buildPlatform(warp.position.toLocation(world))
+        player.addPotionEffect(PotionEffect(PotionEffectType.RESISTANCE, 200, 4, false, false))
         player.teleport(offsetLocation)
         return TeleportResult.SUCCESS
     }

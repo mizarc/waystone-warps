@@ -18,6 +18,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Teleport area has a platform built on teleport to replace missing or hollow blocks to prevent falling.
 - Fluids are prevented from flowing into the teleport zone, as they can fill in the space after the blocks are cleared out.
 - Falling blocks are broken as they fall in to prevent filling the space back in with blocks after the existing blocks are cleared out.
+- Players are now given Resistance 5 on teleport for temporary invulnerability.
 
 ### Changes
 - Text input in menus now defaults to blank.
