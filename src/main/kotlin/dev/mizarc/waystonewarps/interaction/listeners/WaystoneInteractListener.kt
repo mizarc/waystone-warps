@@ -42,7 +42,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
 
         // Check for existing warp
         val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
-        val menuNavigator = MenuNavigator()
+        val menuNavigator = MenuNavigator(player)
 
         // Create new warp if not found, open management menu if owner, discover otherwise
         warp?.let {

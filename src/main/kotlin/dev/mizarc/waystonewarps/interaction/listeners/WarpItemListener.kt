@@ -18,7 +18,7 @@ class WarpItemListener: Listener {
         // Check if the item is a compass and the action is a right-click
         if (itemInHand.type == Material.COMPASS &&
                 (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK)) {
-            val menuNavigator = MenuNavigator()
+            val menuNavigator = MenuNavigator(player)
             val menu = WarpMenu(event.player, menuNavigator)
             menuNavigator.openMenu(menu)
         }
