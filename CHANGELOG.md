@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
-## [Latest]
+## [0.2.0]
 
 ### Added
 - Waystones can now be locked, disallowing discovery and teleportation to the public by toggling the torch icon.
