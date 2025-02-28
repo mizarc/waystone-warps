@@ -36,6 +36,10 @@ class WaystoneInteractListener: Listener, KoinComponent {
         // Check for right click lodestone
         if (event.action != Action.RIGHT_CLICK_BLOCK || clickedBlock.type != Material.LODESTONE) return
 
+        // Check for holding compass
+        val itemInHand = event.player.inventory.itemInMainHand
+        if (itemInHand.type == Material.COMPASS) return
+
         // Check for smooth stone or barrier below lodestone
         val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
         if (blockBelow.type != Material.SMOOTH_STONE && blockBelow.type != Material.BARRIER) return

@@ -15,6 +15,11 @@ class WarpItemListener: Listener {
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
+        // Ignore if clicking on lodestone
+        if (event.clickedBlock?.type == Material.LODESTONE) {
+            return
+        }
+
         // Check if the item is a compass and the action is a right-click
         if (itemInHand.type == Material.COMPASS &&
                 (event.action == Action.RIGHT_CLICK_AIR || event.action == Action.RIGHT_CLICK_BLOCK)) {
