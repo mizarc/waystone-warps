@@ -37,7 +37,6 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.whitelist.WhitelistRe
 import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
-import dev.mizarc.waystonewarps.interaction.commands.TestParticlesCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -131,17 +130,18 @@ class WaystoneWarps: JavaPlugin() {
     private fun registerDependencies() {
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
-                discoveryRepository) }
+                discoveryRepository, structureParticleService) }
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
-            single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
+            single { BreakWarpBlock(warpRepository, structureBuilderService,
+                discoveryRepository, structureParticleService) }
             single { TeleportPlayer(teleportationService, playerAttributeService, discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
-            single { MoveWarp(warpRepository, structureBuilderService) }
+            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService) }
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
             single { ToggleWhitelist(whitelistRepository) }
@@ -154,7 +154,6 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun registerCommands() {
         commandManager.registerCommand(WarpMenuCommand())
-        commandManager.registerCommand(TestParticlesCommand(warpRepository, structureParticleService))
     }
 
     private fun registerEvents() {
