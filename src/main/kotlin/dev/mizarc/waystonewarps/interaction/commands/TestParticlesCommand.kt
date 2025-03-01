@@ -17,7 +17,7 @@ class TestParticlesCommand(private val warpRepository: WarpRepository,
     fun onWarp(player: Player, particleName: String, spawnSpeed: Long) {
         for (warp in warpRepository.getAll()) {
             structureParticleService.removeParticles(warp)
-            structureParticleService.spawnParticles(warp, particleName, spawnSpeed)
+            structureParticleService.spawnParticles(warp)
         }
 
     }

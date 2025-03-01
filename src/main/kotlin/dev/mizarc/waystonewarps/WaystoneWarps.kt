@@ -88,7 +88,7 @@ class WaystoneWarps: JavaPlugin() {
         RefreshAllStructures(warpRepository, structureBuilderService).execute()
 
         for (warp in warpRepository.getAll()) {
-            structureParticleService.spawnParticles(warp, "PORTAL", 2L)
+            structureParticleService.spawnParticles(warp)
         }
 
         logger.info("WaystoneWarps has been Enabled")
@@ -125,7 +125,7 @@ class WaystoneWarps: JavaPlugin() {
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
-        structureParticleService = StructureParticleServiceBukkit(this)
+        structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
     }
 
     private fun registerDependencies() {
