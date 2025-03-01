@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable
 import org.bukkit.scheduler.BukkitTask
 import java.util.UUID
 
-class StructureStructureParticleServiceBukkit(private val plugin: JavaPlugin): StructureParticleService {
+class StructureParticleServiceBukkit(private val plugin: JavaPlugin): StructureParticleService {
     private val activeParticles: MutableMap<UUID, BukkitTask> = mutableMapOf()
 
     override fun spawnParticles(warp: Warp, particleName: String, spawnSpeed: Long) {
