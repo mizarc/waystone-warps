@@ -37,6 +37,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.whitelist.WhitelistRe
 import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
+import dev.mizarc.waystonewarps.interaction.commands.TestParticlesCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -62,6 +63,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerAttributeService: PlayerAttributeService
     private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
+    private lateinit var structureParticleService: StructureParticleService
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
 
@@ -84,6 +86,10 @@ class WaystoneWarps: JavaPlugin() {
         registerCommands()
         registerEvents()
         RefreshAllStructures(warpRepository, structureBuilderService).execute()
+
+        for (warp in warpRepository.getAll()) {
+            structureParticleService.spawnParticles(warp, "PORTAL", 2L)
+        }
 
         logger.info("WaystoneWarps has been Enabled")
     }
@@ -119,6 +125,7 @@ class WaystoneWarps: JavaPlugin() {
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
+        structureParticleService = StructureStructureParticleServiceBukkit(this)
     }
 
     private fun registerDependencies() {
@@ -147,6 +154,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun registerCommands() {
         commandManager.registerCommand(WarpMenuCommand())
+        commandManager.registerCommand(TestParticlesCommand(warpRepository, structureParticleService))
     }
 
     private fun registerEvents() {
