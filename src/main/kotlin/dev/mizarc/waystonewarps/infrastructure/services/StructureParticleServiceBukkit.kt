@@ -35,9 +35,9 @@ class StructureParticleServiceBukkit(private val plugin: JavaPlugin,
                         val whitelisted = whitelistRepository.isWhitelisted(warp.id, player.uniqueId)
 
                         if (warp.playerId == player.uniqueId) {
-                            player.spawnParticle(Particle.SCRAPE, location, 1, 0.5, 0.5, 0.5)
+                            player.spawnParticle(Particle.HAPPY_VILLAGER, location, 1, 0.5, 0.5, 0.5)
                         } else if (warp.isLocked && !whitelisted) {
-                            location.world.spawnParticle(Particle.WAX_ON, location, 1, 0.5, 0.5, 0.5)
+                            player.spawnParticle(Particle.WAX_ON, location, 1, 0.5, 0.5, 0.5)
                         } else {
                             val particle = if (discovered != null) Particle.SCRAPE else Particle.WAX_OFF
                             player.spawnParticle(particle, location, 1, 0.5, 0.5, 0.5)
