@@ -11,6 +11,7 @@ import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
@@ -66,6 +67,8 @@ class WaystoneInteractListener: Listener, KoinComponent {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.SUCCESS.color)
                         .append(Component.text(warp.name).color(AccentColourPalette.SUCCESS.color))
                         .append(Component.text( " has been discovered!").color(PrimaryColourPalette.SUCCESS.color)))
+                    clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, clickedBlock.location,
+                        20, -0.5, -0.5, -0.5)
                 } else {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
                         .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
