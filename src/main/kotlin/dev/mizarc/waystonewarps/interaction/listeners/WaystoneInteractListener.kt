@@ -59,6 +59,12 @@ class WaystoneInteractListener: Listener, KoinComponent {
                 return
             }
 
+            // Set location of particle spawn
+            val particleLocation = clickedBlock.location.clone()
+            particleLocation.x += 0.5
+            particleLocation.y += 0.5
+            particleLocation.z += 0.5
+
             if (it.playerId == player.uniqueId) {
                 menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
             } else {
@@ -67,8 +73,7 @@ class WaystoneInteractListener: Listener, KoinComponent {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.SUCCESS.color)
                         .append(Component.text(warp.name).color(AccentColourPalette.SUCCESS.color))
                         .append(Component.text( " has been discovered!").color(PrimaryColourPalette.SUCCESS.color)))
-                    clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, clickedBlock.location,
-                        20, -0.5, -0.5, -0.5)
+                    clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, particleLocation, 20)
                 } else {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
                         .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
