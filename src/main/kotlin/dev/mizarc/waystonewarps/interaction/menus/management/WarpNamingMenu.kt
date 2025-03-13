@@ -12,6 +12,8 @@ import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Sound
+import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
@@ -56,6 +58,7 @@ class WarpNamingMenu(private val player: Player, private val menuNavigator: Menu
                 location.toPosition3D(), location.world.uid)
             when (result) {
                 is CreateWarpResult.Success -> {
+                    location.world.playSound(player.location, Sound.BLOCK_VAULT_OPEN_SHUTTER, SoundCategory.BLOCKS, 1.0f, 1.0f)
                     menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, result.warp))
                 }
                 is CreateWarpResult.LimitExceeded -> {
