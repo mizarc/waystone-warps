@@ -70,7 +70,6 @@ class WaystoneInteractListener: Listener, KoinComponent {
 
             if (it.playerId == player.uniqueId) {
                 menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
-                player.world.playSound(player.location, Sound.BLOCK_GRINDSTONE_USE, SoundCategory.BLOCKS, 1.0f, 1.0f)
             } else {
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
