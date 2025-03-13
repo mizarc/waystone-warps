@@ -62,6 +62,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerAttributeService: PlayerAttributeService
     private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
+    private lateinit var structureParticleService: StructureParticleService
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
 
@@ -84,6 +85,10 @@ class WaystoneWarps: JavaPlugin() {
         registerCommands()
         registerEvents()
         RefreshAllStructures(warpRepository, structureBuilderService).execute()
+
+        for (warp in warpRepository.getAll()) {
+            structureParticleService.spawnParticles(warp)
+        }
 
         logger.info("WaystoneWarps has been Enabled")
     }
@@ -119,22 +124,24 @@ class WaystoneWarps: JavaPlugin() {
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
+        structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
     }
 
     private fun registerDependencies() {
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
-                discoveryRepository) }
+                discoveryRepository, structureParticleService) }
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
             single { UpdateWarpIcon(warpRepository) }
             single { UpdateWarpName(warpRepository) }
             single { GetWarpAtPosition(warpRepository) }
-            single { BreakWarpBlock(warpRepository, structureBuilderService, discoveryRepository) }
+            single { BreakWarpBlock(warpRepository, structureBuilderService,
+                discoveryRepository, structureParticleService) }
             single { TeleportPlayer(teleportationService, playerAttributeService, discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
-            single { MoveWarp(warpRepository, structureBuilderService) }
+            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService) }
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
             single { ToggleWhitelist(whitelistRepository) }

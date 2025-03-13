@@ -55,10 +55,8 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
         val playerDiscoveries = discoveries[discovery.playerId] ?: return
         // Find the existing discovery in the set
         val existingDiscovery = playerDiscoveries.find { it.warpId == discovery.warpId }
-        println("brah")
         if (existingDiscovery != null) {
             // Remove the old entry and add the updated one
-            println("ah?")
             playerDiscoveries.remove(existingDiscovery)
             playerDiscoveries.add(discovery)
         } else {
