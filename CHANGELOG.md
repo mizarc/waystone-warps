@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [Latest]
+
+### Added
+- Particles are displayed on the waystone depending on personal state. Bright green for owner, dull green for discovered, orange for locked, white for undiscovered.
+- Sounds are now played for vault creation and discovery.
+
 ## [0.2.0]
 
 ### Added
