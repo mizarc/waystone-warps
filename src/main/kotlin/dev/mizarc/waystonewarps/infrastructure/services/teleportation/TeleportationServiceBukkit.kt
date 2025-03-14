@@ -12,20 +12,27 @@ import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
+import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
+import org.bukkit.Particle
 import org.bukkit.entity.Player
+import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import org.bukkit.scheduler.BukkitRunnable
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.cos
+import kotlin.math.sin
 
 class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
                                  private val configService: ConfigService,
                                  private val movementMonitorService: MovementMonitorService,
                                  private val whitelistRepository: WhitelistRepository,
                                  private val scheduler: SchedulerService,
-                                 private val economy: Economy?): TeleportationService {
+                                 private val economy: Economy?,
+                                 private val plugin: Plugin): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
     override fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult {
@@ -100,6 +107,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Schedule the new teleportation task
+        createSpinningParticleEffect(player)
         val taskHandle = scheduler.schedule(delaySeconds * 20L) {
             movementMonitorService.stopMonitoringPlayer(playerId)
             activeTeleportations.remove(playerId)
@@ -244,5 +252,52 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                 }
             }
         }
+    }
+
+    fun createSpinningParticleEffect(player: Player) {
+        val center = player.location
+        val radius = 1.0
+        val height = 2.0
+        val speed = 0.1
+        val particleColor = Color.PURPLE
+        val particleSize = 1.0f
+        val particleOptions = DustOptions(particleColor, particleSize)
+        val helixHeight = 10.0
+
+        object : BukkitRunnable() {
+            var angle1 = 0.0
+            var angle2 = Math.PI // 180 degrees offset for the second helix
+
+            override fun run() {
+                if (!player.isOnline) {
+                    cancel()
+                    return
+                }
+
+                angle1 += speed
+                angle2 += speed
+
+                val x1 = radius * cos(angle1)
+                val z1 = radius * sin(angle1)
+                val y1 = (helixHeight * (angle1 / (2 * Math.PI))) % helixHeight
+
+                val x2 = radius * cos(angle2)
+                val z2 = radius * sin(angle2)
+                val y2 = (helixHeight * (angle2 / (2 * Math.PI))) % helixHeight
+
+                val particleLocation1 = center.clone().add(x1, y1, z1)
+                val particleLocation2 = center.clone().add(x2, y2, z2)
+
+                player.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, particleLocation1, 1, particleOptions)
+                player.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, particleLocation2, 1, particleOptions)
+
+                if (angle1 >= 2 * Math.PI) {
+                    angle1 = 0.0
+                }
+                if (angle2 >= 2 * Math.PI) {
+                    angle2 = 0.0
+                }
+            }
+        }.runTaskTimer(plugin, 0L, 1L)
     }
 }
