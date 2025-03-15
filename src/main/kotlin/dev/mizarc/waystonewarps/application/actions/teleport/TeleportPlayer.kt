@@ -44,19 +44,19 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                     playerParticleService.removeParticles(playerId)
                 },
                 onCanceled = {
-                    onInsufficientFunds
+                    onInsufficientFunds()
                     playerParticleService.removeParticles(playerId)
                 },
                 onWorldNotFound = {
-                    onWorldNotFound
+                    onWorldNotFound()
                     playerParticleService.removeParticles(playerId)
                 },
                 onLocked = {
-                    onLocked
+                    onLocked()
                     playerParticleService.removeParticles(playerId)
                 },
                 onFailure = {
-                    onFailure
+                    onFailure()
                     playerParticleService.removeParticles(playerId)
                 }
             )
