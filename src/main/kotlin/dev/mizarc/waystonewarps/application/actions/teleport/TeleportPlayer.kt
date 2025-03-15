@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps.application.actions.teleport
 
 import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
+import dev.mizarc.waystonewarps.application.services.PlayerParticleService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.warps.Warp
@@ -10,6 +11,7 @@ import java.util.*
 
 class TeleportPlayer(private val teleportationService: TeleportationService,
                      private val playerAttributeService: PlayerAttributeService,
+                     private val playerParticleService: PlayerParticleService,
                      private val discoveryRepository: DiscoveryRepository) {
 
     fun execute(playerId: UUID, warp: Warp, onSuccess: () -> Unit, onPending: () -> Unit,
@@ -20,14 +22,44 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
 
         // Schedule delayed teleport
         if (timer > 0) {
-            teleportationService.scheduleDelayedTeleport(playerId, warp, timer, {
-                onSuccess()
-                val discovery = discoveryRepository.getByWarpAndPlayer(warp.id, playerId)
-                if (discovery != null) {
-                    discovery.lastVisitedTime = Instant.now()
-                    discoveryRepository.update(discovery)
+            teleportationService.scheduleDelayedTeleport(
+                playerId,
+                warp,
+                timer,
+                onSuccess = {
+                    onSuccess()
+                    val discovery = discoveryRepository.getByWarpAndPlayer(warp.id, playerId)
+                    if (discovery != null) {
+                        discovery.lastVisitedTime = Instant.now()
+                        discoveryRepository.update(discovery)
+                    }
+                    playerParticleService.removeParticles(playerId)
+                },
+                onPending = {
+                    onPending()
+                    playerParticleService.spawnParticles(playerId)
+                },
+                onInsufficientFunds = {
+                    onInsufficientFunds()
+                    playerParticleService.removeParticles(playerId)
+                },
+                onCanceled = {
+                    onInsufficientFunds
+                    playerParticleService.removeParticles(playerId)
+                },
+                onWorldNotFound = {
+                    onWorldNotFound
+                    playerParticleService.removeParticles(playerId)
+                },
+                onLocked = {
+                    onLocked
+                    playerParticleService.removeParticles(playerId)
+                },
+                onFailure = {
+                    onFailure
+                    playerParticleService.removeParticles(playerId)
                 }
-            }, onPending, onInsufficientFunds, onCanceled, onWorldNotFound, onLocked, onFailure)
+            )
             return
         }
 

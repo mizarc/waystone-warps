@@ -21,19 +21,15 @@ import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
-import org.bukkit.scheduler.BukkitRunnable
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.cos
-import kotlin.math.sin
 
 class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttributeService,
                                  private val configService: ConfigService,
                                  private val movementMonitorService: MovementMonitorService,
                                  private val whitelistRepository: WhitelistRepository,
                                  private val scheduler: SchedulerService,
-                                 private val economy: Economy?,
-                                 private val plugin: Plugin): TeleportationService {
+                                 private val economy: Economy?): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
     override fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult {
@@ -108,7 +104,6 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Schedule the new teleportation task
-        createSpinningParticleEffect(player)
         val taskHandle = scheduler.schedule(delaySeconds * 20L) {
             movementMonitorService.stopMonitoringPlayer(playerId)
             activeTeleportations.remove(playerId)
@@ -253,53 +248,5 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                 }
             }
         }
-    }
-
-    fun createSpinningParticleEffect(player: Player) {
-        val radius = 1.0
-        val height = 2.0
-        val speed = 0.2
-        val particleColor = Color.fromRGB(222, 122, 250)
-        val particleSize = 0.5f
-        val particleOptions = DustOptions(particleColor, particleSize)
-
-        object : BukkitRunnable() {
-            var goingUp = true
-            var angle = 0.0
-
-            override fun run() {
-                // Cancel is player goes offline
-                if (!player.isOnline) {
-                    cancel()
-                    return
-                }
-
-                // Spinning maths
-                angle += speed
-                val x = radius * cos(angle)
-                val z = radius * sin(angle)
-                var y = (height * (angle / (2 * Math.PI))) % height
-
-                // Flip direction once on top/bottom
-                if (angle >= 2 * Math.PI) {
-                    angle = 0.0
-                    goingUp = !goingUp
-                }
-
-                // Modify y value based on the direction
-                y = if (!goingUp) {
-                    height - y % height
-                }else{
-                    y % height
-                }
-
-                // Spawn particles at location
-                val particleLocation1 = player.location.clone().add(x, y, z)
-                player.world.spawnParticle(Particle.DUST, particleLocation1, 1, particleOptions)
-                val particleLocation2 = player.location.clone().add(-x, y, -z)
-                player.world.spawnParticle(Particle.DUST, particleLocation2, 1, particleOptions)
-                player.world.spawnParticle(Particle.PORTAL, player.location, 1)
-            }
-        }.runTaskTimer(plugin, 0L, 1L)
     }
 }

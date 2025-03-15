@@ -18,7 +18,6 @@ class TeleportZoneProtectionListener: Listener, KoinComponent {
     @EventHandler
     fun blockFallProtection(event: EntityChangeBlockEvent) {
         val fallingBlock = event.entity as? FallingBlock ?: return
-        println(fallingBlock)
         if (event.to == Material.AIR) return
 
         // Check if in teleport zone
