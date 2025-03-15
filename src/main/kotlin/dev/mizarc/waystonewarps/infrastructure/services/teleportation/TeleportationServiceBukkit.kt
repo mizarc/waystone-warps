@@ -16,6 +16,7 @@ import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Particle
+import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
@@ -255,48 +256,49 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
     }
 
     fun createSpinningParticleEffect(player: Player) {
-        val center = player.location
         val radius = 1.0
         val height = 2.0
-        val speed = 0.1
-        val particleColor = Color.PURPLE
-        val particleSize = 1.0f
+        val speed = 0.2
+        val particleColor = Color.fromRGB(222, 122, 250)
+        val particleSize = 0.5f
         val particleOptions = DustOptions(particleColor, particleSize)
-        val helixHeight = 10.0
 
         object : BukkitRunnable() {
-            var angle1 = 0.0
-            var angle2 = Math.PI // 180 degrees offset for the second helix
+            var goingUp = true
+            var angle = 0.0
 
             override fun run() {
+                // Cancel is player goes offline
                 if (!player.isOnline) {
                     cancel()
                     return
                 }
 
-                angle1 += speed
-                angle2 += speed
+                // Spinning maths
+                angle += speed
+                val x = radius * cos(angle)
+                val z = radius * sin(angle)
+                var y = (height * (angle / (2 * Math.PI))) % height
 
-                val x1 = radius * cos(angle1)
-                val z1 = radius * sin(angle1)
-                val y1 = (helixHeight * (angle1 / (2 * Math.PI))) % helixHeight
-
-                val x2 = radius * cos(angle2)
-                val z2 = radius * sin(angle2)
-                val y2 = (helixHeight * (angle2 / (2 * Math.PI))) % helixHeight
-
-                val particleLocation1 = center.clone().add(x1, y1, z1)
-                val particleLocation2 = center.clone().add(x2, y2, z2)
-
-                player.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, particleLocation1, 1, particleOptions)
-                player.world.spawnParticle(Particle.DUST_COLOR_TRANSITION, particleLocation2, 1, particleOptions)
-
-                if (angle1 >= 2 * Math.PI) {
-                    angle1 = 0.0
+                // Flip direction once on top/bottom
+                if (angle >= 2 * Math.PI) {
+                    angle = 0.0
+                    goingUp = !goingUp
                 }
-                if (angle2 >= 2 * Math.PI) {
-                    angle2 = 0.0
+
+                // Modify y value based on the direction
+                y = if (!goingUp) {
+                    height - y % height
+                }else{
+                    y % height
                 }
+
+                // Spawn particles at location
+                val particleLocation1 = player.location.clone().add(x, y, z)
+                player.world.spawnParticle(Particle.DUST, particleLocation1, 1, particleOptions)
+                val particleLocation2 = player.location.clone().add(-x, y, -z)
+                player.world.spawnParticle(Particle.DUST, particleLocation2, 1, particleOptions)
+                player.world.spawnParticle(Particle.PORTAL, player.location, 1)
             }
         }.runTaskTimer(plugin, 0L, 1L)
     }
