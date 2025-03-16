@@ -34,10 +34,11 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                         discoveryRepository.update(discovery)
                     }
                     playerParticleService.removeParticles(playerId)
+                    playerParticleService.spawnPostParticles(playerId)
                 },
                 onPending = {
                     onPending()
-                    playerParticleService.spawnParticles(playerId)
+                    playerParticleService.spawnPreParticles(playerId)
                 },
                 onInsufficientFunds = {
                     onInsufficientFunds()

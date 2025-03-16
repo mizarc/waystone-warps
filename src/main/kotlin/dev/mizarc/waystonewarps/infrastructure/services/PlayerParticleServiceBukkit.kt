@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
+import com.destroystokyo.paper.ParticleBuilder
 import dev.mizarc.waystonewarps.application.services.PlayerParticleService
 import dev.mizarc.waystonewarps.application.services.StructureParticleService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
@@ -22,7 +23,7 @@ import kotlin.math.sin
 class PlayerParticleServiceBukkit(private val plugin: JavaPlugin): PlayerParticleService {
     private val activeParticles: MutableMap<UUID, BukkitTask> = mutableMapOf()
 
-    override fun spawnParticles(playerId: UUID) {
+    override fun spawnPreParticles(playerId: UUID) {
         val player = Bukkit.getPlayer(playerId) ?: return
         val radius = 1.0
         val height = 2.0
@@ -70,6 +71,16 @@ class PlayerParticleServiceBukkit(private val plugin: JavaPlugin): PlayerParticl
             }
         }.runTaskTimer(plugin, 0L, 1L)
         activeParticles.put(player.uniqueId, particles)
+    }
+
+    override fun spawnPostParticles(playerId: UUID) {
+        val player = Bukkit.getPlayer(playerId) ?: return
+        val playerLocation = player.location
+        ParticleBuilder(Particle.REVERSE_PORTAL)
+            .location(playerLocation)
+            .offset(0.5, 1.0, 0.5)
+            .count(100)
+            .spawn()
     }
 
     override fun removeParticles(playerId: UUID) {
