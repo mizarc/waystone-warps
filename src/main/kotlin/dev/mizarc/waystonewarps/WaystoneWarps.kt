@@ -126,7 +126,7 @@ class WaystoneWarps: JavaPlugin() {
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
-        playerParticleService = PlayerParticleServiceBukkit(this)
+        playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
     }
 
     private fun registerDependencies() {
