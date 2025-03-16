@@ -63,6 +63,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var structureBuilderService: StructureBuilderService
     private lateinit var teleportationService: TeleportationService
     private lateinit var structureParticleService: StructureParticleService
+    private lateinit var playerParticleService: PlayerParticleService
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
 
@@ -125,6 +126,7 @@ class WaystoneWarps: JavaPlugin() {
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
+        playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
     }
 
     private fun registerDependencies() {
@@ -138,7 +140,8 @@ class WaystoneWarps: JavaPlugin() {
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
                 discoveryRepository, structureParticleService) }
-            single { TeleportPlayer(teleportationService, playerAttributeService, discoveryRepository)}
+            single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService,
+                discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
             single { MoveWarp(warpRepository, structureBuilderService, structureParticleService) }
