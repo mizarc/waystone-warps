@@ -8,7 +8,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Added
 - Particles are displayed on the waystone depending on personal state. Bright green for owner, dull green for discovered, orange for locked, white for undiscovered.
-- Sounds are now played for vault creation and discovery.
+- Particles are displayed to indicate the player being teleported and arriving at their destination.
+- Sounds are played for vault creation and discovery.
+- Sounds are played for the player being teleported and arriving at their destination.
 
 ## [0.2.0]
 
