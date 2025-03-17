@@ -65,7 +65,7 @@ class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuN
             Material.NETHER_BRICKS,
             Material.POLISHED_BLACKSTONE,
             Material.SMOOTH_QUARTZ,
-            Material.WAXED_CUT_COPPER,
+            Material.WAXED_COPPER_BLOCK,
             Material.WAXED_EXPOSED_COPPER,
             Material.WAXED_WEATHERED_COPPER,
             Material.WAXED_OXIDIZED_COPPER
