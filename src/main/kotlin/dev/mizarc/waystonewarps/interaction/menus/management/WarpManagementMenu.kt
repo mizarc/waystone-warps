@@ -65,7 +65,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiRenamingItem, 3, 0)
 
         // Add icon editor button
-        val iconEditorItem = ItemStack(Material.valueOf(warp.icon))
+        val iconEditorItem = ItemStack(Material.valueOf(warp.block))
             .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {
@@ -73,7 +73,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiIconEditorItem, 4, 0)
 
         // Add skins menu
-        val skinViewItem = ItemStack(Material.SMOOTH_STONE)
+        val skinViewItem = ItemStack(Material.valueOf(warp.block))
             .name("§rView Available Skins")
             .lore("A list of blocks you can use to re-skin the waystone")
         val guiSkinViewItem = GuiItem(skinViewItem) {

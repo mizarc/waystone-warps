@@ -9,7 +9,6 @@ import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpNamingMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
-import net.kyori.adventure.sound.Sound.Emitter
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.Particle

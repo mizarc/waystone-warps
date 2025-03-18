@@ -15,6 +15,7 @@ import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
 import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.IsPositionInTeleportZone
@@ -150,6 +151,7 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleWhitelist(whitelistRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
+            single { UpdateWarpSkin(warpRepository) }
         }
 
         startKoin { modules(actions) }
@@ -167,5 +169,6 @@ class WaystoneWarps: JavaPlugin() {
         server.pluginManager.registerEvents(ToolRemovalListener(), this)
         server.pluginManager.registerEvents(TeleportZoneProtectionListener(), this)
         server.pluginManager.registerEvents(WarpItemListener(), this)
+        server.pluginManager.registerEvents(WaystoneBaseInteractListener(), this)
     }
 }
