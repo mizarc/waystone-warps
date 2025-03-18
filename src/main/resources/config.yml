@@ -14,10 +14,42 @@ teleport_cost_type: ITEM
 # item to consume on teleport.
 teleport_cost_item: ENDER_PEARL
 
-# The amount it costs to teleport, this is the amount of item if set to item,
+# The amount it costs to teleport. This is the amount of item if set to item,
 # amount of xp levels if set to xp, and the amount of money if set to money.
 # Decimals can be used for money type.
 teleport_cost_amount: 4
+
+# The blocks that can be used to transform the waystone appearance. This
+# contains all the required blocks that make up the waystone that must be in the
+# following order:
+#
+#    ------    < 1 Upper Block
+#   --------
+#   |      |   < 2 Primary Block
+#   |      |
+#   --------
+#    ------     < 3 Lower Block
+#     ----      < 4 Pillar Block
+#   --------    < 5 Bottom Slab
+waystone_skins:
+  SMOOTH_STONE:
+    - SMOOTH_STONE
+    - LODESTONE
+    - SMOOTH_STONE
+    - SMOOTH_STONE
+    - SMOOTH_STONE_SLAB
+  STONE_BRICKS:
+    - STONE_BRICKS
+    - CHISELED_STONE_BRICKS
+    - STONE_BRICKS
+    - STONE_BRICKS
+    - STONE_BRICK_SLAB
+  DEEPSLATE_TILES:
+    - DEEPSLATE_TILES
+    - CHISELED_DEEPSLATE
+    - DEEPSLATE_TILES
+    - DEEPSLATE_TILES
+    - DEEPSLATE_TILE_SLAB
 
 # Blocks that will be replaced with a solid platform when teleport to a waystone
 # occurs. It is recommended to add blocks that players are able to fall through
