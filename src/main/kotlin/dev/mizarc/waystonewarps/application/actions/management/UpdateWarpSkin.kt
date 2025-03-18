@@ -14,6 +14,7 @@ class UpdateWarpSkin(private val warpRepository: WarpRepository,
     fun execute(warpId: UUID, blockName: String): UpdateWarpSkinResult {
         val warp = warpRepository.getById(warpId) ?: return UpdateWarpSkinResult.WARP_NOT_FOUND
         if (blockName !in allowedBlockNames) return UpdateWarpSkinResult.BLOCK_NOT_VALID
+        if (blockName == warp.block) return UpdateWarpSkinResult.UNCHANGED
         warp.block = blockName
         warpRepository.update(warp)
         structureBuilderService.destroyStructure(warp)
