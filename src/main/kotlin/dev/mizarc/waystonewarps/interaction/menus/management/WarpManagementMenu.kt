@@ -65,7 +65,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiRenamingItem, 3, 0)
 
         // Add icon editor button
-        val iconEditorItem = ItemStack(Material.valueOf(warp.block))
+        val iconEditorItem = ItemStack(Material.valueOf(warp.icon))
             .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {
