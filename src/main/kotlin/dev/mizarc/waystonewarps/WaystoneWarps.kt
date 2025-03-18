@@ -122,7 +122,7 @@ class WaystoneWarps: JavaPlugin() {
         } else {
             PlayerAttributeServiceSimple(configService)
         }
-        structureBuilderService = StructureBuilderServiceBukkit(this)
+        structureBuilderService = StructureBuilderServiceBukkit(this, configService)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
@@ -151,7 +151,7 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleWhitelist(whitelistRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
-            single { UpdateWarpSkin(warpRepository) }
+            single { UpdateWarpSkin(warpRepository, structureBuilderService) }
         }
 
         startKoin { modules(actions) }
