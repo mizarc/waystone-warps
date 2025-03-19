@@ -27,16 +27,18 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
         val structureBlocks = configService.getBlockMaterialConfig(warp.block).takeIf { it.count() == 5 }
             ?: listOf("SMOOTH_STONE", "LODESTONE", "SMOOTH_STONE", "SMOOTH_STONE", "SMOOTH_STONE_SLAB")
         println(structureBlocks)
-
-        // Replace bottom block with barrier
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
+
+        // Replace top block with main block type
         location.block.type = Material.valueOf(structureBlocks[1])
 
+        // Replace bottom block with slab
         // Needs to be a 2 tick delay here because Bukkit is ass and spits out a stupid POI data mismatch error
         object : BukkitRunnable() {
             override fun run() {
-                world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.BARRIER
+                world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
+                    .type = Material.valueOf(structureBlocks[4])
             }
         }.runTaskLater(plugin, 2L)
 
@@ -50,9 +52,9 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
         createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[3]),
             0.2f, 0.4f, 0.2f,
             0.6f, 0.6f, 0.6f)
-        createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[4]),
-            0.0f, 0.0f, 0.0f,
-            1.0f, 1.0f, 1.0f)
+        //createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[4]),
+        //    0.0f, 0.0f, 0.0f,
+        //    1.0f, 1.0f, 1.0f)
     }
 
     override fun revertStructure(warp: Warp) {
