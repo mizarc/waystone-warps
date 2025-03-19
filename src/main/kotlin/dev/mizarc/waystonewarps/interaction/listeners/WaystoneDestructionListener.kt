@@ -110,8 +110,6 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     }
 
     private fun triggerSuccess(player: Player, warp: Warp) {
-
-
         // Remove any move objects in player inventory
         for ((index, item) in player.inventory.withIndex()) {
             if (item == null) continue

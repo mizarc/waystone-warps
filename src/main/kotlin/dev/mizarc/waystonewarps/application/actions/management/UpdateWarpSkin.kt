@@ -17,8 +17,7 @@ class UpdateWarpSkin(private val warpRepository: WarpRepository,
         if (blockName == warp.block) return UpdateWarpSkinResult.UNCHANGED
         warp.block = blockName
         warpRepository.update(warp)
-        structureBuilderService.destroyStructure(warp)
-        structureBuilderService.spawnStructure(warp)
+        structureBuilderService.updateStructure(warp)
         return UpdateWarpSkinResult.SUCCESS
     }
 }

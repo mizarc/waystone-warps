@@ -12,6 +12,11 @@ interface StructureBuilderService {
     fun spawnStructure(warp: Warp)
 
     /**
+     * Refreshes the structure with new warp metadata.
+     */
+    fun updateStructure(warp: Warp)
+
+    /**
      * Reverts the structure back into its base components
      */
     fun revertStructure(warp: Warp)

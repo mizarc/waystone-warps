@@ -53,6 +53,40 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
             0.6f, 0.6f, 0.6f)
     }
 
+    override fun updateStructure(warp: Warp) {
+        val structureBlocks = configService.getBlockMaterialConfig(warp.block).takeIf { it.count() == 5 }
+            ?: listOf("SMOOTH_STONE", "LODESTONE", "SMOOTH_STONE", "SMOOTH_STONE", "SMOOTH_STONE_SLAB")
+        val world = Bukkit.getWorld(warp.worldId) ?: return
+        val location = warp.position.toLocation(world)
+
+        // Replace top block with main block type
+        location.block.type = Material.valueOf(structureBlocks[1])
+
+        // Replace bottom block with slab
+        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ)
+            .type = Material.valueOf(structureBlocks[4])
+
+        // Generate custom model
+        val entityList = mutableListOf<Entity>()
+        entityList.add(createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[0]),
+            0.075f, 1.3f, 0.075f,
+            0.85f, 0.85f, 0.85f))
+        entityList.add(createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[2]),
+            0.075f, 0.8f, 0.075f,
+            0.85f, 0.85f, 0.85f))
+        entityList.add(createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[3]),
+            0.2f, 0.4f, 0.2f,
+            0.6f, 0.6f, 0.6f))
+
+        // Remove existing block display after 2 ticks to ensure it doesn't disappear before new one is spawned
+        object : BukkitRunnable() {
+            override fun run() {
+                removeBlockDisplay(warp, world, entityList)
+            }
+        }.runTaskLater(plugin, 2L)
+
+    }
+
     override fun revertStructure(warp: Warp) {
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
@@ -70,7 +104,7 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
 
     private fun createBlockDisplay(warpId: UUID, baseLocation: Location, material: Material,
                                    offsetX: Float, offsetY: Float, offsetZ: Float,
-                                   scaleX: Float, scaleY: Float, scaleZ: Float) {
+                                   scaleX: Float, scaleY: Float, scaleZ: Float): Entity {
         // Create BlockData
         val blockData = material.createBlockData()
         baseLocation.y -= 1
@@ -83,11 +117,14 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
             Vector3f(scaleX, scaleY, scaleZ), AxisAngle4f())
         blockDisplay.transformation = transformation
         blockDisplay.customName(Component.text((warpId.toString())))
+
+        return blockDisplay
     }
 
-    private fun removeBlockDisplay(warp: Warp, world: World) {
+    private fun removeBlockDisplay(warp: Warp, world: World, entityExclusions: List<Entity> = listOf()) {
         val entities: MutableList<Entity> = world.entities
         for (entity in entities) {
+            if (entityExclusions.contains(entity)) continue
             val customName = entity.customName() ?: continue
             if (customName is TextComponent && customName.content() == warp.id.toString()) {
                 entity.remove()
