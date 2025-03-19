@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.listeners
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
+import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
@@ -29,32 +30,27 @@ class WaystoneInteractListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val discoverWarp: DiscoverWarp by inject()
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
+    private val isValidWarpBase: IsValidWarpBase by inject()
 
     @EventHandler
     fun onLodestoneInteract(event: PlayerInteractEvent) {
         val player: Player = event.player
+        if (event.action != Action.RIGHT_CLICK_BLOCK) return
         if (event.hand == EquipmentSlot.OFF_HAND) return
         val clickedBlock: Block = event.clickedBlock ?: return
-
-        // Check for right click lodestone
-        if (event.action != Action.RIGHT_CLICK_BLOCK || clickedBlock.type != Material.LODESTONE) return
 
         // Check for holding compass
         val itemInHand = event.player.inventory.itemInMainHand
         if (itemInHand.type == Material.COMPASS) return
-
-        // Check for smooth stone or barrier below lodestone
-        val blockBelow: Block = clickedBlock.getRelative(BlockFace.DOWN)
-        if (blockBelow.type != Material.SMOOTH_STONE && blockBelow.type != Material.BARRIER) return
 
         // Check for existing warp
         val warp = getWarpAtPosition.execute(clickedBlock.location.toPosition3D(), clickedBlock.world.uid)
         val menuNavigator = MenuNavigator(player)
 
         // Create new warp if not found, open management menu if owner, discover otherwise
-        event.isCancelled = true
         warp?.let {
             // Check if warp is locked and alert if no access
+            event.isCancelled = true
             if (warp.isLocked && warp.playerId != player.uniqueId
                     && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 player.sendActionBar(Component.text("Warp is set to private").color(PrimaryColourPalette.FAILED.color))
@@ -83,6 +79,13 @@ class WaystoneInteractListener: Listener, KoinComponent {
                         .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
                 }
             }
-        } ?: menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
+        }
+
+        // Check if valid warp base to create warp
+        val baseBlock = clickedBlock.getRelative(BlockFace.DOWN)
+        if (isValidWarpBase.execute(baseBlock.type.toString())) {
+            event.isCancelled = true
+            menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
+        }
     }
 }

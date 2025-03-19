@@ -19,6 +19,7 @@ import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
 import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.IsPositionInTeleportZone
+import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
@@ -152,6 +153,7 @@ class WaystoneWarps: JavaPlugin() {
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
             single { UpdateWarpSkin(warpRepository, structureBuilderService) }
+            single { IsValidWarpBase(configService) }
         }
 
         startKoin { modules(actions) }
