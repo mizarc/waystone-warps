@@ -32,20 +32,13 @@ class WaystoneDestructionListener: Listener, KoinComponent {
 
     @EventHandler
     fun onClaimHubDestroy(event: BlockBreakEvent) {
-        val blockType = event.block.type
+        val bottomBlockPosition = event.block.location.toPosition3D()
+        val topBlockPosition = event.block.location.clone().apply { y += 1 }.toPosition3D()
 
-        // Check for lodestone or barrier block that is under the lodestone
-        if (blockType == Material.LODESTONE || blockType == Material.BARRIER) {
-
-            // If breaking the barrier block, get the block above
-            val location = if (blockType == Material.LODESTONE) {
-                event.block.location.toPosition3D()
-            } else {
-                event.block.location.clone().apply { y += 1 }.toPosition3D()
-            }
-
-            // Break and perform action based on result
-            val result = breakWarpBlock.execute(location, event.block.world.uid)
+        // Break and perform action based on result
+        val positions = listOf(topBlockPosition, bottomBlockPosition)
+        for (position in positions) {
+            val result = breakWarpBlock.execute(position, event.block.world.uid)
             when (result) {
                 is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
                 is BreakWarpResult.Breaking -> {
@@ -54,7 +47,7 @@ class WaystoneDestructionListener: Listener, KoinComponent {
                                 "to destroy this waystone").color(TextColor.color(255, 201, 14)))
                     event.isCancelled = true
                 }
-                else -> return
+                else -> continue
             }
         }
     }
