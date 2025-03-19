@@ -24,7 +24,7 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
 
     override fun spawnStructure(warp: Warp) {
         // Get the structure blocks based on the block type
-        val structureBlocks = configService.getBlockMaterialConfig(warp.block).takeIf { it.count() == 5 }
+        val structureBlocks = configService.getStructureBlocks(warp.block).takeIf { it.count() == 5 }
             ?: listOf("SMOOTH_STONE", "LODESTONE", "SMOOTH_STONE", "SMOOTH_STONE", "SMOOTH_STONE_SLAB")
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
@@ -54,7 +54,7 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
     }
 
     override fun updateStructure(warp: Warp) {
-        val structureBlocks = configService.getBlockMaterialConfig(warp.block).takeIf { it.count() == 5 }
+        val structureBlocks = configService.getStructureBlocks(warp.block).takeIf { it.count() == 5 }
             ?: listOf("SMOOTH_STONE", "LODESTONE", "SMOOTH_STONE", "SMOOTH_STONE", "SMOOTH_STONE_SLAB")
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
