@@ -37,7 +37,8 @@ class CreateWarp(private val warpRepository: WarpRepository,
      * @param name The name of the warp to be created.
      * @return A `CreateWarpResult` indicating the outcome of the operation.
      */
-    fun execute(playerId: UUID, name: String, position3D: Position3D, worldId: UUID): CreateWarpResult {
+    fun execute(playerId: UUID, name: String, position3D: Position3D, worldId: UUID,
+                baseBlock: String): CreateWarpResult {
         val warps = warpRepository.getByPlayer(playerId)
         if (warps.count() >= playerAttributeService.getWarpLimit(playerId)) {
             return CreateWarpResult.LimitExceeded
@@ -52,7 +53,7 @@ class CreateWarp(private val warpRepository: WarpRepository,
             return CreateWarpResult.NameAlreadyExists
         }
 
-        val newWarp = Warp(worldId, playerId, position3D, name)
+        val newWarp = Warp(worldId, playerId, position3D, name, baseBlock)
         val discovery = Discovery(newWarp.id, playerId, Instant.now())
         warpRepository.add(newWarp)
         discoveryRepository.add(discovery)

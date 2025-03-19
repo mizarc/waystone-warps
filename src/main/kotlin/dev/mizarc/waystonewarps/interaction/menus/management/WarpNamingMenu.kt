@@ -54,8 +54,9 @@ class WarpNamingMenu(private val player: Player, private val menuNavigator: Menu
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR).name("Confirm")
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
+            val belowLocation = location.clone().subtract(0.0, 1.0, 0.0)
             val result = createWarp.execute(player.uniqueId, name,
-                location.toPosition3D(), location.world.uid)
+                location.toPosition3D(), location.world.uid, location.world.getBlockAt(belowLocation).type.name)
             when (result) {
                 is CreateWarpResult.Success -> {
                     location.world.playSound(player.location, Sound.BLOCK_VAULT_OPEN_SHUTTER, SoundCategory.BLOCKS, 1.0f, 1.0f)
