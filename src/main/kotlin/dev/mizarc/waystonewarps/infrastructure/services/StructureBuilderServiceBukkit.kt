@@ -26,7 +26,6 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
         // Get the structure blocks based on the block type
         val structureBlocks = configService.getBlockMaterialConfig(warp.block).takeIf { it.count() == 5 }
             ?: listOf("SMOOTH_STONE", "LODESTONE", "SMOOTH_STONE", "SMOOTH_STONE", "SMOOTH_STONE_SLAB")
-        println(structureBlocks)
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
 
@@ -52,15 +51,12 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
         createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[3]),
             0.2f, 0.4f, 0.2f,
             0.6f, 0.6f, 0.6f)
-        //createBlockDisplay(warp.id, warp.position.toLocation(world), Material.valueOf(structureBlocks[4]),
-        //    0.0f, 0.0f, 0.0f,
-        //    1.0f, 1.0f, 1.0f)
     }
 
     override fun revertStructure(warp: Warp) {
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
-        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.SMOOTH_STONE
+        world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.valueOf(warp.block)
         removeBlockDisplay(warp, world)
     }
 
