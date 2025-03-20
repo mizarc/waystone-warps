@@ -7,10 +7,18 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ## [Latest]
 
 ### Added
+- Waystones can have their appearance changed by clicking on the base of the block with a valid block.
+- Waystones can also have their appearance changed on creation by placing down the lodestone on a valid block type.
+- Valid block skins are displayed on the "View Available Skins" submenu of the management menu.
+- Waystone skin types can be specified in the config with a required structure.
 - Particles are displayed on the waystone depending on personal state. Bright green for owner, dull green for discovered, orange for locked, white for undiscovered.
 - Particles are displayed to indicate the player being teleported and arriving at their destination.
 - Sounds are played for vault creation and discovery.
 - Sounds are played for the player being teleported and arriving at their destination.
+- Sounds are played for changing the skin of the waystone.
+
+### Changed
+- The base of the waystone is now a slab rather than a barrier, making the space above the slab clickable to set the skin.
 
 ## [0.2.0]
 
