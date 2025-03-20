@@ -47,25 +47,26 @@ class WaystoneBaseInteractListener: Listener, KoinComponent {
         val blockAbove: Block = clickedBlock.getRelative(BlockFace.UP)
 
         // Check for existing warp
-        val warp = getWarpAtPosition.execute(blockAbove.location.toPosition3D(), blockAbove.world.uid)
+        val warp = getWarpAtPosition.execute(blockAbove.location.toPosition3D(), blockAbove.world.uid) ?: return
+
+        // Check if player owns warp
+        if (warp.playerId != player.uniqueId) return
 
         // Swap out block type if block is compatible
-        warp?.let {
-                val existingBlock = Material.valueOf(warp.block)
-                val result = updateWarpSkin.execute(warp.id, itemInHand.type.toString())
-                when (result) {
-                    UpdateWarpSkinResult.SUCCESS -> {
-                        event.isCancelled = true
-                        player.sendActionBar(Component.text("Updated waystone skin!")
-                            .color(TextColor.color(85, 255, 85)))
-                        if (player.gameMode != GameMode.CREATIVE) itemInHand.amount -= 1
-                        clickedBlock.world.dropItem(clickedBlock.location, ItemStack(existingBlock))
-                        clickedBlock.world.playSound(player.location, Sound.BLOCK_VAULT_CLOSE_SHUTTER,
-                            SoundCategory.BLOCKS, 1.0f, 1.0f)
-                    }
-                    UpdateWarpSkinResult.WARP_NOT_FOUND -> player.sendActionBar(Component.text("Waystone is invalid"))
-                    else -> {}
-                }
+        val existingBlock = Material.valueOf(warp.block)
+        val result = updateWarpSkin.execute(warp.id, itemInHand.type.toString())
+        when (result) {
+            UpdateWarpSkinResult.SUCCESS -> {
+                event.isCancelled = true
+                player.sendActionBar(Component.text("Updated waystone skin!")
+                    .color(TextColor.color(85, 255, 85)))
+                if (player.gameMode != GameMode.CREATIVE) itemInHand.amount -= 1
+                clickedBlock.world.dropItem(clickedBlock.location, ItemStack(existingBlock))
+                clickedBlock.world.playSound(player.location, Sound.BLOCK_VAULT_CLOSE_SHUTTER,
+                    SoundCategory.BLOCKS, 1.0f, 1.0f)
+            }
+            UpdateWarpSkinResult.WARP_NOT_FOUND -> player.sendActionBar(Component.text("Waystone is invalid"))
+            else -> {}
         }
     }
 
