@@ -11,6 +11,7 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAcces
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
+import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
@@ -152,8 +153,9 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleWhitelist(whitelistRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
-            single { UpdateWarpSkin(warpRepository, structureBuilderService) }
+            single { UpdateWarpSkin(warpRepository, structureBuilderService, configService) }
             single { IsValidWarpBase(configService) }
+            single { GetAllWarpSkins(configService) }
         }
 
         startKoin { modules(actions) }

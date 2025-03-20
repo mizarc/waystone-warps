@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
@@ -12,8 +13,11 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu {
+class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu, KoinComponent {
+    private val getAllWarpSkins: GetAllWarpSkins by inject()
 
     override fun open() {
         // Create menu
@@ -53,23 +57,7 @@ class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuN
     }
 
     private fun displayBlockList(gui: ChestGui) {
-        val blocks = listOf(
-            Material.SMOOTH_STONE,
-            Material.STONE_BRICKS,
-            Material.DEEPSLATE_TILES,
-            Material.POLISHED_TUFF,
-            Material.TUFF_BRICKS,
-            Material.RESIN_BRICKS,
-            Material.CUT_SANDSTONE,
-            Material.CUT_RED_SANDSTONE,
-            Material.NETHER_BRICKS,
-            Material.POLISHED_BLACKSTONE,
-            Material.SMOOTH_QUARTZ,
-            Material.WAXED_COPPER_BLOCK,
-            Material.WAXED_EXPOSED_COPPER,
-            Material.WAXED_WEATHERED_COPPER,
-            Material.WAXED_OXIDIZED_COPPER
-        )
+        val blocks = getAllWarpSkins.execute().map { Material.valueOf(it) }
 
         val blockListPane = OutlinePane(2, 0, 7, 3)
         for (block in blocks) {
