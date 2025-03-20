@@ -5,6 +5,7 @@ import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.results.UpdateWarpSkinResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
 import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
@@ -52,16 +53,13 @@ class WaystoneBaseInteractListener: Listener, KoinComponent {
                 when (result) {
                     UpdateWarpSkinResult.SUCCESS -> {
                         event.isCancelled = true
-                        player.sendActionBar(Component.text("Updated waystone skin!"))
+                        player.sendActionBar(Component.text("Updated waystone skin!")
+                            .color(TextColor.color(85, 255, 85)))
                         itemInHand.amount -= 1
                         clickedBlock.world.dropItem(clickedBlock.location, ItemStack(existingBlock))
                     }
                     UpdateWarpSkinResult.WARP_NOT_FOUND -> player.sendActionBar(Component.text("Waystone is invalid"))
-                    UpdateWarpSkinResult.BLOCK_NOT_VALID -> player.sendActionBar(
-                        Component.text("Item in hand cannot be used to change waystone appearance"))
-
-                    UpdateWarpSkinResult.UNCHANGED -> player.sendActionBar(
-                        Component.text("Waystone is already using that skin"))
+                    else -> {}
                 }
         }
     }
