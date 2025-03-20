@@ -68,7 +68,11 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     @EventHandler
     fun onPistolPush(event: BlockPistonExtendEvent) {
         for (block in event.blocks) {
-            if (getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null) {
+            val isCurrentBlock = getWarpAtPosition.execute(block.location.toPosition3D(), event.block.world.uid) != null
+            val blockAbove = event.block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)).location
+            val isBlockAbove = getWarpAtPosition.execute(blockAbove.toPosition3D(), blockAbove.world.uid) != null
+
+            if (isCurrentBlock || isBlockAbove) {
                 event.isCancelled = true
             }
         }
@@ -77,7 +81,11 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     @EventHandler
     fun onPistolPull(event: BlockPistonRetractEvent) {
         for (block in event.blocks) {
-            if (getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null) {
+            val isCurrentBlock = getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null
+            val blockAbove = event.block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)).location
+            val isBlockAbove = getWarpAtPosition.execute(blockAbove.toPosition3D(), blockAbove.world.uid) != null
+
+            if (isCurrentBlock || isBlockAbove) {
                 event.isCancelled = true
             }
         }
@@ -85,7 +93,12 @@ class WaystoneDestructionListener: Listener, KoinComponent {
 
     @EventHandler
     fun onBlockDestroy(event: BlockDestroyEvent) {
-        if (getWarpAtPosition.execute(event.block.location.toPosition3D(), event.block.world.uid) != null) {
+        val block = event.block
+        val isCurrentBlock = getWarpAtPosition.execute(block.location.toPosition3D(), event.block.world.uid) != null
+        val blockAbove = event.block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)).location
+        val isBlockAbove = getWarpAtPosition.execute(blockAbove.toPosition3D(), blockAbove.world.uid) != null
+
+        if (isCurrentBlock || isBlockAbove) {
             event.isCancelled = true
         }
     }
@@ -93,7 +106,11 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     @EventHandler
     fun onTreeGrowth(event: StructureGrowEvent) {
         for (block in event.blocks) {
-            if (getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null) {
+            val isCurrentBlock = getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null
+            val blockAbove = block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)).location
+            val isBlockAbove = getWarpAtPosition.execute(blockAbove.toPosition3D(), blockAbove.world.uid) != null
+
+            if (isCurrentBlock || isBlockAbove) {
                 event.isCancelled = true
             }
         }
@@ -103,6 +120,12 @@ class WaystoneDestructionListener: Listener, KoinComponent {
         val cancelledBlocks = mutableListOf<Block>()
         for (block in blocks) {
             if (getWarpAtPosition.execute(block.location.toPosition3D(), block.world.uid) != null) {
+                cancelledBlocks.add(block)
+            }
+
+            val blockAbove = block.world.getBlockAt(block.location.add(0.0, 1.0, 0.0)).location
+            val isBlockAbove = getWarpAtPosition.execute(blockAbove.toPosition3D(), blockAbove.world.uid)
+            if (isBlockAbove != null) {
                 cancelledBlocks.add(block)
             }
         }
