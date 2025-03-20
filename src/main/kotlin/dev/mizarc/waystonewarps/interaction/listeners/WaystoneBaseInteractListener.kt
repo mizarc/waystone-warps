@@ -6,6 +6,7 @@ import dev.mizarc.waystonewarps.application.results.UpdateWarpSkinResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
+import org.bukkit.GameMode
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
@@ -57,7 +58,7 @@ class WaystoneBaseInteractListener: Listener, KoinComponent {
                         event.isCancelled = true
                         player.sendActionBar(Component.text("Updated waystone skin!")
                             .color(TextColor.color(85, 255, 85)))
-                        itemInHand.amount -= 1
+                        if (player.gameMode != GameMode.CREATIVE) itemInHand.amount -= 1
                         clickedBlock.world.dropItem(clickedBlock.location, ItemStack(existingBlock))
                         clickedBlock.world.playSound(player.location, Sound.BLOCK_VAULT_CLOSE_SHUTTER,
                             SoundCategory.BLOCKS, 1.0f, 1.0f)
