@@ -59,7 +59,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         // Add renaming icon
         val renamingItem = ItemStack(Material.NAME_TAG)
             .name("§rRename Warp")
-            .lore("Renames this warp")
+            .lore("Changes the name that is displayed")
         val guiRenamingItem = GuiItem(renamingItem) {
             menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp)) }
         pane.addItem(guiRenamingItem, 3, 0)
