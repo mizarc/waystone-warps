@@ -15,6 +15,7 @@ import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -260,14 +261,16 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
                 // Opens confirmation menu to ask to revoke access
                 else if (guiEvent.isRightClick && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)) {
-                    menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player,
-                        "Revoke ${foundPlayer.name}'s access?"
-                    ) {
-                        revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
-                        if (viewMode == 0) {
-                            currentPagePane.removeItem(guiPlayerItem)
-                        }
-                    })
+                    menuNavigator.openMenu(
+                        ConfirmationMenu(
+                            menuNavigator, player,
+                            "Revoke ${foundPlayer.name}'s access?"
+                        ) {
+                            revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
+                            if (viewMode == 0) {
+                                currentPagePane.removeItem(guiPlayerItem)
+                            }
+                        })
                 }
             }
 

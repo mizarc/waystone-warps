@@ -1,4 +1,4 @@
-package dev.mizarc.waystonewarps.interaction.menus.management
+package dev.mizarc.waystonewarps.interaction.menus.common
 
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.HopperGui
