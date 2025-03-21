@@ -16,6 +16,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Sounds are played for vault creation and discovery.
 - Sounds are played for the player being teleported and arriving at their destination.
 - Sounds are played for changing the skin of the waystone.
+- A sample-config.yml file is generated fresh on every launch to ensure that the most update to date base config format is known to administrators.
 
 ### Changed
 - The base of the waystone is now a slab rather than a barrier, making the space above the slab clickable to set the skin.
