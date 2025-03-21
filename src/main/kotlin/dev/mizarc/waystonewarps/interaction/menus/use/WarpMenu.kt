@@ -145,9 +145,9 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             var guiWarpItem: GuiItem
             if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 val lore = listOf(
-                    warpModel.player.name.toString(),
-                    "§6$locationText",
-                    "&cLOCKED",
+                    "§6${warpModel.player.name}",
+                    "§3$locationText",
+                    "§cLOCKED",
                 )
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(lore)
                 guiWarpItem = GuiItem(warpItem) { open() }
@@ -155,7 +155,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             else {
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name)
                     .lore("§6${warpModel.player.name}")
-                    .lore(locationText)
+                    .lore("§3$locationText")
                 guiWarpItem = GuiItem(warpItem) {guiEvent ->
                     teleportPlayer.execute(player.uniqueId, warp,
                         onPending = {
