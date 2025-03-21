@@ -15,6 +15,7 @@ import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.checkerframework.checker.units.qual.s
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -55,6 +56,14 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         }
         pane.addItem(guiPlayerCountItem, 1, 0)
 
+        // Add renaming icon
+        val renamingItem = ItemStack(Material.NAME_TAG)
+            .name("§rRename Warp")
+            .lore("Changes the name that is displayed")
+        val guiRenamingItem = GuiItem(renamingItem) {
+            menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp)) }
+        pane.addItem(guiRenamingItem, 3, 0)
+
         // Add icon editor button
         val iconEditorItem = ItemStack(Material.valueOf(warp.icon))
             .name("§rEdit Warp Icon")
@@ -63,13 +72,13 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
             menuNavigator.openMenu(WarpIconMenu(player, menuNavigator, warp)) }
         pane.addItem(guiIconEditorItem, 4, 0)
 
-        // Add renaming icon
-        val renamingItem = ItemStack(Material.NAME_TAG)
-            .name("§rRename Warp")
-            .lore("Renames this warp")
-        val guiRenamingItem = GuiItem(renamingItem) {
-            menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp)) }
-        pane.addItem(guiRenamingItem, 5, 0)
+        // Add skins menu
+        val skinViewItem = ItemStack(Material.valueOf(warp.block))
+            .name("§rView Available Skins")
+            .lore("A list of blocks you can use to re-skin the waystone")
+        val guiSkinViewItem = GuiItem(skinViewItem) {
+            menuNavigator.openMenu(WarpSkinsMenu(player, menuNavigator)) }
+        pane.addItem(guiSkinViewItem, 5, 0)
 
         // Add move icon
         val moveItem = ItemStack(Material.PISTON)

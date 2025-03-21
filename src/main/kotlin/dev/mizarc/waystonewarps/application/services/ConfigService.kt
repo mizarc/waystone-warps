@@ -9,4 +9,6 @@ interface ConfigService {
     fun getTeleportCostItem(): String
     fun getTeleportCostAmount(): Double
     fun getPlatformReplaceBlocks(): Set<String>
+    fun getAllSkinTypes(): List<String>
+    fun getStructureBlocks(blockType: String): List<String>
 }

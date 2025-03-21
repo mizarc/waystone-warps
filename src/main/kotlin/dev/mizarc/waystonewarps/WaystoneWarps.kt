@@ -11,13 +11,16 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAcces
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
+import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
+import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
 import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.IsPositionInTeleportZone
+import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
@@ -121,7 +124,7 @@ class WaystoneWarps: JavaPlugin() {
         } else {
             PlayerAttributeServiceSimple(configService)
         }
-        structureBuilderService = StructureBuilderServiceBukkit(this)
+        structureBuilderService = StructureBuilderServiceBukkit(this, configService)
         scheduler = SchedulerServiceBukkit(this)
         teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
             movementMonitorService, whitelistRepository, scheduler, economy)
@@ -150,6 +153,9 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleWhitelist(whitelistRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
+            single { UpdateWarpSkin(warpRepository, structureBuilderService, configService) }
+            single { IsValidWarpBase(configService) }
+            single { GetAllWarpSkins(configService) }
         }
 
         startKoin { modules(actions) }
@@ -167,5 +173,6 @@ class WaystoneWarps: JavaPlugin() {
         server.pluginManager.registerEvents(ToolRemovalListener(), this)
         server.pluginManager.registerEvents(TeleportZoneProtectionListener(), this)
         server.pluginManager.registerEvents(WarpItemListener(), this)
+        server.pluginManager.registerEvents(WaystoneBaseInteractListener(), this)
     }
 }

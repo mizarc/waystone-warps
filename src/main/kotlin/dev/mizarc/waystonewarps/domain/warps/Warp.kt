@@ -29,9 +29,10 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
      * @param playerId The id of the player who owns the warp.
      * @param position The position of the warp.
      * @param name The name of the claim.
+     * @param block The base block being used for the physical appearance.
      */
-    constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String) : this(
-        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", "LODESTONE", false)
+    constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String, block: String) : this(
+        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", block, false)
 
     /**
      * Resets the break count after a set period of time.

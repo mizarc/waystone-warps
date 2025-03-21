@@ -32,4 +32,12 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     override fun getPlatformReplaceBlocks(): Set<String> {
         return configFile.getStringList("platform_replace_blocks").toSet()
     }
+
+    override fun getAllSkinTypes(): List<String> {
+        return configFile.getConfigurationSection("waystone_skins")?.getKeys(false)?.toList() ?: emptyList()
+    }
+
+    override fun getStructureBlocks(blockType: String): List<String> {
+        return configFile.getStringList("waystone_skins.$blockType")
+    }
 }
