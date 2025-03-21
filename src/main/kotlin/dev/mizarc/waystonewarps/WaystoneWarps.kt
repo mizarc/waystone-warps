@@ -10,7 +10,9 @@ import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
+import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
@@ -47,7 +49,6 @@ import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -173,6 +174,8 @@ class WaystoneWarps: JavaPlugin() {
             single { UpdateWarpSkin(warpRepository, structureBuilderService, configService) }
             single { IsValidWarpBase(configService) }
             single { GetAllWarpSkins(configService) }
+            single { IsPlayerFavouriteWarp(discoveryRepository) }
+            single { ToggleFavouriteDiscovery(discoveryRepository) }
         }
 
         startKoin { modules(actions) }
