@@ -156,54 +156,65 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
                 customLore.add(2, "Left Click to teleport")
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) {guiEvent ->
-                    teleportPlayer.execute(player.uniqueId, warp,
-                        onPending = {
-                            player.sendActionBar {
-                                Component.text("Teleporting to ").color(PrimaryColourPalette.INFO.color)
-                                    .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
-                                    .append(Component.text("... Don't move!").color(PrimaryColourPalette.INFO.color))
+
+
+                    if (guiEvent.isRightClick) {
+                        // Right click to open options
+                        menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp))
+                    } else {
+                        // Left click to teleport
+                        teleportPlayer.execute(
+                            player.uniqueId, warp,
+                            onPending = {
+                                player.sendActionBar {
+                                    Component.text("Teleporting to ").color(PrimaryColourPalette.INFO.color)
+                                        .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
+                                        .append(
+                                            Component.text("... Don't move!").color(PrimaryColourPalette.INFO.color)
+                                        )
+                                }
+                            },
+                            onSuccess = {
+                                player.sendActionBar {
+                                    Component.text("Welcome to ").color(PrimaryColourPalette.SUCCESS.color)
+                                        .append(Component.text(warp.name).color(AccentColourPalette.SUCCESS.color))
+                                        .append(Component.text("!").color(PrimaryColourPalette.SUCCESS.color))
+                                }
+                            },
+                            onFailure = {
+                                player.sendActionBar {
+                                    Component.text("Failed to teleport, contact the server administrator")
+                                        .color(PrimaryColourPalette.FAILED.color)
+                                }
+                            },
+                            onInsufficientFunds = {
+                                player.sendActionBar {
+                                    Component.text("Insufficient funds to teleport")
+                                        .color(PrimaryColourPalette.CANCELLED.color)
+                                }
+                            },
+                            onWorldNotFound = {
+                                player.sendActionBar {
+                                    Component.text("Cannot teleport to a world that does not exist")
+                                        .color(PrimaryColourPalette.FAILED.color)
+                                }
+                            },
+                            onLocked = {
+                                player.sendActionBar {
+                                    Component.text("Cannot teleport to a warp that is now locked")
+                                        .color(PrimaryColourPalette.CANCELLED.color)
+                                }
+                            },
+                            onCanceled = {
+                                player.sendActionBar {
+                                    Component.text("Cancelled teleport due to movement")
+                                        .color(PrimaryColourPalette.CANCELLED.color)
+                                }
                             }
-                        },
-                        onSuccess = {
-                            player.sendActionBar {
-                                Component.text("Welcome to ").color(PrimaryColourPalette.SUCCESS.color)
-                                    .append(Component.text(warp.name).color(AccentColourPalette.SUCCESS.color))
-                                    .append(Component.text("!").color(PrimaryColourPalette.SUCCESS.color))
-                            }
-                        },
-                        onFailure = {
-                            player.sendActionBar {
-                                Component.text("Failed to teleport, contact the server administrator")
-                                    .color(PrimaryColourPalette.FAILED.color)
-                            }
-                        },
-                        onInsufficientFunds = {
-                            player.sendActionBar {
-                                Component.text("Insufficient funds to teleport")
-                                    .color(PrimaryColourPalette.CANCELLED.color)
-                            }
-                        },
-                        onWorldNotFound = {
-                            player.sendActionBar {
-                                Component.text("Cannot teleport to a world that does not exist")
-                                    .color(PrimaryColourPalette.FAILED.color)
-                            }
-                        },
-                        onLocked = {
-                            player.sendActionBar {
-                                Component.text("Cannot teleport to a warp that is now locked")
-                                    .color(PrimaryColourPalette.CANCELLED.color)
-                            }
-                        },
-                        onCanceled = {
-                            player.sendActionBar {
-                                Component.text("Cancelled teleport due to movement")
-                                    .color(PrimaryColourPalette.CANCELLED.color)
-                            }
-                        }
-                    )
-                    player.closeInventory()
-                    guiEvent.isCancelled = true
+                        )
+                        player.closeInventory()
+                        guiEvent.isCancelled = true
+                    }
                 }
             }
 
