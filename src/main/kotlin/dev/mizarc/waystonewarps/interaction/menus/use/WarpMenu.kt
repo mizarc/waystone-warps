@@ -133,6 +133,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
         val playerPane = PaginatedPane(1, 2, 7, 3)
         var currentPagePane = OutlinePane(0, 0, 7, 3)
         var playerCounter = 0
+        val stockLore = listOf("Right Click for additional options")
 
         for (warp in warps) {
             val warpModel = warp.toViewModel()
@@ -141,21 +142,19 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             } ?: run {
                 "Location not found"
             }
+            val customLore = stockLore.toMutableList()
+            customLore.add(0, "§3$locationText")
+            customLore.add(0, "§6${warpModel.player.name}")
 
             var guiWarpItem: GuiItem
             if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
-                val lore = listOf(
-                    "§6${warpModel.player.name}",
-                    "§3$locationText",
-                    "§cLOCKED",
-                )
-                val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(lore)
+                customLore.add(2, "§cLOCKED")
+                val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) { open() }
             }
             else {
-                val warpItem = ItemStack(warpModel.icon).name(warpModel.name)
-                    .lore("§6${warpModel.player.name}")
-                    .lore("§3$locationText")
+                customLore.add(2, "Left Click to teleport")
+                val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) {guiEvent ->
                     teleportPlayer.execute(player.uniqueId, warp,
                         onPending = {
