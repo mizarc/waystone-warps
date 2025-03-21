@@ -45,6 +45,11 @@ import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class WaystoneWarps: JavaPlugin() {
     private lateinit var commandManager: PaperCommandManager
@@ -81,7 +86,7 @@ class WaystoneWarps: JavaPlugin() {
         commandManager = PaperCommandManager(this)
 
         // Initialise everything else
-        saveDefaultConfig()
+        initialiseConfig()
         initialiseVaultDependency()
         initialiseRepositories()
         initialiseServices()
@@ -107,6 +112,18 @@ class WaystoneWarps: JavaPlugin() {
             server.servicesManager.getRegistration(Economy::class.java)?.let {economy = it.provider}
             logger.info(Chat::class.java.toString())
         }
+    }
+
+    private fun initialiseConfig() {
+        saveDefaultConfig()
+        getResource("config.yml")?.use { defaultConfigStream ->
+            val sampleConfigFile = File(dataFolder, "sample-config.yml")
+            try {
+                Files.copy(defaultConfigStream, sampleConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            } catch (e: IOException) {
+                logger.severe("Failed to copy config: ${e.message}")
+            }
+        } ?: logger.warning("Default config file not found in the plugin resources")
     }
 
     private fun initialiseRepositories() {
