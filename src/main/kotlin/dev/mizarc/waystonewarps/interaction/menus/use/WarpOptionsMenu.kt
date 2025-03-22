@@ -29,7 +29,7 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
 
     override fun open() {
         // Create menu
-        val gui = HopperGui("Warp ${warp.name}")
+        val gui = HopperGui("Warp '${warp.name}'")
         val pane = StaticPane(0, 0, 5, 1)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
