@@ -70,14 +70,22 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
 
         // Add delete menu item
         // Add favourite menu item
-        val deleteItem = ItemStack(Material.FIRE_CHARGE)
-            .name("Delete")
-            .lore("Removes your access to this warp")
-        val guiDeleteItem = GuiItem(deleteItem) { guiEvent ->
-            menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player, "Delete access to ${warp.name}") {
-                revokeDiscovery.execute(player.uniqueId, warp.id)
-                menuNavigator.goBack()
-            })
+        val guiDeleteItem: GuiItem
+        if (warp.playerId == player.uniqueId) {
+            val deleteItem = ItemStack(Material.SNOWBALL)
+                .name("Cannot Delete")
+                .lore("You own this warp!")
+            guiDeleteItem = GuiItem(deleteItem)
+        } else {
+            val deleteItem = ItemStack(Material.FIRE_CHARGE)
+                .name("Delete")
+                .lore("Removes your access to this warp")
+            guiDeleteItem = GuiItem(deleteItem) { guiEvent ->
+                menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player, "Delete access to ${warp.name}") {
+                    revokeDiscovery.execute(player.uniqueId, warp.id)
+                    menuNavigator.goBack()
+                })
+            }
         }
         pane.addItem(guiDeleteItem, 4, 0)
 
