@@ -44,13 +44,23 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         pane.addItem(guiBackItem, 0, 0)
 
         // Add point menu item
-        val pointItem = ItemStack(Material.COMPASS)
-            .name("Point to Waystone")
-            .lore("Your compass will point towards this waystone")
-        val guiPointItem = GuiItem(pointItem) { guiEvent ->
-            givePlayerLodestoneCompass()
+        val guiPointItem: GuiItem
+        if (player.inventory.itemInMainHand.type == Material.COMPASS) {
+            val pointItem = ItemStack(Material.COMPASS)
+                .name("Locate Waystone")
+                .lore("Your compass will point towards this waystone")
+            guiPointItem = GuiItem(pointItem) { guiEvent ->
+                givePlayerLodestoneCompass()
+            }
+            pane.addItem(guiPointItem, 2, 0)
         }
-        pane.addItem(guiPointItem, 2, 0)
+        else {
+            val pointItem = ItemStack(Material.WIND_CHARGE)
+                .name("No Compass")
+                .lore("Hold a compass in hand to use the waystone locator")
+            guiPointItem = GuiItem(pointItem)
+            pane.addItem(guiPointItem, 2, 0)
+        }
 
         // Add favourite menu item
         val favouriteItem = if (isPlayerFavouriteWarp.execute(player.uniqueId, warp.id)) {
