@@ -4,10 +4,12 @@ import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpNamingMenu
+import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
@@ -26,7 +28,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WaystoneInteractListener: Listener, KoinComponent {
+class WaystoneInteractListener(private val configService: ConfigService): Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val discoverWarp: DiscoverWarp by inject()
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
@@ -64,7 +66,15 @@ class WaystoneInteractListener: Listener, KoinComponent {
             particleLocation.z += 0.5
 
             if (it.playerId == player.uniqueId) {
-                menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                if (configService.allowWarpsMenuViaWaystone()) {
+                    if (event.player.isSneaking) {
+                        menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                    } else {
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                    }
+                } else {
+                    menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                }
             } else {
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
@@ -74,9 +84,14 @@ class WaystoneInteractListener: Listener, KoinComponent {
                     clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, particleLocation, 20)
                     clickedBlock.world.playSound(particleLocation, Sound.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 1.0f, 1.0f)
                 } else {
-                    player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
-                        .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
-                        .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
+                    if (configService.allowWarpsMenuViaWaystone()) {
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                    }
+                    else {
+                        player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
+                            .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
+                            .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
+                    }
                 }
             }
         }

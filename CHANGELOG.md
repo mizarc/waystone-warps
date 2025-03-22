@@ -19,6 +19,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Sounds are played for vault creation and discovery.
 - Sounds are played for the player being teleported and arriving at their destination.
 - Sounds are played for changing the skin of the waystone.
+- Config toggle to enable the functionality of using the compass to open the warp list menu.
+- Config toggle to enable the functionality of using the waystone to open the warp list menu, moving the management menu to shift+right click.
 - A sample-config.yml file is generated fresh on every launch to ensure that the most update to date base config format is known to administrators.
 
 ### Changed

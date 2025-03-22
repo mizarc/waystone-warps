@@ -19,6 +19,13 @@ teleport_cost_item: ENDER_PEARL
 # Decimals can be used for money type.
 teleport_cost_amount: 4
 
+# If the player can open the warp list menu via right-clicking on a compass.
+warps_menu_via_compass: true
+
+# If the player can open the warp list menu via right-clicking on a waystone.
+# This replaces warp management menu to be shift-right click instead.
+warps_menu_via_waystone: false
+
 # The blocks that can be used to transform the waystone appearance. This
 # contains all the required blocks that make up the waystone that must be in the
 # following order:

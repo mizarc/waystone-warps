@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.interaction.listeners
 
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import org.bukkit.Material
@@ -8,10 +9,12 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
 import org.bukkit.event.player.PlayerInteractEvent
 
-class WarpItemListener: Listener {
+class WarpItemListener(private val configService: ConfigService): Listener {
 
     @EventHandler
     fun onWarpItemClick(event: PlayerInteractEvent) {
+        if (!configService.allowWarpsMenuViaCompass()) return
+
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
 
