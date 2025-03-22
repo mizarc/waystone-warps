@@ -103,7 +103,7 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
 
             // Set lodestone details
             meta.lodestone = warp.position.toLocation(world)
-            meta.isLodestoneTracked = true
+            meta.isLodestoneTracked = false
 
             compass.itemMeta = meta
 
