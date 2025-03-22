@@ -9,6 +9,7 @@ import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpNamingMenu
+import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
@@ -65,7 +66,15 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             particleLocation.z += 0.5
 
             if (it.playerId == player.uniqueId) {
-                menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                if (configService.allowListMenuViaWaystone()) {
+                    if (event.player.isSneaking) {
+                        menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                    } else {
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                    }
+                } else {
+                    menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                }
             } else {
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
@@ -75,9 +84,14 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, particleLocation, 20)
                     clickedBlock.world.playSound(particleLocation, Sound.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 1.0f, 1.0f)
                 } else {
-                    player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
-                        .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
-                        .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
+                    if (configService.allowListMenuViaWaystone()) {
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                    }
+                    else {
+                        player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)
+                            .append(Component.text(warp.name).color(AccentColourPalette.INFO.color))
+                            .append(Component.text( " already discovered").color(PrimaryColourPalette.INFO.color)))
+                    }
                 }
             }
         }
