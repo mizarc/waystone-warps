@@ -66,7 +66,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             particleLocation.z += 0.5
 
             if (it.playerId == player.uniqueId) {
-                if (configService.allowListMenuViaWaystone()) {
+                if (configService.allowWarpsMenuViaWaystone()) {
                     if (event.player.isSneaking) {
                         menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
                     } else {
@@ -84,7 +84,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     clickedBlock.world.spawnParticle(Particle.TOTEM_OF_UNDYING, particleLocation, 20)
                     clickedBlock.world.playSound(particleLocation, Sound.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 1.0f, 1.0f)
                 } else {
-                    if (configService.allowListMenuViaWaystone()) {
+                    if (configService.allowWarpsMenuViaWaystone()) {
                         menuNavigator.openMenu(WarpMenu(player, menuNavigator))
                     }
                     else {

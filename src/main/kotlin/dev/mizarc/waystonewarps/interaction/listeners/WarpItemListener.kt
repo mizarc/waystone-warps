@@ -13,7 +13,7 @@ class WarpItemListener(private val configService: ConfigService): Listener {
 
     @EventHandler
     fun onWarpItemClick(event: PlayerInteractEvent) {
-        if (!configService.allowListMenuViaCompass()) return
+        if (!configService.allowWarpsMenuViaCompass()) return
 
         val player = event.player
         val itemInHand = player.inventory.itemInMainHand
