@@ -4,6 +4,7 @@ import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.management.WarpManagementMenu
@@ -26,7 +27,7 @@ import org.bukkit.inventory.EquipmentSlot
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WaystoneInteractListener: Listener, KoinComponent {
+class WaystoneInteractListener(private val configService: ConfigService): Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val discoverWarp: DiscoverWarp by inject()
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()

@@ -190,13 +190,13 @@ class WaystoneWarps: JavaPlugin() {
     }
 
     private fun registerEvents() {
-        server.pluginManager.registerEvents(WaystoneInteractListener(), this)
+        server.pluginManager.registerEvents(WaystoneInteractListener(configService), this)
         server.pluginManager.registerEvents(WaystoneDestructionListener(), this)
         server.pluginManager.registerEvents(PlayerMovementListener(), this)
         server.pluginManager.registerEvents(MoveToolListener(), this)
         server.pluginManager.registerEvents(ToolRemovalListener(), this)
         server.pluginManager.registerEvents(TeleportZoneProtectionListener(), this)
-        server.pluginManager.registerEvents(WarpItemListener(), this)
+        server.pluginManager.registerEvents(WarpItemListener(configService), this)
         server.pluginManager.registerEvents(WaystoneBaseInteractListener(), this)
     }
 }
