@@ -150,13 +150,17 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 customLore.add(2, "§cLOCKED")
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
-                guiWarpItem = GuiItem(warpItem) { open() }
+                guiWarpItem = GuiItem(warpItem) { guiEvent ->
+                    if (guiEvent.isRightClick) {
+                        // Right click to open options
+                        menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp))
+                    }
+                }
             }
             else {
                 customLore.add(2, "Left Click to teleport")
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) {guiEvent ->
-
 
                     if (guiEvent.isRightClick) {
                         // Right click to open options
