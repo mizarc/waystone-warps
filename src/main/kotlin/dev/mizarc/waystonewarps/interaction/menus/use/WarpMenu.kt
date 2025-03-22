@@ -54,7 +54,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             1 -> getFavouritedWarpAccess.execute(player.uniqueId)
             2 -> getOwnedWarps.execute(player.uniqueId)
             else -> emptyList()
-        }
+        }.sortedBy { it.name }
 
         // Filter by warp name if specified
         val filteredWarps = if (warpNameSearch.isNotBlank()) {

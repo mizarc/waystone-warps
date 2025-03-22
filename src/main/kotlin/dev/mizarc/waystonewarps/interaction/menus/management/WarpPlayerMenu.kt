@@ -57,7 +57,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             1 -> getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }
             2 -> Bukkit.getOnlinePlayers().map { it as OfflinePlayer }
             else -> emptyList()
-        }.filter { it.uniqueId != warp.playerId }
+        }.filter { it.uniqueId != warp.playerId }.sortedBy { it.name }
 
         // Filter by player name if specified
         val filteredPlayers = if (playerNameSearch.isNotBlank()) {
