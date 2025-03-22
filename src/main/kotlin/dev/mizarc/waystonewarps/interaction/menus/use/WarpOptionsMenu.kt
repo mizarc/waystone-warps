@@ -56,11 +56,11 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         val favouriteItem = if (isPlayerFavouriteWarp.execute(player.uniqueId, warp.id)) {
             ItemStack(Material.DIAMOND)
                 .name("Unfavourite")
-                .lore("Deprioritises placement in the menu")
+                .lore("Removes this warp from the favourites list")
         } else {
             ItemStack(Material.COAL)
                 .name("Favourite")
-                .lore("Prioritises placement in the menu")
+                .lore("Adds this warp to the favourites list")
         }
         val guiFavouriteItem = GuiItem(favouriteItem) { guiEvent ->
             toggleFavouriteDiscovery.execute(player.uniqueId, warp.id)

@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps
 import co.aikar.commands.PaperCommandManager
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
+import dev.mizarc.waystonewarps.application.actions.discovery.GetFavouritedWarpAccess
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.world.BreakWarpBlock
@@ -14,6 +15,7 @@ import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteW
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
+import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
@@ -176,6 +178,8 @@ class WaystoneWarps: JavaPlugin() {
             single { GetAllWarpSkins(configService) }
             single { IsPlayerFavouriteWarp(discoveryRepository) }
             single { ToggleFavouriteDiscovery(discoveryRepository) }
+            single { GetFavouritedWarpAccess(discoveryRepository, warpRepository) }
+            single { GetOwnedWarps(warpRepository) }
         }
 
         startKoin { modules(actions) }

@@ -72,6 +72,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Pane of players
         val playerPane = displayPlayers(filteredPlayers, warp, gui)
+        gui.addPane(playerPane)
 
         // Add paginator pane
         addPaginator(gui, playerPane.pages.coerceAtLeast(1), page) { newPage ->
@@ -80,7 +81,6 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         }
 
         // Display to GUI
-        gui.addPane(playerPane)
         gui.show(player)
     }
 
