@@ -40,4 +40,12 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     override fun getStructureBlocks(blockType: String): List<String> {
         return configFile.getStringList("waystone_skins.$blockType")
     }
+
+    override fun allowListMenuViaCompass(): Boolean {
+        return configFile.getBoolean("list_menu_via_compass")
+    }
+
+    override fun allowListMenuViaWaystone(): Boolean {
+        return configFile.getBoolean("list_menu_via_waystone")
+    }
 }

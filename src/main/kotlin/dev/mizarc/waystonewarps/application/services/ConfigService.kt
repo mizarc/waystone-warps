@@ -11,4 +11,6 @@ interface ConfigService {
     fun getPlatformReplaceBlocks(): Set<String>
     fun getAllSkinTypes(): List<String>
     fun getStructureBlocks(blockType: String): List<String>
+    fun allowListMenuViaCompass(): Boolean
+    fun allowListMenuViaWaystone(): Boolean
 }
