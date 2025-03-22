@@ -7,6 +7,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ## [Latest]
 
 ### Added
+- Warp menu contains filters to switch between discovered, favourites, and owned.
+- Search can be used to narrow down the list of discovered warps.
+- Warp sub-menu can be used to delete, favourite, or point the currently held compass to the direction of the warp.
 - Waystones can have their appearance changed by clicking on the base of the block with a valid block.
 - Waystones can also have their appearance changed on creation by placing down the lodestone on a valid block type.
 - Valid block skins are displayed on the "View Available Skins" submenu of the management menu.
@@ -20,6 +23,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Changed
 - The base of the waystone is now a slab rather than a barrier, making the space above the slab clickable to set the skin.
+- Lists of players and warps are sorted alphabetically.
 
 ## [0.2.0]
 

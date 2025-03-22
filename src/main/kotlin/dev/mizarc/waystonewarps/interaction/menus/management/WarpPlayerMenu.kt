@@ -15,6 +15,7 @@ import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -56,7 +57,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             1 -> getPlayerWhitelistForWarp.execute(warp.id).map { Bukkit.getOfflinePlayer(it) }
             2 -> Bukkit.getOnlinePlayers().map { it as OfflinePlayer }
             else -> emptyList()
-        }.filter { it.uniqueId != warp.playerId }
+        }.filter { it.uniqueId != warp.playerId }.sortedBy { it.name }
 
         // Filter by player name if specified
         val filteredPlayers = if (playerNameSearch.isNotBlank()) {
@@ -71,6 +72,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Pane of players
         val playerPane = displayPlayers(filteredPlayers, warp, gui)
+        gui.addPane(playerPane)
 
         // Add paginator pane
         addPaginator(gui, playerPane.pages.coerceAtLeast(1), page) { newPage ->
@@ -79,7 +81,6 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         }
 
         // Display to GUI
-        gui.addPane(playerPane)
         gui.show(player)
     }
 
@@ -260,14 +261,14 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
                 // Opens confirmation menu to ask to revoke access
                 else if (guiEvent.isRightClick && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)) {
-                    menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player,
-                        "Revoke ${foundPlayer.name}'s access?"
-                    ) {
-                        revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
-                        if (viewMode == 0) {
-                            currentPagePane.removeItem(guiPlayerItem)
+                    menuNavigator.openMenu(
+                        ConfirmationMenu(menuNavigator, player, "Revoke ${foundPlayer.name}'s access?") {
+                            revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
+                            if (viewMode == 0) {
+                                currentPagePane.removeItem(guiPlayerItem)
+                            }
                         }
-                    })
+                    )
                 }
             }
 
