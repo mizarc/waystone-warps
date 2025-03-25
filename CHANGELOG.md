@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.1]
+
+### Fixed
+- Invalid cost type in the config. Falls back to ITEM if set to an invalid type.
+
 ## [0.3.0]
 
 ### Added
