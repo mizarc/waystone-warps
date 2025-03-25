@@ -15,7 +15,9 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     }
 
     override fun getTeleportCostType(): CostType {
-        return CostType.valueOf(configFile.getString("teleport_cost_type", "ITEM").toString())
+        return runCatching {
+            CostType.valueOf(configFile.getString("teleport_cost_type", "ITEM").toString())
+        }.getOrDefault(CostType.ITEM)
     }
 
     override fun getTeleportCostItem(): String {

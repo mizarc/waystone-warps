@@ -12,13 +12,9 @@ import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
-import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
-import org.bukkit.Particle
-import org.bukkit.Particle.DustOptions
 import org.bukkit.entity.Player
-import org.bukkit.plugin.Plugin
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
 import java.util.UUID
@@ -159,7 +155,14 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
     private fun deductCost(player: Player) {
         val teleportCost = playerAttributeService.getTeleportCost(player.uniqueId)
         when (configService.getTeleportCostType()) {
-            CostType.ITEM -> removeItems(player, Material.valueOf(configService.getTeleportCostItem()), teleportCost)
+            CostType.ITEM -> {
+                val material = try {
+                    Material.valueOf(configService.getTeleportCostItem())
+                } catch (_: IllegalArgumentException) {
+                    Material.ENDER_PEARL
+                }
+                removeItems(player, material, teleportCost)
+            }
             CostType.MONEY -> subtractMoney(player, teleportCost)
             CostType.XP -> subtractXp(player, teleportCost)
         }
