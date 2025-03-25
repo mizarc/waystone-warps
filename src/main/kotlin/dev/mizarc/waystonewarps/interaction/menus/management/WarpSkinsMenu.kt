@@ -57,7 +57,7 @@ class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuN
     }
 
     private fun displayBlockList(gui: ChestGui) {
-        val blocks = getAllWarpSkins.execute().map { Material.valueOf(it) }
+        val blocks = getAllWarpSkins.execute().mapNotNull { it -> runCatching { Material.valueOf(it) }.getOrNull() }
 
         val blockListPane = OutlinePane(2, 0, 7, 3)
         for (block in blocks) {

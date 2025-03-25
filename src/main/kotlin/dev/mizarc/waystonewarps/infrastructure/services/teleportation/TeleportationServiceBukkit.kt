@@ -242,9 +242,10 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             for (z in -1..1) {
                 val block = location.world.getBlockAt(location.blockX + x, location.blockY - 2, location.blockZ + z)
 
-                if (block.type in configService.getPlatformReplaceBlocks().map { it -> Material.valueOf(it) }) {
+                if (block.type in configService.getPlatformReplaceBlocks().mapNotNull { it ->
+                        runCatching { Material.valueOf(it) }.getOrNull() }) {
                     block.breakNaturally()
-                    block.type = Material.COBBLESTONE // Replace with the desired material
+                    block.type = Material.COBBLESTONE
                 }
             }
         }

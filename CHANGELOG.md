@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.1]
+
+### Fixed
+- Error when using invalid materials in the config. Invalid materials are now skipped over or set to default when required.
+
 ## [0.3.0]
 
 ### Added
