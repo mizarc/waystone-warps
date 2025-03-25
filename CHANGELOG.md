@@ -8,6 +8,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Fixed
 - Invalid cost type in the config. Falls back to ITEM if set to an invalid type.
+- Error when using invalid materials in the config. Invalid materials are now skipped over or set to default when required.
 
 ## [0.3.0]
 
