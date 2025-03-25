@@ -141,8 +141,16 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
 
     private fun hasCost(player: Player): Boolean {
         val teleportCost = playerAttributeService.getTeleportCost(player.uniqueId)
+
         return when (configService.getTeleportCostType()) {
-            CostType.ITEM -> hasEnoughItems(player, Material.valueOf(configService.getTeleportCostItem()), teleportCost)
+            CostType.ITEM -> {
+                val material = try {
+                    Material.valueOf(configService.getTeleportCostItem())
+                } catch (_: IllegalArgumentException) {
+                    Material.ENDER_PEARL
+                }
+                hasEnoughItems(player, material, teleportCost)
+            }
             CostType.MONEY -> hasEnoughMoney(player, teleportCost)
             CostType.XP -> hasEnoughXp(player, teleportCost)
         }
