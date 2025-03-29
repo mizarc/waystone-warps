@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.2]
+
+### Fixed
+- Trying to incorrectly find `list_menu_via_compass` and `list_menu_via_waystone` instead of `warps_menu_via_compass` and `warps_menu_via_compass`
+
 ## [0.3.1]
 
 ### Fixed
