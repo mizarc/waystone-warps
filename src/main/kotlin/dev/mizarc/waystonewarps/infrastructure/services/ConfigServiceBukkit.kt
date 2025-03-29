@@ -41,10 +41,10 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     }
 
     override fun allowWarpsMenuViaCompass(): Boolean {
-        return configFile.getBoolean("list_menu_via_compass")
+        return configFile.getBoolean("warps_menu_via_compass")
     }
 
     override fun allowWarpsMenuViaWaystone(): Boolean {
-        return configFile.getBoolean("list_menu_via_waystone")
+        return configFile.getBoolean("warps_menu_via_waystone")
     }
 }
