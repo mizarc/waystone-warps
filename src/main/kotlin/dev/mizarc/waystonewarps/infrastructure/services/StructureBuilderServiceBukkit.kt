@@ -74,7 +74,6 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
 
     private fun generateStructure(warp: Warp, structureBlocks: List<Material>, world: World): MutableList<Entity> {
         val location = warp.position.toLocation(world)
-        println(location)
 
         // Replace top block with main block type
         location.block.type = structureBlocks[1]

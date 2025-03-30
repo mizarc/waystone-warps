@@ -57,6 +57,7 @@ class WaystoneBaseInteractListener: Listener, KoinComponent {
         val result = updateWarpSkin.execute(warp.id, itemInHand.type.toString())
         when (result) {
             UpdateWarpSkinResult.SUCCESS -> {
+                player.swingMainHand()
                 event.isCancelled = true
                 player.sendActionBar(Component.text("Updated waystone skin!")
                     .color(TextColor.color(85, 255, 85)))

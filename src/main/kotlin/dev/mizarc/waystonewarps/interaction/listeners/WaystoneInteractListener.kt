@@ -52,6 +52,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
         // Create new warp if not found, open management menu if owner, discover otherwise
         warp?.let {
             // Check if warp is locked and alert if no access
+            player.swingMainHand()
             event.isCancelled = true
             if (warp.isLocked && warp.playerId != player.uniqueId
                     && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
@@ -99,6 +100,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
         // Check if valid warp base to create warp
         val baseBlock = clickedBlock.getRelative(BlockFace.DOWN)
         if (isValidWarpBase.execute(baseBlock.type.toString())) {
+            player.swingMainHand()
             event.isCancelled = true
             menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
         }
