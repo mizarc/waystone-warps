@@ -6,6 +6,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ## [0.3.2]
 
+### Added
+- Player hand swings when interacting with a waystone or changing the base block.
+
 ### Fixed
 - Trying to incorrectly find `list_menu_via_compass` and `list_menu_via_waystone` instead of `warps_menu_via_compass` and `warps_menu_via_compass`
 
