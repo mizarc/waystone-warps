@@ -14,7 +14,6 @@ import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlay
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.interaction.menus.management.PlayerSearchMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.models.toViewModel
@@ -25,8 +24,6 @@ import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import net.kyori.adventure.text.Component
-import org.bukkit.Bukkit
-import org.bukkit.OfflinePlayer
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -228,7 +225,8 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             customLore.add(0, "§6${warpModel.player.name}")
 
             var guiWarpItem: GuiItem
-            if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
+            if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)
+                    && player.uniqueId != warp.playerId) {
                 customLore.add(2, "§cLOCKED")
                 val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) { guiEvent ->
