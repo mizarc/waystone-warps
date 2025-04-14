@@ -4,12 +4,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
-## [0.3.3]
-
-### Fixed
-- Warp owner unable to teleport to their own warp when locked.
-- Incorrect message when teleport is cancelled due to movement.
-
 ## [0.3.2]
 
 ### Added
@@ -17,6 +11,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Fixed
 - Trying to incorrectly find `list_menu_via_compass` and `list_menu_via_waystone` instead of `warps_menu_via_compass` and `warps_menu_via_compass`
+- Warp owner unable to teleport to their own warp when locked.
+- Incorrect message when teleport is cancelled due to movement.
 
 ## [0.3.1]
 
