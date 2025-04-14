@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.3]
+
+### Fixed
+- Warp owner unable to teleport to their own warp when locked.
+
 ## [0.3.2]
 
 ### Added
