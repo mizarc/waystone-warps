@@ -37,6 +37,7 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     }
 
     override fun getStructureBlocks(blockType: String): List<String> {
+        if (blockType !in getAllSkinTypes()) return emptyList()
         return configFile.getStringList("waystone_skins.$blockType")
     }
 
