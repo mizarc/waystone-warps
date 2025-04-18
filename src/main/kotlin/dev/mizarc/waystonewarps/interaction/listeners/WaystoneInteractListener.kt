@@ -99,7 +99,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
 
         // Check if valid warp base to create warp
         val baseBlock = clickedBlock.getRelative(BlockFace.DOWN)
-        if (isValidWarpBase.execute(baseBlock.type.toString())) {
+        if (isValidWarpBase.execute(baseBlock.type.toString()) && clickedBlock.type == Material.LODESTONE) {
             player.swingMainHand()
             event.isCancelled = true
             menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
