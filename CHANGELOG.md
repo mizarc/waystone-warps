@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.3]
+
+### Fixed
+- Waystone creation not checking if the top block is a Lodestone, resulting in the menu popping up for any block on top of a valid base block.
+- Waystone creation with base bypassing removal of config specified base block
+
 ## [0.3.2]
 
 ### Added
