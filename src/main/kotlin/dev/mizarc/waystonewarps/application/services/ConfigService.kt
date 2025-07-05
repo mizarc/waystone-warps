@@ -13,4 +13,5 @@ interface ConfigService {
     fun getStructureBlocks(blockType: String): List<String>
     fun allowWarpsMenuViaCompass(): Boolean
     fun allowWarpsMenuViaWaystone(): Boolean
+    fun hologramsEnabled(): Boolean
 }

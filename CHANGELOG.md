@@ -4,11 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.4]
+
+### Added
+- Support for Minecraft 1.21.5 and 1.21.6.
+- Waystones can now display holographic text information above them containing their name and coordinates.
+- New config value to toggle whether waystones will have a hologram.
+
 ## [0.3.3]
 
 ### Fixed
 - Waystone creation not checking if the top block is a Lodestone, resulting in the menu popping up for any block on top of a valid base block.
-- Waystone creation with base bypassing removal of config specified base block
+- Waystone creation with base bypassing removal of config specified base block.
 
 ## [0.3.2]
 
