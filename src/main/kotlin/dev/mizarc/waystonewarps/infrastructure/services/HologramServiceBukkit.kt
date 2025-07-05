@@ -9,6 +9,7 @@ import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
+import org.bukkit.entity.BlockDisplay
 import org.bukkit.entity.Display
 import org.bukkit.entity.Entity
 import org.bukkit.entity.TextDisplay
@@ -45,6 +46,7 @@ class HologramServiceBukkit: HologramService {
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val entities: MutableList<Entity> = world.entities
         for (entity in entities) {
+            if (entity !is TextDisplay) continue
             val customName = entity.customName() ?: continue
             if (customName is TextComponent && customName.content() == warp.id.toString()) {
                 entity.remove()
