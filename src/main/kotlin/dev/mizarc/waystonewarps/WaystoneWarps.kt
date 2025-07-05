@@ -169,7 +169,7 @@ class WaystoneWarps: JavaPlugin() {
                 discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
-            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService) }
+            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService) }
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
             single { ToggleWhitelist(whitelistRepository) }
