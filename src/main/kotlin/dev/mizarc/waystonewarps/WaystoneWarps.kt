@@ -17,7 +17,6 @@ import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDis
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
-import dev.mizarc.waystonewarps.application.actions.world.RefreshAllStructures
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
@@ -26,6 +25,7 @@ import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlay
 import dev.mizarc.waystonewarps.application.actions.world.IsPositionInTeleportZone
 import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
+import dev.mizarc.waystonewarps.application.actions.world.RefreshAllDisplays
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
@@ -97,7 +97,7 @@ class WaystoneWarps: JavaPlugin() {
         registerDependencies()
         registerCommands()
         registerEvents()
-        RefreshAllStructures(warpRepository, structureBuilderService).execute()
+        RefreshAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
 
         for (warp in warpRepository.getAll()) {
             structureParticleService.spawnParticles(warp)
