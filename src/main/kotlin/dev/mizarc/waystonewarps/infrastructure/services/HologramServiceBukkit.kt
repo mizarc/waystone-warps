@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.services
 
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.application.services.HologramService
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
@@ -14,8 +15,9 @@ import org.bukkit.entity.Display
 import org.bukkit.entity.Entity
 import org.bukkit.entity.TextDisplay
 
-class HologramServiceBukkit: HologramService {
+class HologramServiceBukkit(private val configService: ConfigService): HologramService {
     override fun spawnHologram(warp: Warp) {
+        if (!configService.hologramsEnabled()) return
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
 

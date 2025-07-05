@@ -151,7 +151,7 @@ class WaystoneWarps: JavaPlugin() {
             movementMonitorService, whitelistRepository, scheduler, economy)
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
         playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
-        hologramService = HologramServiceBukkit()
+        hologramService = HologramServiceBukkit(configService)
     }
 
     private fun registerDependencies() {
