@@ -123,6 +123,7 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
         val entities: MutableList<Entity> = world.entities
         for (entity in entities) {
             if (entityExclusions.contains(entity)) continue
+            if (entity !is BlockDisplay) continue
             val customName = entity.customName() ?: continue
             if (customName is TextComponent && customName.content() == warp.id.toString()) {
                 entity.remove()

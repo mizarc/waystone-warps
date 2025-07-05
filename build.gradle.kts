@@ -4,17 +4,11 @@ plugins {
 }
 
 group = "dev.mizarc"
-version = "0.3.3"
+version = "0.3.4"
 
 repositories {
+    mavenLocal()
     mavenCentral()
-    maven {
-        url = uri("https://maven.pkg.github.com/mizarc/IF")
-        credentials {
-            username = project.findProperty("gpr.user") as? String ?: System.getenv("GITHUB_ACTOR")
-            password = project.findProperty("gpr.key") as? String ?: System.getenv("GITHUB_TOKEN")
-        }
-    }
     maven {
         name = "papermc"
         url = uri("https://repo.papermc.io/repository/maven-public/")
@@ -31,7 +25,6 @@ repositories {
     maven {
         url = uri("https://jitpack.io")
     }
-    mavenLocal()
 }
 
 dependencies {
@@ -42,7 +35,7 @@ dependencies {
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("dev.mizarc.inventoryframework:if:0.10.19-fork-1")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.11.1")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     implementation("me.xdrop:fuzzywuzzy:1.3.1")
 }
