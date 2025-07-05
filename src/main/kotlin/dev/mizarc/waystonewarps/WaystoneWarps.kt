@@ -161,7 +161,7 @@ class WaystoneWarps: JavaPlugin() {
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
             single { UpdateWarpIcon(warpRepository) }
-            single { UpdateWarpName(warpRepository) }
+            single { UpdateWarpName(warpRepository, hologramService) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
                 discoveryRepository, structureParticleService) }
