@@ -48,4 +48,8 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
     override fun allowWarpsMenuViaWaystone(): Boolean {
         return configFile.getBoolean("warps_menu_via_waystone")
     }
+
+    override fun hologramsEnabled(): Boolean {
+        return configFile.getBoolean("holograms_enabled")
+    }
 }

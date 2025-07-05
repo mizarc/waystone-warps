@@ -26,6 +26,9 @@ warps_menu_via_compass: true
 # This replaces warp management menu to be shift-right click instead.
 warps_menu_via_waystone: false
 
+# If a hologram should display above the waystone showing its name and location.
+holograms_enabled: true
+
 # The blocks that can be used to transform the waystone appearance. This
 # contains all the required blocks that make up the waystone that must be in the
 # following order:
