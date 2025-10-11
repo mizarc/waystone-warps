@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [0.3.5]
+
+### Added
+- Support for Minecraft 1.21.7, 1.21.8, 1.21.9, and 1.21.10.
+
+### Changed
+- Waystones are now reverted back to their original state when the plugin is disabled.
+
 ## [0.3.4]
 
 ### Added
