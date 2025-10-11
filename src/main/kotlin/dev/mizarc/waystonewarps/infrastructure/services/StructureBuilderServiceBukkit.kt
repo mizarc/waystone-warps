@@ -44,6 +44,7 @@ class StructureBuilderServiceBukkit(private val plugin: Plugin, private val conf
     override fun revertStructure(warp: Warp) {
         val world = Bukkit.getWorld(warp.worldId) ?: return
         val location = warp.position.toLocation(world)
+        world.getBlockAt(location.blockX, location.blockY, location.blockZ).type = Material.LODESTONE
         world.getBlockAt(location.blockX, location.blockY - 1, location.blockZ).type = Material.valueOf(warp.block)
         removeBlockDisplay(warp, world)
     }
