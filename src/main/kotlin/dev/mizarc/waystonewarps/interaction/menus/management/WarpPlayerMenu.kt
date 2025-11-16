@@ -16,6 +16,7 @@ import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -221,7 +222,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
         val discovered = getWarpPlayerAccess.execute(warp.id)
-        val stockLore = listOf("Left Click to toggle whitelist")
+        val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
+        val stockLore = if (canManageWhitelist) {
+            listOf("Left Click to toggle whitelist")
+        } else {
+            listOf("§cYou don't have permission to manage the whitelist")
+        }
 
         for (foundPlayer in players) {
             // Modify lore text depending on if the player has discovered this warp or is whitelisted
@@ -244,19 +250,21 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             guiPlayerItem = GuiItem(playerItem) { guiEvent ->
 
                 // Toggles whitelist state
-                if (guiEvent.isLeftClick) {
-                    val result = toggleWhitelist.execute(warp.id, foundPlayer.uniqueId)
-                    if (result) {
-                        customLore.add(0, "§aWhitelisted")
-                    } else {
-                        customLore.remove("§aWhitelisted")
-                        if (viewMode == 1) {
-                            currentPagePane.removeItem(guiPlayerItem)
+                if (guiEvent.isLeftClick && canManageWhitelist) {
+                    val result = toggleWhitelist.execute(player.uniqueId, warp.id, foundPlayer.uniqueId)
+                    result.onSuccess { isWhitelisted ->
+                        if (isWhitelisted) {
+                            customLore.add(0, "§aWhitelisted")
+                        } else {
+                            customLore.remove("§aWhitelisted")
+                            if (viewMode == 1) {
+                                currentPagePane.removeItem(guiPlayerItem)
+                            }
                         }
+                        playerItem.lore()
+                        playerItem.lore(customLore)
+                        gui.update()
                     }
-                    playerItem.lore()
-                    playerItem.lore(customLore)
-                    gui.update()
                 }
 
                 // Opens confirmation menu to ask to revoke access

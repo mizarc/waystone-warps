@@ -2,8 +2,10 @@ package dev.mizarc.waystonewarps.interaction.listeners
 
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.results.MoveWarpResult
+import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -17,12 +19,32 @@ import java.util.UUID
 
 class MoveToolListener: Listener, KoinComponent {
     private val moveWarp: MoveWarp by inject()
+    private val warpRepository: WarpRepository by inject()
 
     @EventHandler
     fun onClaimMoveBlockPlace(event: BlockPlaceEvent) {
         // Check to see if item in hand is the warp mover
         val warpId = event.itemInHand.itemMeta.persistentDataContainer.get(
             NamespacedKey("waystonewarps","warp"), PersistentDataType.STRING) ?: return
+
+        // Get the warp to check permissions
+        val warp = warpRepository.getById(UUID.fromString(warpId))
+        if (warp == null) {
+            event.player.sendActionBar(
+                Component.text("The warp you're trying to move can't be found!")
+                    .color(PrimaryColourPalette.FAILED.color))
+            event.isCancelled = true
+            return
+        }
+
+        // Check if player has permission to relocate this warp
+        if (!PermissionHelper.canRelocate(event.player, warp.playerId)) {
+            event.player.sendActionBar(
+                Component.text("You don't have permission to move this warp!")
+                    .color(PrimaryColourPalette.FAILED.color))
+            event.isCancelled = true
+            return
+        }
 
         // Check if block above is clear
         val aboveLocation = event.block.location.clone()

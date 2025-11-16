@@ -2,3 +2,38 @@ name: WaystoneWarps
 version: 0.3.4
 api-version: '1.21'
 main: dev.mizarc.waystonewarps.WaystoneWarps
+
+permissions:
+  waystones.command.warpmenu:
+    description: Allows access to the warp menu command
+    default: true
+
+  waystones.admin.*:
+    description: Full control of all waystones
+    default: op
+    children:
+      waystones.admin.accesscontrol: true
+      waystones.admin.manage: true
+      waystones.admin.rename: true
+      waystones.admin.icon: true
+      waystones.admin.relocate: true
+
+  waystones.admin.accesscontrol:
+    description: Can change any waystone to private or public
+    default: op
+
+  waystones.admin.manage:
+    description: Can manage whitelist on other waystones
+    default: op
+
+  waystones.admin.rename:
+    description: Can rename other waystones
+    default: op
+
+  waystones.admin.icon:
+    description: Can change other waystone icons
+    default: op
+
+  waystones.admin.relocate:
+    description: Can move any waystone
+    default: op

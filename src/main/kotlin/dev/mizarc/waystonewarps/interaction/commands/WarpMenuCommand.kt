@@ -10,7 +10,7 @@ import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import org.bukkit.entity.Player
 
 @CommandAlias("warpmenu")
-@CommandPermission("worldwidewarps.command.warpmenu")
+@CommandPermission("waystones.command.warpmenu")
 class WarpMenuCommand: BaseCommand() {
 
     @Default

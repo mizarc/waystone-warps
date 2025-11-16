@@ -4,5 +4,6 @@ enum class UpdateWarpNameResult {
     SUCCESS,
     WARP_NOT_FOUND,
     NAME_ALREADY_TAKEN,
-    NAME_BLANK
+    NAME_BLANK,
+    NOT_AUTHORIZED
 }

@@ -155,6 +155,13 @@ class WaystoneWarps: JavaPlugin() {
     }
 
     private fun registerDependencies() {
+        val repositories = module {
+            single<WarpRepository> { warpRepository }
+            single<DiscoveryRepository> { discoveryRepository }
+            single<PlayerStateRepository> { playerStateRepository }
+            single<WhitelistRepository> { whitelistRepository }
+        }
+
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
                 discoveryRepository, structureParticleService, hologramService) }
@@ -172,7 +179,7 @@ class WaystoneWarps: JavaPlugin() {
             single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService) }
             single { ToggleLock(warpRepository) }
             single { GetWhitelistedPlayers(whitelistRepository) }
-            single { ToggleWhitelist(whitelistRepository) }
+            single { ToggleWhitelist(whitelistRepository, warpRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
             single { UpdateWarpSkin(warpRepository, structureBuilderService, configService) }
@@ -184,7 +191,7 @@ class WaystoneWarps: JavaPlugin() {
             single { GetOwnedWarps(warpRepository) }
         }
 
-        startKoin { modules(actions) }
+        startKoin { modules(repositories, actions) }
     }
 
     private fun registerCommands() {
