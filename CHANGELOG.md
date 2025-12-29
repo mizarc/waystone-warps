@@ -8,6 +8,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Added
 - Support for Minecraft 1.21.11.
+- Waystone creation is covered by protections that protect against block placing.
 
 ### Fixed
 - Config not being read on the first launch, required restart before the plugin could actually let you do anything.
