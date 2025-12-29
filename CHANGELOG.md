@@ -9,6 +9,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ### Added
 - Support for Minecraft 1.21.11.
 
+### Fixed
+- Config not being read on the first launch, required restart before the plugin could actually let you do anything.
+
 ## [0.3.5]
 
 ### Added
