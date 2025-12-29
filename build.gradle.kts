@@ -54,7 +54,8 @@ dependencies {
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT")
     implementation("co.aikar:acf-paper:0.5.1-SNAPSHOT")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("com.github.mizarc:IF:0.11.4-d")
+    // implementation("com.github.mizarc:IF:0.11.4-d")
+    implementation("com.github.stefvanschie.inventoryframework:IF:0.11.6")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     implementation("me.xdrop:fuzzywuzzy:1.3.1")
 }
