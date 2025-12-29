@@ -13,6 +13,7 @@ import dev.mizarc.waystonewarps.interaction.menus.use.WarpMenu
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.Particle
 import org.bukkit.Sound
@@ -21,10 +22,13 @@ import org.bukkit.block.Block
 import org.bukkit.block.BlockFace
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
+import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.inventory.EquipmentSlot
+import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -34,7 +38,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val isValidWarpBase: IsValidWarpBase by inject()
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     fun onLodestoneInteract(event: PlayerInteractEvent) {
         val player: Player = event.player
         if (event.action != Action.RIGHT_CLICK_BLOCK) return
@@ -102,6 +106,23 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
         if (isValidWarpBase.execute(baseBlock.type.toString()) && clickedBlock.type == Material.LODESTONE) {
             player.swingMainHand()
             event.isCancelled = true
+            val clicked = event.clickedBlock ?: return
+
+            // Send out a fake BlockPlaceEvent for protection plugins to hook
+            @Suppress("UnstableApiUsage")
+            val testEvent = BlockPlaceEvent(
+                clicked,
+                clicked.state,
+                clicked,
+                ItemStack(Material.LODESTONE),
+                player,
+                true,
+                EquipmentSlot.HAND
+            )
+            Bukkit.getPluginManager().callEvent(testEvent)
+            if (testEvent.isCancelled) return
+
+            // Open the menu
             menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
         }
     }
