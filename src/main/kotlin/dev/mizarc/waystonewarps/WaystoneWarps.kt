@@ -122,6 +122,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseConfig() {
         saveDefaultConfig()
+        reloadConfig()
         getResource("config.yml")?.use { defaultConfigStream ->
             val sampleConfigFile = File(dataFolder, "sample-config.yml")
             try {
