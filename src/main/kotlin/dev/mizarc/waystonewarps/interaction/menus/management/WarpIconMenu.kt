@@ -1,6 +1,6 @@
 package dev.mizarc.waystonewarps.interaction.menus.management
 
-import CustomModelData
+import IconMeta
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
@@ -68,14 +68,14 @@ class WarpIconMenu(private val player: Player,
             if (newIcon != null) {
                 val paperCmd = newIcon.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
                 val iconMeta = if (paperCmd != null) {
-                    CustomModelData(
+                    IconMeta(
                         strings = paperCmd.strings(),
                         floats = paperCmd.floats(),
                         flags = paperCmd.flags(),
                         colorsArgb = paperCmd.colors().map { it.asARGB() }
                     )
                 } else {
-                    CustomModelData()
+                    IconMeta()
                 }
                 updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
             }

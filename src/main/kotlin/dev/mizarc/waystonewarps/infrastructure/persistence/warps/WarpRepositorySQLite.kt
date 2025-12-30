@@ -1,6 +1,6 @@
 package dev.mizarc.waystonewarps.infrastructure.persistence.warps
 
-import CustomModelData
+import IconMeta
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
@@ -76,9 +76,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         for (result in results) {
             val iconMeta = runCatching {
                 val raw = result.getString("iconMeta")
-                if (raw.isNullOrBlank()) CustomModelData() else iconMetaJson.decodeFromString<CustomModelData>(raw)
+                if (raw.isNullOrBlank()) IconMeta() else iconMetaJson.decodeFromString<IconMeta>(raw)
             }.getOrElse {
-                CustomModelData()
+                IconMeta()
             }
 
             warps[UUID.fromString(result.getString("id"))] = Warp(
