@@ -33,7 +33,8 @@ fun ItemStack.amount(amount: Int): ItemStack {
 
 fun ItemStack.name(name: String): ItemStack {
     val meta = itemMeta
-    meta.itemName(Component.text(name))
+    meta.addItemFlags(*ItemFlag.entries.toTypedArray())
+    meta.displayName(Component.text(name))
     itemMeta = meta
     return this
 }
