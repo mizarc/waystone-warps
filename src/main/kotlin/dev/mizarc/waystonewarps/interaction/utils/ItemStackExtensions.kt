@@ -7,6 +7,8 @@ import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -31,34 +33,34 @@ fun ItemStack.amount(amount: Int): ItemStack {
     return this
 }
 
-fun ItemStack.name(name: String): ItemStack {
+fun ItemStack.name(name: String, color: TextColor = NamedTextColor.GOLD): ItemStack {
     val meta = itemMeta
     meta.addItemFlags(*ItemFlag.entries.toTypedArray())
-    meta.displayName(Component.text(name))
+    meta.displayName(Component.text(name).color(color).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
     itemMeta = meta
     return this
 }
 
-fun ItemStack.lore(text: String): ItemStack {
-    val meta = itemMeta
-    var lore: MutableList<String>? = meta!!.lore
-    if (lore == null) {
-        lore = ArrayList()
-    }
-    lore.add(text)
-    meta.lore = lore.c()
+fun ItemStack.lore(text: String, color: TextColor = NamedTextColor.GRAY): ItemStack {
+    val meta = itemMeta ?: return this
+    val currentLore = meta.lore() ?: mutableListOf()
+
+    // Add new line with specified color and no italics
+    currentLore.add(Component.text(text).color(color).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
+
+    meta.lore(currentLore)
     itemMeta = meta
     return this
 }
 
-fun ItemStack.lore(vararg text: String): ItemStack {
-    Arrays.stream(text).forEach { this.lore(it) }
+fun ItemStack.lore(vararg text: String, color: TextColor = NamedTextColor.GRAY): ItemStack {
+    Arrays.stream(text).forEach { this.lore(it, color) }
     return this
 }
 
-fun ItemStack.lore(text: List<String>): ItemStack {
+fun ItemStack.lore(text: List<String>, color: TextColor = NamedTextColor.GRAY): ItemStack {
     this.clearLore()
-    text.forEach { this.lore(it) }
+    text.forEach { this.lore(it, color) }
     return this
 }
 
