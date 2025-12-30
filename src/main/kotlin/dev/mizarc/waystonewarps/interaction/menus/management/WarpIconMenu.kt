@@ -15,7 +15,6 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import org.bukkit.Material
-import org.bukkit.Registry
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ArmorMeta
@@ -32,6 +31,7 @@ class WarpIconMenu(private val player: Player,
                    private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
     private val updateWarpIcon: UpdateWarpIcon by inject()
 
+    @Suppress("UnstableApiUsage")
     override fun open() {
         val gui = FurnaceGui("Set Warp Icon")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -46,7 +46,7 @@ class WarpIconMenu(private val player: Player,
         fuelPane.addItem(guiIconEditorItem, 0, 0)
         gui.fuelComponent.addPane(fuelPane)
 
-        // Allow item to be placed in slot
+        // Allow item to be placed in the slot
         val inputPane = StaticPane(0, 0, 1, 1)
         inputPane.setOnClick {guiEvent ->
             guiEvent.isCancelled = true
@@ -75,7 +75,7 @@ class WarpIconMenu(private val player: Player,
             val newIcon = gui.ingredientComponent.getItem(0, 0)
             val registryAccess = RegistryAccess.registryAccess()
 
-            // Set icon if item in slot
+            // Set icon if the item in slot
             if (newIcon != null) {
                 // Get potion type
                 val potionTypeKey = (newIcon.itemMeta as? PotionMeta)
@@ -83,19 +83,19 @@ class WarpIconMenu(private val player: Player,
                     ?.key
                     ?.toString()
 
-                // Get leather armor color
+                // Get leather armour colour
                 val leatherColorRgb = (newIcon.itemMeta as? LeatherArmorMeta)
                     ?.color
                     ?.asRGB()
 
-                // Get armor trim pattern and material
+                // Get armour trim pattern and material
                 val armorTrim = (newIcon.itemMeta as? ArmorMeta)?.trim
                 val patternRegistry = registryAccess.getRegistry(RegistryKey.TRIM_PATTERN)
                 val materialRegistry = registryAccess.getRegistry(RegistryKey.TRIM_MATERIAL)
                 val trimPatternKey = armorTrim?.let { patternRegistry.getKey(it.pattern).toString() }
                 val trimMaterialKey = armorTrim?.let { materialRegistry.getKey(it.material).toString() }
 
-                // Get banner pattern and color
+                // Get banner pattern and colour
                 val bannerPatternRegistry = registryAccess.getRegistry(RegistryKey.BANNER_PATTERN)
                 val bannerMeta = newIcon.itemMeta as? BannerMeta
                 val bannerPatterns = bannerMeta?.patterns?.mapNotNull { p ->
@@ -116,7 +116,7 @@ class WarpIconMenu(private val player: Player,
                 val skullTextureValue = textures?.value
                 val skullTextureSignature = textures?.signature
 
-                // Get firework color
+                // Get firework colour
                 val fireworkStarColorRgb = (newIcon.itemMeta as? FireworkEffectMeta)
                     ?.effect
                     ?.colors
