@@ -14,6 +14,8 @@ import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.LeatherArmorMeta
+import org.bukkit.inventory.meta.PotionMeta
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.concurrent.thread
@@ -67,16 +69,34 @@ class WarpIconMenu(private val player: Player,
             // Set icon if item in slot
             if (newIcon != null) {
                 val paperCmd = newIcon.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                val potionTypeKey = (newIcon.itemMeta as? PotionMeta)
+                    ?.basePotionType
+                    ?.key
+                    ?.toString()
+                println("potionTypeKey:")
+                println(potionTypeKey)
+
+                val leatherColorRgb = (newIcon.itemMeta as? LeatherArmorMeta)
+                    ?.color
+                    ?.asRGB()
+                println("leatherColorRgb:")
+                println(leatherColorRgb)
                 val iconMeta = if (paperCmd != null) {
                     IconMeta(
                         strings = paperCmd.strings(),
                         floats = paperCmd.floats(),
                         flags = paperCmd.flags(),
-                        colorsArgb = paperCmd.colors().map { it.asARGB() }
+                        colorsArgb = paperCmd.colors().map { it.asARGB() },
+                        potionTypeKey = potionTypeKey,
+                        leatherColorRgb = leatherColorRgb
                     )
                 } else {
-                    IconMeta()
+                    IconMeta(
+                        potionTypeKey = potionTypeKey,
+                        leatherColorRgb = leatherColorRgb
+                    )
                 }
+                println(iconMeta)
                 updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
             }
 

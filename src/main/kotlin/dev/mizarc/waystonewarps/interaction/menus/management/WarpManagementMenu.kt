@@ -8,7 +8,7 @@ import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
-import dev.mizarc.waystonewarps.interaction.utils.customModelData
+import dev.mizarc.waystonewarps.interaction.utils.applyIconMeta
 import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -64,7 +64,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiRenamingItem, 3, 0)
 
         // Add icon editor button
-        val iconEditorItem = ItemStack(Material.valueOf(warp.icon)).customModelData(warp.iconMeta)
+        val iconEditorItem = ItemStack(Material.valueOf(warp.icon)).applyIconMeta(warp.iconMeta)
             .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {

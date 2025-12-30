@@ -15,7 +15,7 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
 
     private val iconMetaJson = Json {
         ignoreUnknownKeys = true
-        encodeDefaults = true
+        encodeDefaults = false
         explicitNulls = false
     }
 

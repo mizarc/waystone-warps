@@ -14,6 +14,7 @@ import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.function.Consumer
 import org.bukkit.Color
+import org.bukkit.inventory.meta.PotionMeta
 
 
 fun ItemStack.amount(amount: Int): ItemStack {
@@ -139,13 +140,38 @@ fun ItemStack.setStringMeta(key: String, value: String): ItemStack {
 }
 
 @Suppress("UnstableApiUsage")
-fun ItemStack.customModelData(meta: IconMeta): ItemStack {
-    val builder = CustomModelData.customModelData()
+fun ItemStack.applyIconMeta(meta: IconMeta): ItemStack {
 
+    // Custom model data
+    val builder = CustomModelData.customModelData()
     meta.strings.forEach(builder::addString)
     meta.floats.forEach(builder::addFloat)
     meta.flags.forEach(builder::addFlag)
     meta.colorsArgb.forEach { argb -> builder.addColor(Color.fromARGB(argb)) }
+
+    // Potion base type
+    if (meta.potionTypeKey != null) {
+        val potionKey = NamespacedKey.fromString(meta.potionTypeKey)
+        if (potionKey != null) {
+            val potionType = Registry.POTION.get(potionKey)
+            if (potionType != null) {
+                val im = this.itemMeta
+                if (im is PotionMeta) {
+                    im.basePotionType = potionType
+                    this.itemMeta = im
+                }
+            }
+        }
+    }
+
+    // Leather armor dye color
+    if (meta.leatherColorRgb != null) {
+        val im = this.itemMeta
+        if (im is LeatherArmorMeta) {
+            im.setColor(Color.fromRGB(meta.leatherColorRgb))
+            this.itemMeta = im
+        }
+    }
 
     this.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build())
     return this
