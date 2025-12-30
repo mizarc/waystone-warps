@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps.interaction.menus.management
 
 import IconMeta
+import com.destroystokyo.paper.profile.ProfileProperty
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
@@ -11,11 +12,18 @@ import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import org.bukkit.Material
+import org.bukkit.Registry
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ArmorMeta
+import org.bukkit.inventory.meta.BannerMeta
+import org.bukkit.inventory.meta.FireworkEffectMeta
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.SkullMeta
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.concurrent.thread
@@ -65,22 +73,57 @@ class WarpIconMenu(private val player: Player,
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             guiEvent.isCancelled = true
             val newIcon = gui.ingredientComponent.getItem(0, 0)
+            val registryAccess = RegistryAccess.registryAccess()
 
             // Set icon if item in slot
             if (newIcon != null) {
-                val paperCmd = newIcon.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                // Get potion type
                 val potionTypeKey = (newIcon.itemMeta as? PotionMeta)
                     ?.basePotionType
                     ?.key
                     ?.toString()
-                println("potionTypeKey:")
-                println(potionTypeKey)
 
+                // Get leather armor color
                 val leatherColorRgb = (newIcon.itemMeta as? LeatherArmorMeta)
                     ?.color
                     ?.asRGB()
-                println("leatherColorRgb:")
-                println(leatherColorRgb)
+
+                // Get armor trim pattern and material
+                val armorTrim = (newIcon.itemMeta as? ArmorMeta)?.trim
+                val patternRegistry = registryAccess.getRegistry(RegistryKey.TRIM_PATTERN)
+                val materialRegistry = registryAccess.getRegistry(RegistryKey.TRIM_MATERIAL)
+                val trimPatternKey = armorTrim?.let { patternRegistry.getKey(it.pattern).toString() }
+                val trimMaterialKey = armorTrim?.let { materialRegistry.getKey(it.material).toString() }
+
+                // Get banner pattern and color
+                val bannerPatternRegistry = registryAccess.getRegistry(RegistryKey.BANNER_PATTERN)
+                val bannerMeta = newIcon.itemMeta as? BannerMeta
+                val bannerPatterns = bannerMeta?.patterns?.mapNotNull { p ->
+                    val patternKey = bannerPatternRegistry.getKey(p.pattern)
+                    if (patternKey != null) {
+                        "${patternKey}|${p.color.name}"
+                    } else {
+                        null
+                    }
+                } ?: emptyList()
+
+                // Get skull skin
+                val skullMeta = newIcon.itemMeta as? SkullMeta
+                val textures: ProfileProperty? = skullMeta
+                    ?.playerProfile
+                    ?.properties
+                    ?.firstOrNull { it.name.equals("textures", ignoreCase = true) }
+                val skullTextureValue = textures?.value
+                val skullTextureSignature = textures?.signature
+
+                // Get firework color
+                val fireworkStarColorRgb = (newIcon.itemMeta as? FireworkEffectMeta)
+                    ?.effect
+                    ?.colors
+                    ?.firstOrNull()
+                    ?.asRGB()
+
+                val paperCmd = newIcon.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
                 val iconMeta = if (paperCmd != null) {
                     IconMeta(
                         strings = paperCmd.strings(),
@@ -88,15 +131,27 @@ class WarpIconMenu(private val player: Player,
                         flags = paperCmd.flags(),
                         colorsArgb = paperCmd.colors().map { it.asARGB() },
                         potionTypeKey = potionTypeKey,
-                        leatherColorRgb = leatherColorRgb
+                        leatherColorRgb = leatherColorRgb,
+                        trimPatternKey = trimPatternKey,
+                        trimMaterialKey = trimMaterialKey,
+                        bannerPatterns = bannerPatterns,
+                        skullTextureValue = skullTextureValue,
+                        skullTextureSignature = skullTextureSignature,
+                        fireworkStarColorRgb = fireworkStarColorRgb
                     )
                 } else {
                     IconMeta(
                         potionTypeKey = potionTypeKey,
-                        leatherColorRgb = leatherColorRgb
+                        leatherColorRgb = leatherColorRgb,
+                        trimPatternKey = trimPatternKey,
+                        trimMaterialKey = trimMaterialKey,
+                        bannerPatterns = bannerPatterns,
+                        skullTextureValue = skullTextureValue,
+                        skullTextureSignature = skullTextureSignature,
+                        fireworkStarColorRgb = fireworkStarColorRgb
                     )
                 }
-                println(iconMeta)
+
                 updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
             }
 

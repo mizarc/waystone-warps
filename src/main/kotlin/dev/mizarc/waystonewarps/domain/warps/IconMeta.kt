@@ -12,5 +12,12 @@ data class IconMeta(
     val flags: List<Boolean> = emptyList(),
     val colorsArgb: List<Int> = emptyList(),
     val potionTypeKey: String? = null,
-    val leatherColorRgb: Int? = null
+    val leatherColorRgb: Int? = null,
+    val trimPatternKey: String? = null,
+    val trimMaterialKey: String? = null,
+    val bannerBaseColor: String? = null,
+    val bannerPatterns: List<String> = emptyList(),
+    val skullTextureValue: String? = null,
+    val skullTextureSignature: String? = null,
+    val fireworkStarColorRgb: Int? = null
 )
