@@ -8,14 +8,13 @@ import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.utils.customModelData
 import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
-import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.checkerframework.checker.units.qual.s
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -65,7 +64,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiRenamingItem, 3, 0)
 
         // Add icon editor button
-        val iconEditorItem = ItemStack(Material.valueOf(warp.icon))
+        val iconEditorItem = ItemStack(Material.valueOf(warp.icon)).customModelData(warp.iconMeta)
             .name("§rEdit Warp Icon")
             .lore("Changes the icon that shows up on the warp list")
         val guiIconEditorItem = GuiItem(iconEditorItem) {

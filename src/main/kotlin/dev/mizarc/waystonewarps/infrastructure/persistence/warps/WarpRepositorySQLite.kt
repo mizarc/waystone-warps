@@ -13,6 +13,12 @@ import java.util.*
 class WarpRepositorySQLite(private val storage: Storage<Database>): WarpRepository {
     private val warps: MutableMap<UUID, Warp> = mutableMapOf()
 
+    private val iconMetaJson = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+        explicitNulls = false
+    }
+
     init {
         createTable()
         preload()
@@ -76,10 +82,14 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         for (result in results) {
             val iconMeta = runCatching {
                 val raw = result.getString("iconMeta")
+                println(raw)
                 if (raw.isNullOrBlank()) IconMeta() else iconMetaJson.decodeFromString<IconMeta>(raw)
-            }.getOrElse {
+            }.getOrElse { ex ->
+                ex.printStackTrace()
                 IconMeta()
             }
+            println("preloading")
+            println(iconMeta)
 
             warps[UUID.fromString(result.getString("id"))] = Warp(
                 UUID.fromString(result.getString("id")),
@@ -96,11 +106,5 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
                 result.getString("block"),
                 result.getInt("isLocked") != 0)
         }
-    }
-
-    private val iconMetaJson = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-        explicitNulls = false
     }
 }

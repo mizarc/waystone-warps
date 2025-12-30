@@ -17,6 +17,7 @@ import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.messaging.AccentColourPalette
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.models.toViewModel
+import dev.mizarc.waystonewarps.interaction.utils.customModelData
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -228,7 +229,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)
                     && player.uniqueId != warp.playerId) {
                 customLore.add(2, "§cLOCKED")
-                val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
+                val warpItem = ItemStack(warpModel.icon).customModelData(warp.iconMeta).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) { guiEvent ->
                     if (guiEvent.isRightClick) {
                         // Right click to open options
@@ -238,7 +239,7 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             }
             else {
                 customLore.add(2, "Left Click to teleport")
-                val warpItem = ItemStack(warpModel.icon).name(warpModel.name).lore(customLore)
+                val warpItem = ItemStack(warpModel.icon).customModelData(warp.iconMeta).name(warpModel.name).lore(customLore)
                 guiWarpItem = GuiItem(warpItem) {guiEvent ->
 
                     if (guiEvent.isRightClick) {

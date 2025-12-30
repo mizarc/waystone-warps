@@ -1,5 +1,8 @@
 package dev.mizarc.waystonewarps.interaction.utils
 
+import IconMeta
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
 import net.kyori.adventure.text.Component
 import org.bukkit.*
 import org.bukkit.enchantments.Enchantment
@@ -10,6 +13,7 @@ import org.bukkit.material.MaterialData
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.function.Consumer
+import org.bukkit.Color
 
 
 fun ItemStack.amount(amount: Int): ItemStack {
@@ -131,6 +135,19 @@ fun ItemStack.setStringMeta(key: String, value: String): ItemStack {
     meta.persistentDataContainer.set(
         NamespacedKey("waystonewarps",key), PersistentDataType.STRING, value)
     itemMeta = meta
+    return this
+}
+
+@Suppress("UnstableApiUsage")
+fun ItemStack.customModelData(meta: IconMeta): ItemStack {
+    val builder = CustomModelData.customModelData()
+
+    meta.strings.forEach(builder::addString)
+    meta.floats.forEach(builder::addFloat)
+    meta.flags.forEach(builder::addFlag)
+    meta.colorsArgb.forEach { argb -> builder.addColor(Color.fromARGB(argb)) }
+
+    this.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build())
     return this
 }
 
