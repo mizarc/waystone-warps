@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.interaction.menus.management
 
+import CustomModelData
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
@@ -9,6 +10,7 @@ import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import io.papermc.paper.datacomponent.DataComponentTypes
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -38,20 +40,19 @@ class WarpIconMenu(private val player: Player,
         val inputPane = StaticPane(0, 0, 1, 1)
         inputPane.setOnClick {guiEvent ->
             guiEvent.isCancelled = true
-            val temp = guiEvent.cursor
-            val cursor = guiEvent.cursor.type
+            val itemOnCursor = guiEvent.cursor
 
-            if (cursor == Material.AIR) {
+            if (itemOnCursor.type == Material.AIR) {
                 inputPane.removeItem(0, 0)
                 gui.update()
                 return@setOnClick
             }
 
-            inputPane.addItem(GuiItem(ItemStack(cursor)), 0, 0)
+            inputPane.addItem(GuiItem(ItemStack(itemOnCursor.clone())), 0, 0)
             gui.update()
             thread(start = true) {
                 Thread.sleep(1)
-                player.setItemOnCursor(temp)
+                player.setItemOnCursor(itemOnCursor)
             }
         }
         gui.ingredientComponent.addPane(inputPane)
@@ -65,7 +66,18 @@ class WarpIconMenu(private val player: Player,
 
             // Set icon if item in slot
             if (newIcon != null) {
-                updateWarpIcon.execute(warp.id, newIcon.type.name)
+                val paperCmd = newIcon.getData(DataComponentTypes.CUSTOM_MODEL_DATA)
+                val iconMeta = if (paperCmd != null) {
+                    CustomModelData(
+                        strings = paperCmd.strings(),
+                        floats = paperCmd.floats(),
+                        flags = paperCmd.flags(),
+                        colorsArgb = paperCmd.colors().map { it.asARGB() }
+                    )
+                } else {
+                    CustomModelData()
+                }
+                updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
             }
 
             // Go back to edit menu
