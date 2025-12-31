@@ -54,7 +54,11 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         }
         val guiPrivacyItem = GuiItem(privacyIcon) {
             if (canChangeAccess) {
-                toggleLock.execute(player.uniqueId, warp.id)
+                toggleLock.execute(
+                    playerId = player.uniqueId,
+                    warpId = warp.id,
+                    bypassOwnership = player.hasPermission("waystones.admin.accesscontrol"),
+                )
                 open()
             }
         }

@@ -30,7 +30,6 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
                      private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
@@ -43,6 +42,13 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     private var playerNameSearch: String = ""
 
     override fun open() {
+        val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
+        if (!canManageWhitelist) {
+            player.sendMessage("§cYou don't have permission to manage the whitelist!")
+            menuNavigator.goBack()
+            return
+        }
+
         // Create player access menu
         val gui = ChestGui(6, "Player Access")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -268,7 +274,11 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 }
 
                 // Opens confirmation menu to ask to revoke access
-                else if (guiEvent.isRightClick && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)) {
+                else if (
+                    guiEvent.isRightClick
+                    && canManageWhitelist
+                    && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)
+                ) {
                     menuNavigator.openMenu(
                         ConfirmationMenu(menuNavigator, player, "Revoke ${foundPlayer.name}'s access?") {
                             revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
