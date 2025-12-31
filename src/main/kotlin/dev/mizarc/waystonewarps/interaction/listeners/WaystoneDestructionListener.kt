@@ -13,6 +13,7 @@ import org.bukkit.NamespacedKey
 import org.bukkit.block.Block
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockExplodeEvent
@@ -30,7 +31,7 @@ class WaystoneDestructionListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val breakWarpBlock: BreakWarpBlock by inject()
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onClaimHubDestroy(event: BlockBreakEvent) {
         val bottomBlockPosition = event.block.location.toPosition3D()
         val topBlockPosition = event.block.location.clone().apply { y += 1 }.toPosition3D()
