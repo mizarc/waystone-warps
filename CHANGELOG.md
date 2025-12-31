@@ -17,6 +17,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Fixed
 - Config not being read on the first launch, required restart before the plugin could actually let you do anything.
+- Waystones not being covered by protection plugins even though the block break itself is prevented.
 
 ## [0.3.5]
 
