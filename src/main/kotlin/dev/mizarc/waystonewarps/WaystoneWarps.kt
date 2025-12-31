@@ -38,7 +38,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
-import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_CreateInitialTables
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration0_CreateInitialTables
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_AddWarpIconMeta
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.SchemaMigrator
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
@@ -93,7 +94,8 @@ class WaystoneWarps: JavaPlugin() {
             SchemaMigrator(
                 db = storage.connection,
                 migrations = listOf(
-                    Migration1_CreateInitialTables(),
+                    Migration0_CreateInitialTables(),
+                    Migration1_AddWarpIconMeta(),
                 ),
             ).migrateToLatest()
         } catch (ex: Exception) {
