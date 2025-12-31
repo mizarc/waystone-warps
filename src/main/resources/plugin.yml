@@ -2,3 +2,43 @@ name: WaystoneWarps
 version: 0.3.5
 api-version: '1.21'
 main: dev.mizarc.waystonewarps.WaystoneWarps
+
+permissions:
+  waystones.command.warpmenu:
+    description: Allows access to the warp menu command
+    default: true
+
+  waystonewarps.bypass.*:
+    description: Full control of all waystones
+    default: op
+    children:
+      waystonewarps.bypass.accesscontrol: true
+      waystonewarps.bypass.manageplayers: true
+      waystonewarps.bypass.rename: true
+      waystonewarps.bypass.icon: true
+      waystonewarps.bypass.relocate: true
+      waystonewarps.bypass.openmenu: true
+
+  waystonewarps.bypass.accesscontrol:
+    description: Can change any waystone to private or public
+    default: op
+
+  waystonewarps.bypass.manageplayers:
+    description: Can manage whitelist on other waystones
+    default: op
+
+  waystonewarps.bypass.rename:
+    description: Can rename other waystones
+    default: op
+
+  waystonewarps.bypass.icon:
+    description: Can change other waystone icons
+    default: op
+
+  waystonewarps.bypass.relocate:
+    description: Can move any waystone
+    default: op
+
+  waystonewarps.bypass.openmenu:
+    description: Can open other players' waystone menus
+    default: op

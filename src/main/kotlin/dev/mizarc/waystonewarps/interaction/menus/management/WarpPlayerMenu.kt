@@ -16,6 +16,7 @@ import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -29,7 +30,6 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
                      private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
@@ -42,6 +42,13 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     private var playerNameSearch: String = ""
 
     override fun open() {
+        val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
+        if (!canManageWhitelist) {
+            player.sendMessage("§cYou don't have permission to manage the whitelist!")
+            menuNavigator.goBack()
+            return
+        }
+
         // Create player access menu
         val gui = ChestGui(6, "Player Access")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -221,7 +228,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
         val discovered = getWarpPlayerAccess.execute(warp.id)
-        val stockLore = listOf("Left Click to toggle whitelist")
+        val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
+        val stockLore = if (canManageWhitelist) {
+            listOf("Left Click to toggle whitelist")
+        } else {
+            listOf("§cYou don't have permission to manage the whitelist")
+        }
 
         for (foundPlayer in players) {
             // Modify lore text depending on if the player has discovered this warp or is whitelisted
@@ -244,23 +256,34 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             guiPlayerItem = GuiItem(playerItem) { guiEvent ->
 
                 // Toggles whitelist state
-                if (guiEvent.isLeftClick) {
-                    val result = toggleWhitelist.execute(warp.id, foundPlayer.uniqueId)
-                    if (result) {
-                        customLore.add(0, "§aWhitelisted")
-                    } else {
-                        customLore.remove("§aWhitelisted")
-                        if (viewMode == 1) {
-                            currentPagePane.removeItem(guiPlayerItem)
+                if (guiEvent.isLeftClick && canManageWhitelist) {
+                    val result = toggleWhitelist.execute(
+                        editorPlayerId = player.uniqueId,
+                        warpId = warp.id,
+                        targetPlayerId = foundPlayer.uniqueId,
+                        bypassOwnership = player.hasPermission("waystonewarps.bypass.manageplayers"),
+                    )
+                    result.onSuccess { isWhitelisted ->
+                        if (isWhitelisted) {
+                            customLore.add(0, "§aWhitelisted")
+                        } else {
+                            customLore.remove("§aWhitelisted")
+                            if (viewMode == 1) {
+                                currentPagePane.removeItem(guiPlayerItem)
+                            }
                         }
+                        playerItem.lore()
+                        playerItem.lore(customLore)
+                        gui.update()
                     }
-                    playerItem.lore()
-                    playerItem.lore(customLore)
-                    gui.update()
                 }
 
                 // Opens confirmation menu to ask to revoke access
-                else if (guiEvent.isRightClick && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)) {
+                else if (
+                    guiEvent.isRightClick
+                    && canManageWhitelist
+                    && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)
+                ) {
                     menuNavigator.openMenu(
                         ConfirmationMenu(menuNavigator, player, "Revoke ${foundPlayer.name}'s access?") {
                             revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)

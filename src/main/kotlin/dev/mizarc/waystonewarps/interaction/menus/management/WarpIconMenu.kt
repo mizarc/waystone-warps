@@ -9,6 +9,7 @@ import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import io.papermc.paper.datacomponent.DataComponentTypes
@@ -33,6 +34,14 @@ class WarpIconMenu(private val player: Player,
 
     @Suppress("UnstableApiUsage")
     override fun open() {
+        // Check if the player has permission to change the icon
+        val canChangeIcon = PermissionHelper.canChangeIcon(player, warp.playerId)
+        if (!canChangeIcon) {
+            player.sendMessage("§cYou don't have permission to change this waystone's icon!")
+            menuNavigator.goBack()
+            return
+        }
+
         val gui = FurnaceGui("Set Warp Icon")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
@@ -152,7 +161,16 @@ class WarpIconMenu(private val player: Player,
                     )
                 }
 
-                updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
+                val result = updateWarpIcon.execute(
+                    editorPlayerId = player.uniqueId,
+                    warpId = warp.id,
+                    materialName = newIcon.type.name,
+                    iconMeta = iconMeta,
+                    bypassOwnership = player.hasPermission("waystonewarps.bypass.icon"),
+                )
+                result.onFailure {
+                    player.sendMessage("§cFailed to update icon: ${it.message}")
+                }
             }
 
             // Go back to edit menu

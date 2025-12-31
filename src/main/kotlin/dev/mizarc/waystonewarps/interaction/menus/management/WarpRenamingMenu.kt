@@ -8,6 +8,7 @@ import dev.mizarc.waystonewarps.application.results.UpdateWarpNameResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
@@ -24,6 +25,14 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
     private var isConfirming = false
 
     override fun open() {
+        // Check if the player has permission to rename this warp
+        val canRename = PermissionHelper.canRename(player, warp.playerId)
+        if (!canRename) {
+            player.sendMessage("§cYou don't have permission to rename this waystone!")
+            menuNavigator.goBack()
+            return
+        }
+
         // Create homes menu
         val gui = AnvilGui("Renaming Warp")
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
@@ -59,7 +68,12 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
             }
 
             // Attempt renaming
-            val result = updateWarpName.execute(warp.id, player.uniqueId, name)
+            val result = updateWarpName.execute(
+                warpId = warp.id,
+                editorPlayerId = player.uniqueId,
+                name = name,
+                bypassOwnership = player.hasPermission("waystonewarps.bypass.rename"),
+            )
             when (result) {
                 UpdateWarpNameResult.SUCCESS -> menuNavigator.goBack()
                 UpdateWarpNameResult.WARP_NOT_FOUND -> {
@@ -86,6 +100,10 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
                     gui.update()
                 }
                 UpdateWarpNameResult.NAME_BLANK -> menuNavigator.goBack()
+                UpdateWarpNameResult.NOT_AUTHORIZED -> {
+                    player.sendMessage("§cYou don't have permission to rename this waystone!")
+                    menuNavigator.goBack()
+                }
             }
         }
 

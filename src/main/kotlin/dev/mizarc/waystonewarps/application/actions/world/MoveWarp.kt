@@ -13,10 +13,10 @@ class MoveWarp(private val warpRepository: WarpRepository,
                private val structureParticleService: StructureParticleService,
                private val hologramService: HologramService
 ) {
-    fun execute(playerId: UUID, warpId: UUID, position: Position3D): MoveWarpResult {
+    fun execute(playerId: UUID, warpId: UUID, position: Position3D, bypassOwnership: Boolean = false): MoveWarpResult {
         val warp = warpRepository.getById(warpId) ?: return MoveWarpResult.WARP_NOT_FOUND
 
-        if (warp.playerId != playerId) {
+        if (warp.playerId != playerId && !bypassOwnership) {
             return MoveWarpResult.NOT_OWNER
         }
 
