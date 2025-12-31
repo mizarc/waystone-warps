@@ -58,7 +58,12 @@ class MoveToolListener: Listener, KoinComponent {
         }
 
         // Try to move warp
-        val result = moveWarp.execute(event.player.uniqueId, UUID.fromString(warpId), aboveLocation.toPosition3D())
+        val result = moveWarp.execute(
+            event.player.uniqueId, 
+            UUID.fromString(warpId), 
+            aboveLocation.toPosition3D(),
+            bypassOwnership = event.player.hasPermission("waystones.admin.relocate")
+        )
         when (result) {
             MoveWarpResult.SUCCESS -> {
                 event.player.sendActionBar(
