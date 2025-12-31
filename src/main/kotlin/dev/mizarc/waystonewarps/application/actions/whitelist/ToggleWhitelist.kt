@@ -10,11 +10,16 @@ class ToggleWhitelist(
     private val warpRepository: WarpRepository
 ) {
 
-    fun execute(editorPlayerId: UUID, warpId: UUID, targetPlayerId: UUID): Result<Boolean> {
+    fun execute(
+        editorPlayerId: UUID,
+        warpId: UUID,
+        targetPlayerId: UUID,
+        bypassOwnership: Boolean = false,
+    ): Result<Boolean> {
         val warp = warpRepository.getById(warpId) ?: return Result.failure(Exception("Warp not found"))
 
         // Check if the editor owns the warp
-        if (warp.playerId != editorPlayerId) {
+        if (warp.playerId != editorPlayerId && !bypassOwnership) {
             return Result.failure(Exception("Not authorized"))
         }
 

@@ -6,13 +6,18 @@ import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import java.util.*
 
 class UpdateWarpName(private val warpRepository: WarpRepository, private val hologramService: HologramService) {
-    fun execute(warpId: UUID, editorPlayerId: UUID, name: String): UpdateWarpNameResult {
+    fun execute(
+        warpId: UUID,
+        editorPlayerId: UUID,
+        name: String,
+        bypassOwnership: Boolean = false,
+    ): UpdateWarpNameResult {
         if (name.isBlank()) return UpdateWarpNameResult.NAME_BLANK
 
         val warp = warpRepository.getById(warpId) ?: return UpdateWarpNameResult.WARP_NOT_FOUND
 
         // Check if the editor owns the warp
-        if (warp.playerId != editorPlayerId) {
+        if (warp.playerId != editorPlayerId && !bypassOwnership) {
             return UpdateWarpNameResult.NOT_AUTHORIZED
         }
 

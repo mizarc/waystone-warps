@@ -257,7 +257,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
                 // Toggles whitelist state
                 if (guiEvent.isLeftClick && canManageWhitelist) {
-                    val result = toggleWhitelist.execute(player.uniqueId, warp.id, foundPlayer.uniqueId)
+                    val result = toggleWhitelist.execute(
+                        editorPlayerId = player.uniqueId,
+                        warpId = warp.id,
+                        targetPlayerId = foundPlayer.uniqueId,
+                        bypassOwnership = player.hasPermission("waystones.admin.manage"),
+                    )
                     result.onSuccess { isWhitelisted ->
                         if (isWhitelisted) {
                             customLore.add(0, "§aWhitelisted")

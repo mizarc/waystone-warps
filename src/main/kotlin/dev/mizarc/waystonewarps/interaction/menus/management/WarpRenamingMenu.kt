@@ -68,7 +68,12 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
             }
 
             // Attempt renaming
-            val result = updateWarpName.execute(warp.id, player.uniqueId, name)
+            val result = updateWarpName.execute(
+                warpId = warp.id,
+                editorPlayerId = player.uniqueId,
+                name = name,
+                bypassOwnership = player.hasPermission("waystones.admin.rename"),
+            )
             when (result) {
                 UpdateWarpNameResult.SUCCESS -> menuNavigator.goBack()
                 UpdateWarpNameResult.WARP_NOT_FOUND -> {
