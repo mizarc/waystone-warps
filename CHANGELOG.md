@@ -10,6 +10,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Support for Minecraft 1.21.11.
 - Waystone creation is covered by protections that protect against block placing.
 - Icons for waystones now support metadata including custom model data, armour dyes, trims, firework colours, potion types.
+- Automatic database schema migrations on startup, including schema version tracking.
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
