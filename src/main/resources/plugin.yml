@@ -13,7 +13,7 @@ permissions:
     default: op
     children:
       waystonewarps.bypass.accesscontrol: true
-      waystonewarps.bypass.manage: true
+      waystonewarps.bypass.manageplayers: true
       waystonewarps.bypass.rename: true
       waystonewarps.bypass.icon: true
       waystonewarps.bypass.relocate: true
@@ -23,7 +23,7 @@ permissions:
     description: Can change any waystone to private or public
     default: op
 
-  waystonewarps.bypass.manage:
+  waystonewarps.bypass.manageplayers:
     description: Can manage whitelist on other waystones
     default: op
 

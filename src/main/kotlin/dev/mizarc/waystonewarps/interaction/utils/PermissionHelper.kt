@@ -28,7 +28,7 @@ object PermissionHelper {
      * Checks if a player can manage the whitelist on a waystone
      */
     fun canManageWhitelist(player: Player, waystoneOwnerId: UUID): Boolean {
-        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.manage")
+        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.manageplayers")
     }
 
     /**
