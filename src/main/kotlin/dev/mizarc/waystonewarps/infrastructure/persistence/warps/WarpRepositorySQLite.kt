@@ -20,7 +20,6 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     init {
-        createTable()
         preload()
     }
 
@@ -67,13 +66,6 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     override fun remove(id: UUID) {
         warps.remove(id)
         storage.connection.executeUpdate("DELETE FROM warps WHERE id=?", id)
-    }
-
-    private fun createTable() {
-        storage.connection.executeUpdate("CREATE TABLE IF NOT EXISTS warps (id TEXT NOT NULL, " +
-                "playerId TEXT NOT NULL, creationTime TEXT NOT NULL, name TEXT, worldId TEXT NOT NULL, " +
-                "positionX INTEGER NOT NULL, positionY INTEGER NOT NULL, positionZ INTEGER NOT NULL, icon TEXT, iconMeta TEXT," +
-                "block TEXT, isLocked INTEGER);")
     }
 
     private fun preload() {

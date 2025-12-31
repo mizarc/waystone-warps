@@ -38,6 +38,8 @@ import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_CreateInitialTables
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.SchemaMigrator
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
@@ -86,6 +88,20 @@ class WaystoneWarps: JavaPlugin() {
 
         // Get storage type
         storage = SQLiteStorage(this.dataFolder)
+
+        try {
+            SchemaMigrator(
+                db = storage.connection,
+                migrations = listOf(
+                    Migration1_CreateInitialTables(),
+                ),
+            ).migrateToLatest()
+        } catch (ex: Exception) {
+            logger.severe("Failed to migrate database: ${ex.message}")
+            ex.printStackTrace()
+            server.pluginManager.disablePlugin(this)
+            return
+        }
 
         // Get command manager
         commandManager = PaperCommandManager(this)

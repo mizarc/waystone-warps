@@ -12,7 +12,6 @@ class DiscoveryRepositorySQLite(private val storage: Storage<Database>): Discove
     private val discoveries: MutableMap<UUID, MutableSet<Discovery>> = mutableMapOf()
 
     init {
-        createTable()
         preload()
     }
 

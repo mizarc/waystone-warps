@@ -11,7 +11,6 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
     private val whitelistMap = HashMap<UUID, MutableSet<UUID>>()
 
     init {
-        createTable()
         preload()
     }
 
@@ -49,17 +48,6 @@ class WhitelistRepositorySQLite(private val storage: Storage<Database>): Whiteli
     override fun removeByWarp(warpId: UUID) {
         whitelistMap.remove(warpId)
         storage.connection.executeUpdate("DELETE FROM whitelist WHERE warpId=?", warpId)
-    }
-
-    private fun createTable() {
-        storage.connection.executeUpdate("""
-            CREATE TABLE IF NOT EXISTS whitelist (
-                warpId TEXT NOT NULL,
-                playerId TEXT NOT NULL,
-                creationTime TEXT NOT NULL,
-                PRIMARY KEY (warpId, playerId)
-            );"""
-        )
     }
 
     private fun preload() {
