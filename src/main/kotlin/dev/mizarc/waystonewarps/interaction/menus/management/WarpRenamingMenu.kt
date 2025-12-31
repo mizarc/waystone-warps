@@ -72,7 +72,7 @@ class WarpRenamingMenu(private val player: Player, private val menuNavigator: Me
                 warpId = warp.id,
                 editorPlayerId = player.uniqueId,
                 name = name,
-                bypassOwnership = player.hasPermission("waystones.admin.rename"),
+                bypassOwnership = player.hasPermission("waystonewarps.bypass.rename"),
             )
             when (result) {
                 UpdateWarpNameResult.SUCCESS -> menuNavigator.goBack()

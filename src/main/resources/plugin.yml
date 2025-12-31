@@ -8,37 +8,37 @@ permissions:
     description: Allows access to the warp menu command
     default: true
 
-  waystones.admin.*:
+  waystonewarps.bypass.*:
     description: Full control of all waystones
     default: op
     children:
-      waystones.admin.accesscontrol: true
-      waystones.admin.manage: true
-      waystones.admin.rename: true
-      waystones.admin.icon: true
-      waystones.admin.relocate: true
-      waystones.admin.openmenu: true
+      waystonewarps.bypass.accesscontrol: true
+      waystonewarps.bypass.manage: true
+      waystonewarps.bypass.rename: true
+      waystonewarps.bypass.icon: true
+      waystonewarps.bypass.relocate: true
+      waystonewarps.bypass.openmenu: true
 
-  waystones.admin.accesscontrol:
+  waystonewarps.bypass.accesscontrol:
     description: Can change any waystone to private or public
     default: op
 
-  waystones.admin.manage:
+  waystonewarps.bypass.manage:
     description: Can manage whitelist on other waystones
     default: op
 
-  waystones.admin.rename:
+  waystonewarps.bypass.rename:
     description: Can rename other waystones
     default: op
 
-  waystones.admin.icon:
+  waystonewarps.bypass.icon:
     description: Can change other waystone icons
     default: op
 
-  waystones.admin.relocate:
+  waystonewarps.bypass.relocate:
     description: Can move any waystone
     default: op
 
-  waystones.admin.openmenu:
+  waystonewarps.bypass.openmenu:
     description: Can open other players' waystone menus
     default: op

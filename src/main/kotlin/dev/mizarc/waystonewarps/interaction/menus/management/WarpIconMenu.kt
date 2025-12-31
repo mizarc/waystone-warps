@@ -166,7 +166,7 @@ class WarpIconMenu(private val player: Player,
                     warpId = warp.id,
                     materialName = newIcon.type.name,
                     iconMeta = iconMeta,
-                    bypassOwnership = player.hasPermission("waystones.admin.icon"),
+                    bypassOwnership = player.hasPermission("waystonewarps.bypass.icon"),
                 )
                 result.onFailure {
                     player.sendMessage("§cFailed to update icon: ${it.message}")

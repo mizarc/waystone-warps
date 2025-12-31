@@ -62,7 +62,7 @@ class MoveToolListener: Listener, KoinComponent {
             event.player.uniqueId, 
             UUID.fromString(warpId), 
             aboveLocation.toPosition3D(),
-            bypassOwnership = event.player.hasPermission("waystones.admin.relocate")
+            bypassOwnership = event.player.hasPermission("waystonewarps.bypass.relocate")
         )
         when (result) {
             MoveWarpResult.SUCCESS -> {
