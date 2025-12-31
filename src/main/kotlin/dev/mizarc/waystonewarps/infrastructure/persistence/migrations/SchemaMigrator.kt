@@ -47,8 +47,39 @@ class SchemaMigrator(
 
         val row = db.getResults("SELECT version FROM schema_version LIMIT 1;").firstOrNull()
         if (row == null) {
-            db.executeUpdate("INSERT INTO schema_version (version) VALUES (0);")
+            val inferred = inferCurrentVersion()
+            db.executeUpdate("INSERT INTO schema_version (version) VALUES (?);", inferred)
         }
+    }
+
+    private fun inferCurrentVersion(): Int {
+        if (!hasTable("warps")) {
+            return -1
+        }
+
+        return if (hasColumn("warps", "iconMeta")) {
+            1
+        } else {
+            0
+        }
+    }
+
+    private fun hasTable(tableName: String): Boolean {
+        val row = db.getResults(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name=? LIMIT 1;",
+            tableName
+        ).firstOrNull()
+        return row != null
+    }
+
+    private fun hasColumn(tableName: String, columnName: String): Boolean {
+        val results = db.getResults("PRAGMA table_info($tableName);")
+        for (row in results) {
+            if (row.getString("name").equals(columnName, ignoreCase = true)) {
+                return true
+            }
+        }
+        return false
     }
 
     private fun getCurrentVersion(): Int {
