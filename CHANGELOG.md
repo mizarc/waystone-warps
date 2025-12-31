@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [Latest]
+
+### Added
+- Support for Minecraft 1.21.11.
+- Waystone creation is covered by protections that protect against block placing.
+- Icons for waystones now support metadata including custom model data, armour dyes, trims, firework colours, potion types.
+- Automatic database schema migrations on startup, including schema version tracking.
+
+### Changed
+- Menu buttons are now gold with a grey description for standardisation.
+
+### Fixed
+- Config not being read on the first launch, required restart before the plugin could actually let you do anything.
+- Waystones not being covered by protection plugins even though the block break itself is prevented.
+
+## [0.3.5]
+
+### Added
+- Support for Minecraft 1.21.7, 1.21.8, 1.21.9, and 1.21.10.
+
+### Changed
+- Waystones are now reverted back to their original state when the plugin is disabled.
+
 ## [0.3.4]
 
 ### Added

@@ -22,10 +22,11 @@ import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
 import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
+import dev.mizarc.waystonewarps.application.actions.world.AddAllDisplays
 import dev.mizarc.waystonewarps.application.actions.world.IsPositionInTeleportZone
 import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
-import dev.mizarc.waystonewarps.application.actions.world.RefreshAllDisplays
+import dev.mizarc.waystonewarps.application.actions.world.RemoveAllDisplays
 import dev.mizarc.waystonewarps.application.services.*
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
@@ -37,6 +38,9 @@ import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration0_CreateInitialTables
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_AddWarpIconMeta
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.SchemaMigrator
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
@@ -86,6 +90,21 @@ class WaystoneWarps: JavaPlugin() {
         // Get storage type
         storage = SQLiteStorage(this.dataFolder)
 
+        try {
+            SchemaMigrator(
+                db = storage.connection,
+                migrations = listOf(
+                    Migration0_CreateInitialTables(),
+                    Migration1_AddWarpIconMeta(),
+                ),
+            ).migrateToLatest()
+        } catch (ex: Exception) {
+            logger.severe("Failed to migrate database: ${ex.message}")
+            ex.printStackTrace()
+            server.pluginManager.disablePlugin(this)
+            return
+        }
+
         // Get command manager
         commandManager = PaperCommandManager(this)
 
@@ -97,7 +116,7 @@ class WaystoneWarps: JavaPlugin() {
         registerDependencies()
         registerCommands()
         registerEvents()
-        RefreshAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
+        AddAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
 
         for (warp in warpRepository.getAll()) {
             structureParticleService.spawnParticles(warp)
@@ -107,6 +126,7 @@ class WaystoneWarps: JavaPlugin() {
     }
 
     override fun onDisable() {
+        RemoveAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
         logger.info("WaystoneWarps has been Disabled")
     }
 
@@ -120,6 +140,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun initialiseConfig() {
         saveDefaultConfig()
+        reloadConfig()
         getResource("config.yml")?.use { defaultConfigStream ->
             val sampleConfigFile = File(dataFolder, "sample-config.yml")
             try {

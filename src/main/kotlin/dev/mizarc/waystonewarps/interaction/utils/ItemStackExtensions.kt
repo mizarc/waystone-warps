@@ -1,6 +1,14 @@
 package dev.mizarc.waystonewarps.interaction.utils
 
+import IconMeta
+import com.destroystokyo.paper.profile.ProfileProperty
+import io.papermc.paper.datacomponent.DataComponentTypes
+import io.papermc.paper.datacomponent.item.CustomModelData
+import io.papermc.paper.registry.RegistryAccess
+import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import org.bukkit.*
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
@@ -10,6 +18,14 @@ import org.bukkit.material.MaterialData
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.function.Consumer
+import org.bukkit.Color
+import org.bukkit.block.banner.Pattern
+import org.bukkit.inventory.meta.ArmorMeta
+import org.bukkit.inventory.meta.BannerMeta
+import org.bukkit.inventory.meta.FireworkEffectMeta
+import org.bukkit.inventory.meta.PotionMeta
+import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.inventory.meta.trim.ArmorTrim
 
 
 fun ItemStack.amount(amount: Int): ItemStack {
@@ -17,33 +33,34 @@ fun ItemStack.amount(amount: Int): ItemStack {
     return this
 }
 
-fun ItemStack.name(name: String): ItemStack {
+fun ItemStack.name(name: String, color: TextColor = NamedTextColor.GOLD): ItemStack {
     val meta = itemMeta
-    meta.itemName(Component.text(name))
+    meta.addItemFlags(*ItemFlag.entries.toTypedArray())
+    meta.displayName(Component.text(name).color(color).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
     itemMeta = meta
     return this
 }
 
-fun ItemStack.lore(text: String): ItemStack {
-    val meta = itemMeta
-    var lore: MutableList<String>? = meta!!.lore
-    if (lore == null) {
-        lore = ArrayList()
-    }
-    lore.add(text)
-    meta.lore = lore.c()
+fun ItemStack.lore(text: String, color: TextColor = NamedTextColor.GRAY): ItemStack {
+    val meta = itemMeta ?: return this
+    val currentLore = meta.lore() ?: mutableListOf()
+
+    // Add new line with specified color and no italics
+    currentLore.add(Component.text(text).color(color).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
+
+    meta.lore(currentLore)
     itemMeta = meta
     return this
 }
 
-fun ItemStack.lore(vararg text: String): ItemStack {
-    Arrays.stream(text).forEach { this.lore(it) }
+fun ItemStack.lore(vararg text: String, color: TextColor = NamedTextColor.GRAY): ItemStack {
+    Arrays.stream(text).forEach { this.lore(it, color) }
     return this
 }
 
-fun ItemStack.lore(text: List<String>): ItemStack {
+fun ItemStack.lore(text: List<String>, color: TextColor = NamedTextColor.GRAY): ItemStack {
     this.clearLore()
-    text.forEach { this.lore(it) }
+    text.forEach { this.lore(it, color) }
     return this
 }
 
@@ -131,6 +148,114 @@ fun ItemStack.setStringMeta(key: String, value: String): ItemStack {
     meta.persistentDataContainer.set(
         NamespacedKey("waystonewarps",key), PersistentDataType.STRING, value)
     itemMeta = meta
+    return this
+}
+
+@Suppress("UnstableApiUsage")
+fun ItemStack.applyIconMeta(meta: IconMeta): ItemStack {
+
+    // Custom model data
+    val builder = CustomModelData.customModelData()
+    meta.strings.forEach(builder::addString)
+    meta.floats.forEach(builder::addFloat)
+    meta.flags.forEach(builder::addFlag)
+    meta.colorsArgb.forEach { argb -> builder.addColor(Color.fromARGB(argb)) }
+
+    // Potion base type
+    if (meta.potionTypeKey != null) {
+        val potionKey = NamespacedKey.fromString(meta.potionTypeKey)
+        if (potionKey != null) {
+            val potionType = Registry.POTION.get(potionKey)
+            if (potionType != null) {
+                val im = this.itemMeta
+                if (im is PotionMeta) {
+                    im.basePotionType = potionType
+                    this.itemMeta = im
+                }
+            }
+        }
+    }
+
+    // Leather armor dye color
+    if (meta.leatherColorRgb != null) {
+        val im = this.itemMeta
+        if (im is LeatherArmorMeta) {
+            im.setColor(Color.fromRGB(meta.leatherColorRgb))
+            this.itemMeta = im
+        }
+    }
+
+    // Armor trim
+    val registryAccess = RegistryAccess.registryAccess()
+    val trimPatternRegistry = registryAccess.getRegistry(RegistryKey.TRIM_PATTERN)
+    val trimMaterialRegistry = registryAccess.getRegistry(RegistryKey.TRIM_MATERIAL)
+    if (meta.trimPatternKey != null && meta.trimMaterialKey != null) {
+        val patternKey = NamespacedKey.fromString(meta.trimPatternKey)
+        val materialKey = NamespacedKey.fromString(meta.trimMaterialKey)
+        if (patternKey != null && materialKey != null) {
+            val pattern = trimPatternRegistry.get(patternKey)
+            val material = trimMaterialRegistry.get(materialKey)
+            if (pattern != null && material != null) {
+                (this.itemMeta as? ArmorMeta)?.let { im ->
+                    im.trim = ArmorTrim(material, pattern)
+                    this.itemMeta = im
+                }
+            }
+        }
+    }
+
+    // Banner base color + patterns (stored as "<patternKey>|<DyeColorName>")
+    val bannerRegistry = registryAccess.getRegistry(RegistryKey.BANNER_PATTERN)
+    if (meta.bannerBaseColor != null || meta.bannerPatterns.isNotEmpty()) {
+        (this.itemMeta as? BannerMeta)?.let { im ->
+            if (meta.bannerPatterns.isNotEmpty()) {
+                val patterns = meta.bannerPatterns.mapNotNull { raw ->
+                    val parts = raw.split("|", limit = 2)
+                    if (parts.size != 2) return@mapNotNull null
+
+                    val pKey = NamespacedKey.fromString(parts[0]) ?: return@mapNotNull null
+                    val pType = bannerRegistry.get(pKey) ?: return@mapNotNull null
+                    val dye = runCatching { DyeColor.valueOf(parts[1]) }.getOrNull() ?: return@mapNotNull null
+
+                    Pattern(dye, pType)
+                }
+                im.patterns = patterns
+            }
+
+            this.itemMeta = im
+        }
+    }
+
+    // Skull texture (freeze at time of set): use textures property if present
+    if (meta.skullTextureValue != null) {
+        (this.itemMeta as? SkullMeta)?.let { im ->
+            val profile = Bukkit.createProfile(UUID.randomUUID(), null)
+            profile.setProperty(ProfileProperty("textures", meta.skullTextureValue, meta.skullTextureSignature))
+            im.playerProfile = profile
+            this.itemMeta = im
+        }
+    }
+
+    // Firework star color (primary)
+    meta.fireworkStarColorRgb?.let { rgb ->
+        (this.itemMeta as? FireworkEffectMeta)?.let { im ->
+            val existing = im.effect
+            val b = FireworkEffect.builder()
+
+            if (existing != null) {
+                b.with(existing.type)
+                if (existing.hasFlicker()) b.flicker(true)
+                if (existing.hasTrail()) b.trail(true)
+                b.withFade(existing.fadeColors)
+            }
+
+            b.withColor(Color.fromRGB(rgb))
+            im.effect = b.build()
+            this.itemMeta = im
+        }
+    }
+
+    this.setData(DataComponentTypes.CUSTOM_MODEL_DATA, builder.build())
     return this
 }
 

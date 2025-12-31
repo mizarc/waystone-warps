@@ -1,7 +1,7 @@
 package dev.mizarc.waystonewarps.domain.warps
 
+import IconMeta
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
-import org.bukkit.Material
 import java.time.Instant
 import java.util.*
 import kotlin.concurrent.thread
@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
  * @property icon The name of the material to use as an icon.
  */
 class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
-           var position: Position3D, var icon: String, var block: String, var isLocked: Boolean) {
+           var position: Position3D, var icon: String, var iconMeta: IconMeta, var block: String, var isLocked: Boolean) {
     var breakCount = 3
 
     private val defaultBreakCount = 3
@@ -32,7 +32,7 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
      * @param block The base block being used for the physical appearance.
      */
     constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String, block: String) : this(
-        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", block, false)
+        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", IconMeta(), block, false)
 
     /**
      * Resets the break count after a set period of time.
