@@ -161,7 +161,6 @@ class WarpIconMenu(private val player: Player,
                     )
                 }
 
-                updateWarpIcon.execute(warp.id, newIcon.type.name, iconMeta)
                 val result = updateWarpIcon.execute(player.uniqueId, warp.id, newIcon.type.name)
                 result.onFailure {
                     player.sendMessage("§cFailed to update icon: ${it.message}")

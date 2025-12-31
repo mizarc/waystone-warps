@@ -17,6 +17,7 @@ permissions:
       waystones.admin.rename: true
       waystones.admin.icon: true
       waystones.admin.relocate: true
+      waystones.admin.openmenu: true
 
   waystones.admin.accesscontrol:
     description: Can change any waystone to private or public
@@ -36,4 +37,8 @@ permissions:
 
   waystones.admin.relocate:
     description: Can move any waystone
+    default: op
+
+  waystones.admin.openmenu:
+    description: Can open other players' waystone menus
     default: op

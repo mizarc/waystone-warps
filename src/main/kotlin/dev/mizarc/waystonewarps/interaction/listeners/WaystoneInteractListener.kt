@@ -38,6 +38,8 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val isValidWarpBase: IsValidWarpBase by inject()
 
+    private val openOtherMenuPermission = "waystones.admin.openmenu"
+
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     fun onLodestoneInteract(event: PlayerInteractEvent) {
         val player: Player = event.player
@@ -58,7 +60,11 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             // Check if warp is locked and alert if no access
             player.swingMainHand()
             event.isCancelled = true
-            if (warp.isLocked && warp.playerId != player.uniqueId
+            val isOwner = warp.playerId == player.uniqueId
+            val canOpenOtherMenu = player.hasPermission(openOtherMenuPermission)
+            val isAdminMenuOpenAttempt = !isOwner && canOpenOtherMenu && player.isSneaking
+
+            if (warp.isLocked && !isOwner && !isAdminMenuOpenAttempt
                     && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 player.sendActionBar(Component.text("Warp is set to private").color(PrimaryColourPalette.FAILED.color))
                 return
@@ -70,6 +76,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             particleLocation.y += 0.5
             particleLocation.z += 0.5
 
+            // Waystone owner path.
             if (it.playerId == player.uniqueId) {
                 if (configService.allowWarpsMenuViaWaystone()) {
                     if (event.player.isSneaking) {
@@ -80,7 +87,19 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                 } else {
                     menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
                 }
+
+            // Non-owner path.
             } else {
+                // Allow server admins to open the management menu.
+                if (isAdminMenuOpenAttempt) {
+                    menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
+                    return
+                }
+
+                if (configService.allowWarpsMenuViaWaystone()) {
+                    menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                }
+
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.SUCCESS.color)
