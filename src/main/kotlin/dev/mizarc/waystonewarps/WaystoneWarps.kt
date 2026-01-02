@@ -218,8 +218,8 @@ class WaystoneWarps: JavaPlugin() {
             single { GetFavouritedWarpAccess(discoveryRepository, warpRepository) }
             single { GetOwnedWarps(warpRepository) }
             single { ListInvalidWarps(warpRepository, worldService) }
-            single { RemoveAllInvalidWarps(warpRepository, worldService) }
-            single { RemoveInvalidWarpsForWorld(warpRepository, worldService) }
+            single { RemoveAllInvalidWarps(warpRepository, worldService, discoveryRepository, whitelistRepository) }
+            single { RemoveInvalidWarpsForWorld(warpRepository, worldService, discoveryRepository, whitelistRepository) }
         }
 
         startKoin { modules(repositories, actions) }
