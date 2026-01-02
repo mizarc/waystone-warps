@@ -199,7 +199,7 @@ class WaystoneWarps: JavaPlugin() {
             single { UpdateWarpName(warpRepository, hologramService) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
-                discoveryRepository, structureParticleService, hologramService) }
+                discoveryRepository, whitelistRepository, structureParticleService, hologramService) }
             single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService,
                 discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
