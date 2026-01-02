@@ -30,6 +30,15 @@ interface WarpRepository {
      */
     fun getByPlayer(playerId: UUID): List<Warp>
 
+
+    /**
+     * Gets all warps for a particular world.
+     *
+     * @param worldId The world to retrieve the warps for.
+     * @return A set of warps in the world.
+     */
+    fun getByWorld(worldId: UUID): List<Warp>
+
     /**
      * Gets a warp owned by a player by name.
      *
