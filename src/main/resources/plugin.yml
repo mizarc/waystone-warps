@@ -42,3 +42,23 @@ permissions:
   waystonewarps.bypass.openmenu:
     description: Can open other players' waystone menus
     default: op
+
+  waystonewarps.admin.invalids.*:
+    description: Access to all invalid warp management commands
+    default: op
+    children:
+      waystonewarps.admin.invalids.list: true
+      waystonewarps.admin.invalids.remove: true
+      waystonewarps.admin.invalids.removeall: true
+
+  waystonewarps.admin.invalids.list:
+    description: Allows listing warps in invalid worlds
+    default: op
+
+  waystonewarps.admin.invalids.remove:
+    description: Allows removing warps from specific invalid worlds
+    default: op
+
+  waystonewarps.admin.invalids.removeall:
+    description: Allows removing all warps from all invalid worlds
+    default: op

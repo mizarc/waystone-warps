@@ -7,13 +7,16 @@ import dev.mizarc.waystonewarps.application.services.StructureParticleService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
+import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import java.util.UUID
 
-class BreakWarpBlock(private val warpRepository: WarpRepository,
-                     private val structureBuilderService: StructureBuilderService,
-                     private val discoveryRepository: DiscoveryRepository,
-                     private val structureParticleService: StructureParticleService,
-                     private val hologramService: HologramService
+class BreakWarpBlock(
+    private val warpRepository: WarpRepository,
+    private val structureBuilderService: StructureBuilderService,
+    private val discoveryRepository: DiscoveryRepository,
+    private val whitelistRepository: WhitelistRepository,
+    private val structureParticleService: StructureParticleService,
+    private val hologramService: HologramService
 ) {
     fun execute(position: Position3D, worldId: UUID): BreakWarpResult  {
         val warp = warpRepository.getByPosition(position, worldId) ?: return BreakWarpResult.WarpNotFound
@@ -29,10 +32,15 @@ class BreakWarpBlock(private val warpRepository: WarpRepository,
 
         // Warp has been broken
         warpRepository.remove(warp.id)
-        val discoveries = discoveryRepository.getByWarp(warp.id)
-        for (discovery in discoveries) {
+        
+        // Remove all discoveries for this warp
+        discoveryRepository.getByWarp(warp.id).forEach { discovery ->
             discoveryRepository.remove(discovery.warpId, discovery.playerId)
         }
+        
+        // Remove all whitelist entries for this warp
+        whitelistRepository.removeByWarp(warp.id)
+        
         structureBuilderService.revertStructure(warp)
         structureParticleService.removeParticles(warp)
         hologramService.removeHologram(warp)
