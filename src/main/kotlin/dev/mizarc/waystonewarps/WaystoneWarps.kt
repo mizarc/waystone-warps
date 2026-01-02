@@ -2,6 +2,9 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.idb.Database
+import dev.mizarc.waystonewarps.application.actions.administration.ListInvalidWarps
+import dev.mizarc.waystonewarps.application.actions.administration.RemoveAllInvalidWarps
+import dev.mizarc.waystonewarps.application.actions.administration.RemoveInvalidWarpsForWorld
 import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetFavouritedWarpAccess
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
@@ -33,6 +36,7 @@ import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
+import dev.mizarc.waystonewarps.domain.world.WorldService
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
@@ -48,6 +52,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.whitelist.WhitelistRe
 import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
+import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
@@ -79,6 +84,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var teleportationService: TeleportationService
     private lateinit var structureParticleService: StructureParticleService
     private lateinit var playerParticleService: PlayerParticleService
+    private lateinit var worldService: WorldService
     private lateinit var hologramService: HologramService
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
@@ -173,6 +179,7 @@ class WaystoneWarps: JavaPlugin() {
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
         playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
         hologramService = HologramServiceBukkit(configService)
+        worldService = WorldServiceBukkit()
     }
 
     private fun registerDependencies() {
@@ -210,6 +217,9 @@ class WaystoneWarps: JavaPlugin() {
             single { ToggleFavouriteDiscovery(discoveryRepository) }
             single { GetFavouritedWarpAccess(discoveryRepository, warpRepository) }
             single { GetOwnedWarps(warpRepository) }
+            single { ListInvalidWarps(warpRepository, worldService) }
+            single { RemoveAllInvalidWarps(warpRepository, worldService) }
+            single { RemoveInvalidWarpsForWorld(warpRepository, worldService) }
         }
 
         startKoin { modules(repositories, actions) }
@@ -217,6 +227,7 @@ class WaystoneWarps: JavaPlugin() {
 
     private fun registerCommands() {
         commandManager.registerCommand(WarpMenuCommand())
+        commandManager.registerCommand(InvalidsCommand())
     }
 
     private fun registerEvents() {

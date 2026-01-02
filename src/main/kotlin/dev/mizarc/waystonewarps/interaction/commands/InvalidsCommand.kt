@@ -9,19 +9,19 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Bukkit
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.*
 
 @CommandAlias("waystonewarps|ww")
 @CommandPermission("waystonewarps.admin.invalids")
-class InvalidsCommand(
-    private val listInvalidWarps: ListInvalidWarps,
-    private val removeAllInvalidWarps: RemoveAllInvalidWarps,
-    private val removeInvalidWarpsForWorld: RemoveInvalidWarpsForWorld
-) : BaseCommand() {
+class InvalidsCommand : BaseCommand(), KoinComponent {
+    private val listInvalidWarps: ListInvalidWarps by inject()
+    private val removeAllInvalidWarps: RemoveAllInvalidWarps by inject()
+    private val removeInvalidWarpsForWorld: RemoveInvalidWarpsForWorld by inject()
 
     @Subcommand("invalids list")
     @CommandPermission("waystonewarps.admin.invalids.list")
@@ -41,7 +41,7 @@ class InvalidsCommand(
             .sortedByDescending { (_, count) -> count }
 
         val header = Component.text()
-            .content("--- Invalid Warps (${warps.size} total) ---")
+            .content("--- Worlds with invalid warps: (${warps.size} total) ---")
             .color(NamedTextColor.GOLD)
             .build()
         sender.sendMessage(header)
@@ -70,10 +70,36 @@ class InvalidsCommand(
     @Subcommand("invalids remove")
     @CommandPermission("waystonewarps.admin.invalids.remove")
     @Description("Remove warps in a specific world")
-    fun onRemoveInvalids(sender: CommandSender, @Name("world") worldId: UUID) {
-        val (removed, total) = removeInvalidWarpsForWorld.execute(worldId)
-        val worldName = Bukkit.getWorld(worldId)?.name ?: worldId.toString()
-        sender.sendMessage("§aRemoved $removed warps from world '$worldName' (out of $total checked).")
+    fun onRemoveInvalids(sender: CommandSender, @Name("world") worldId: String) {
+        try {
+            val uuid = try {
+                UUID.fromString(worldId)
+            } catch (e: IllegalArgumentException) {
+                // Try to find world by name if UUID parsing fails
+                val world = Bukkit.getWorld(worldId)
+                if (world == null) {
+                    sender.sendMessage(Component.text("Error: '$worldId' is not a valid UUID or world name", NamedTextColor.RED))
+                    return
+                }
+                world.uid
+            }
+            
+            val (removed, total) = removeInvalidWarpsForWorld.execute(uuid)
+            val world = Bukkit.getWorld(uuid)
+            val worldName = world?.name ?: "Unknown World ($uuid)"
+            
+            val message = Component.text()
+                .append(Component.text("Removed ", NamedTextColor.GREEN))
+                .append(Component.text(removed, NamedTextColor.WHITE))
+                .append(Component.text(" warps from world '", NamedTextColor.GREEN))
+                .append(Component.text(worldName, NamedTextColor.YELLOW))
+                .append(Component.text("' ", NamedTextColor.GREEN))
+                .build()
+                
+            sender.sendMessage(message)
+        } catch (e: Exception) {
+            sender.sendMessage(Component.text("An error occurred while removing warps: ${e.message}", NamedTextColor.RED))
+        }
     }
 
     @Subcommand("invalids removeall")
@@ -81,6 +107,6 @@ class InvalidsCommand(
     @Description("Remove all warps in invalid worlds")
     fun onRemoveAllInvalids(sender: CommandSender) {
         val (removed, total) = removeAllInvalidWarps.execute()
-        sender.sendMessage("§aRemoved $removed invalid warps (out of $total checked).")
+        sender.sendMessage("§aRemoved $removed invalid warps.")
     }
 }
