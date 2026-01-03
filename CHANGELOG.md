@@ -38,6 +38,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - New permission to disallow the creation of warps `waystonewarps.create`
 - New permission to disallow the discovery of warps `waystonewarps.discover`
 - New permission to use the /warpmenu command `waystonewarps.command.warpmenu`
+- Localisation support, with languages now contained in properties files in the lang folder. Currently only supports English.
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
