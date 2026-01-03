@@ -141,6 +141,11 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             Bukkit.getPluginManager().callEvent(testEvent)
             if (testEvent.isCancelled) return
 
+            if (!player.hasPermission("waystonewarps.create")) {
+                player.sendActionBar(Component.text("You don't have permission to create warps").color(PrimaryColourPalette.FAILED.color))
+                return
+            }
+
             // Open the menu
             menuNavigator.openMenu(WarpNamingMenu(player, menuNavigator, clickedBlock.location))
         }

@@ -11,7 +11,6 @@ import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
-import dev.mizarc.waystonewarps.infrastructure.services.HologramServiceBukkit
 import java.time.Instant
 import java.util.*
 

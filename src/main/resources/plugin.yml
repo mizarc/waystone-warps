@@ -18,6 +18,11 @@ permissions:
       waystonewarps.bypass.icon: true
       waystonewarps.bypass.relocate: true
       waystonewarps.bypass.openmenu: true
+      waystonewarps.create: true
+
+  waystonewarps.create:
+    description: Allows creating waystone warps
+    default: true
 
   waystonewarps.bypass.accesscontrol:
     description: Can change any waystone to private or public
