@@ -35,8 +35,8 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   - `waystonewarps.teleport`: Disallows teleportation entirely
   - `waystonewarps.teleport.interworld`: Disallows teleportation to undiscovered warps
   - `waystonewarps.teleport.cooldown_bypass`: Disallows teleportation to undiscovered warps
-- New permission to disallow the creation of warps:
-  - `waystonewarps.create`
+- New permission to disallow the creation of warps `waystonewarps.create`
+- New permission to disallow the discovery of warps `waystonewarps.discover`
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
