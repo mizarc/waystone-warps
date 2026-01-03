@@ -119,6 +119,11 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         val controlsPane = StaticPane(0, 0, 6, 1)
         gui.addPane(controlsPane)
 
+        // Add go back item
+        val exitItem = ItemStack(Material.NETHER_STAR).name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME))
+        val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
+        controlsPane.addItem(guiExitItem, 0, 0)
+
         // Add view mode item
         val viewModeItem = when (viewMode) {
             0 -> ItemStack(Material.SUGAR)
@@ -267,8 +272,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                         if (isWhitelisted) {
                             customLore.add(0, "§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_WHITELISTED)}")
                         } else {
-customLore.remove("§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_WHITELISTED)}")
-                            if (viewMode == 1) {
+                            customLore.remove("§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_WHITELISTED)}")
+                        if (viewMode == 1) {
                                 currentPagePane.removeItem(guiPlayerItem)
                             }
                         }
