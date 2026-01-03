@@ -62,3 +62,15 @@ permissions:
   waystonewarps.admin.invalids.removeall:
     description: Allows removing all warps from all invalid worlds
     default: op
+
+  waystonewarps.teleport:
+    description: Allows teleportation to waystones
+    default: true
+
+  waystonewarps.teleport.interworld:
+    description: Allows teleportation between different worlds
+    default: op
+
+  waystonewarps.teleport.cooldown_bypass:
+    description: Bypasses the cooldown between teleportations
+    default: op

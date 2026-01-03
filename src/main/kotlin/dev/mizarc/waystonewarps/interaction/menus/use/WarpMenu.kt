@@ -292,6 +292,18 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
                                     Component.text("Cancelled teleport due to movement")
                                         .color(PrimaryColourPalette.CANCELLED.color)
                                 }
+                            },
+                            onPermissionDenied = {
+                                player.sendActionBar {
+                                    Component.text("You don't have permission to teleport")
+                                        .color(PrimaryColourPalette.CANCELLED.color)
+                                }
+                            },
+                            onInterworldPermissionDenied = {
+                                player.sendActionBar {
+                                    Component.text("You don't have permission to teleport across worlds")
+                                        .color(PrimaryColourPalette.CANCELLED.color)
+                                }
                             }
                         )
                         player.closeInventory()

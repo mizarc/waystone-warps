@@ -30,7 +30,8 @@ interface TeleportationService {
      */
     fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int, onSuccess: () -> Unit,
                                 onPending: () -> Unit, onInsufficientFunds: () -> Unit, onCanceled: () -> Unit,
-                                onWorldNotFound: () -> Unit, onLocked: () -> Unit, onFailure: () -> Unit)
+                                onWorldNotFound: () -> Unit, onLocked: () -> Unit, onFailure: () -> Unit,
+                                onPermissionDenied: () -> Unit, onInterworldPermissionDenied: () -> Unit)
 
     /**
      * Cancels a pending teleport.

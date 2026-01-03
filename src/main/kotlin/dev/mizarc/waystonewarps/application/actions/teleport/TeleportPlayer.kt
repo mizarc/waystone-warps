@@ -16,7 +16,8 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
 
     fun execute(playerId: UUID, warp: Warp, onSuccess: () -> Unit, onPending: () -> Unit,
                 onInsufficientFunds: () -> Unit, onCanceled: () -> Unit, onWorldNotFound: () -> Unit,
-                onLocked: () -> Unit, onFailure: () -> Unit) {
+                onLocked: () -> Unit, onFailure: () -> Unit, onPermissionDenied: () -> Unit,
+                onInterworldPermissionDenied: () -> Unit) {
         // Retrieve player settings
         val timer = playerAttributeService.getTeleportTimer(playerId)
 
@@ -59,6 +60,14 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                 onFailure = {
                     onFailure()
                     playerParticleService.removeParticles(playerId)
+                },
+                onPermissionDenied = {
+                    onPermissionDenied()
+                    playerParticleService.removeParticles(playerId)
+                },
+                onInterworldPermissionDenied = {
+                    onInterworldPermissionDenied()
+                    playerParticleService.removeParticles(playerId)
                 }
             )
             return
@@ -77,6 +86,8 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
             TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
             TeleportResult.LOCKED -> onLocked()
             TeleportResult.FAILED -> onFailure()
+            TeleportResult.PERMISSION_DENIED -> onPermissionDenied()
+            TeleportResult.INTERWORLD_PERMISSION_DENIED -> onInterworldPermissionDenied()
         }
     }
 }
