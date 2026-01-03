@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.application.services
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
 
 interface ConfigService {
+    fun getPluginLanguage(): String
     fun getWarpLimit(): Int
     fun getTeleportTimer(): Int
     fun getTeleportCostType(): CostType

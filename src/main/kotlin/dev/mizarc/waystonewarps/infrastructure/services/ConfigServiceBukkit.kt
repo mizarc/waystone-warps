@@ -6,6 +6,10 @@ import org.bukkit.configuration.file.FileConfiguration
 
 class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigService {
 
+    override fun getPluginLanguage(): String {
+        return configFile.getString("plugin_language", "en").toString()
+    }
+
     override fun getWarpLimit(): Int {
         return configFile.getInt("warp_limit", 3)
     }
