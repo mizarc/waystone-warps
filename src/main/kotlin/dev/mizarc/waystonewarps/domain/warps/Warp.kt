@@ -47,4 +47,40 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
             }
         }
     }
+
+    /**
+     * Creates a deep copy of this Warp object.
+     * @return A new Warp instance with the same property values as this one.
+     */
+    fun copy(): Warp {
+        return Warp(
+            id = UUID.fromString(id.toString()),
+            playerId = UUID.fromString(playerId.toString()),
+            creationTime = Instant.ofEpochMilli(creationTime.toEpochMilli()),
+            name = name,
+            worldId = UUID.fromString(worldId.toString()),
+            position = position.copy(),
+            icon = icon,
+            iconMeta = IconMeta(
+                schemaVersion = iconMeta.schemaVersion,
+                strings = iconMeta.strings.toList(),
+                floats = iconMeta.floats.toList(),
+                flags = iconMeta.flags.toList(),
+                colorsArgb = iconMeta.colorsArgb.toList(),
+                potionTypeKey = iconMeta.potionTypeKey,
+                leatherColorRgb = iconMeta.leatherColorRgb,
+                trimPatternKey = iconMeta.trimPatternKey,
+                trimMaterialKey = iconMeta.trimMaterialKey,
+                bannerBaseColor = iconMeta.bannerBaseColor,
+                bannerPatterns = iconMeta.bannerPatterns.toList(),
+                skullTextureValue = iconMeta.skullTextureValue,
+                skullTextureSignature = iconMeta.skullTextureSignature,
+                fireworkStarColorRgb = iconMeta.fireworkStarColorRgb
+            ),
+            block = block,
+            isLocked = isLocked
+        ).also {
+            it.breakCount = this.breakCount
+        }
+    }
 }

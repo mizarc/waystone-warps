@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.idb.Database
+import dev.mizarc.waystonewarps.api.WaystoneWarpsAPI
 import dev.mizarc.waystonewarps.application.actions.administration.ListInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveAllInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveInvalidWarpsForWorld
@@ -56,6 +57,7 @@ import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
+import org.bukkit.plugin.ServicePriority
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.io.File
@@ -64,6 +66,11 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 class WaystoneWarps: JavaPlugin() {
+    companion object {
+        lateinit var api: WaystoneWarpsAPI
+            private set
+    }
+
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
     private var economy: Economy? = null
@@ -72,7 +79,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var storage: Storage<Database>
 
     // Repositories
-    private lateinit var warpRepository: WarpRepository
+    internal lateinit var warpRepository: WarpRepository
     private lateinit var discoveryRepository: DiscoveryRepository
     private lateinit var playerStateRepository: PlayerStateRepository
     private lateinit var whitelistRepository: WhitelistRepository
@@ -88,6 +95,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var hologramService: HologramService
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
+    private lateinit var warpEventPublisher: WarpEventPublisher
 
     override fun onEnable() {
         // Create plugin folder
@@ -123,6 +131,10 @@ class WaystoneWarps: JavaPlugin() {
         registerCommands()
         registerEvents()
         AddAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
+
+        // Initialise API
+        api = WaystoneWarpsAPI(warpRepository)
+        server.servicesManager.register( WaystoneWarpsAPI::class.java, api, this, ServicePriority.Normal )
 
         for (warp in warpRepository.getAll()) {
             structureParticleService.spawnParticles(warp)
@@ -180,6 +192,7 @@ class WaystoneWarps: JavaPlugin() {
         playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
         hologramService = HologramServiceBukkit(configService)
         worldService = WorldServiceBukkit()
+        warpEventPublisher = WarpEventPublisherBukkit()
     }
 
     private fun registerDependencies() {
@@ -192,25 +205,25 @@ class WaystoneWarps: JavaPlugin() {
 
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
-                discoveryRepository, structureParticleService, hologramService) }
+                discoveryRepository, structureParticleService, hologramService, warpEventPublisher) }
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
-            single { UpdateWarpIcon(warpRepository) }
-            single { UpdateWarpName(warpRepository, hologramService) }
+            single { UpdateWarpIcon(warpRepository, warpEventPublisher) }
+            single { UpdateWarpName(warpRepository, hologramService, warpEventPublisher) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
-                discoveryRepository, whitelistRepository, structureParticleService, hologramService) }
+                discoveryRepository, whitelistRepository, structureParticleService, hologramService, warpEventPublisher) }
             single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService,
                 discoveryRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository) }
-            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService) }
-            single { ToggleLock(warpRepository) }
+            single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService, warpEventPublisher) }
+            single { ToggleLock(warpRepository, warpEventPublisher) }
             single { GetWhitelistedPlayers(whitelistRepository) }
             single { ToggleWhitelist(whitelistRepository, warpRepository) }
             single { RevokeDiscovery(discoveryRepository) }
             single { IsPositionInTeleportZone(warpRepository) }
-            single { UpdateWarpSkin(warpRepository, structureBuilderService, configService) }
+            single { UpdateWarpSkin(warpRepository, structureBuilderService, configService, warpEventPublisher) }
             single { IsValidWarpBase(configService) }
             single { GetAllWarpSkins(configService) }
             single { IsPlayerFavouriteWarp(discoveryRepository) }
@@ -218,8 +231,8 @@ class WaystoneWarps: JavaPlugin() {
             single { GetFavouritedWarpAccess(discoveryRepository, warpRepository) }
             single { GetOwnedWarps(warpRepository) }
             single { ListInvalidWarps(warpRepository, worldService) }
-            single { RemoveAllInvalidWarps(warpRepository, worldService, discoveryRepository, whitelistRepository) }
-            single { RemoveInvalidWarpsForWorld(warpRepository, worldService, discoveryRepository, whitelistRepository) }
+            single { RemoveAllInvalidWarps(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
+            single { RemoveInvalidWarpsForWorld(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
         }
 
         startKoin { modules(repositories, actions) }
