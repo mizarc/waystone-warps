@@ -127,6 +127,7 @@ class WaystoneWarps: JavaPlugin() {
         initialiseVaultDependency()
         initialiseRepositories()
         initialiseServices()
+        initialiseLang()
         registerDependencies()
         registerCommands()
         registerEvents()
@@ -193,6 +194,19 @@ class WaystoneWarps: JavaPlugin() {
         hologramService = HologramServiceBukkit(configService)
         worldService = WorldServiceBukkit()
         warpEventPublisher = WarpEventPublisherBukkit()
+    }
+
+    fun initialiseLang() {
+        val defaultLanguageFilenames = listOf(
+            "en.properties"
+        )
+
+        // Move languages to the required folder and add readme for override instructions
+        defaultLanguageFilenames.forEach { filename ->
+            val resourcePathInJar = "lang/defaults/$filename"
+            saveResource(resourcePathInJar, true)
+        }
+        saveResource("lang/overrides/README.txt", true)
     }
 
     private fun registerDependencies() {
