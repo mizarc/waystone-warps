@@ -223,23 +223,40 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             customLore.add(0, "§3$locationText")
             customLore.add(0, "§6${warpModel.player.name}")
 
-            var guiWarpItem: GuiItem
-            if (warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)
-                    && player.uniqueId != warp.playerId) {
+            val hasTeleportPermission = player.hasPermission("waystonewarps.teleport")
+            val isDifferentWorld = warp.worldId != player.world.uid
+            val hasInterworldPermission = !isDifferentWorld || player.hasPermission("waystonewarps.teleport.interworld")
+            val hasPermission = hasTeleportPermission && hasInterworldPermission
+
+            // Check if the warp is locked for this player
+            val isLocked = warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId
+
+            // Add the locked status if applicable
+            if (isLocked) {
                 customLore.add(2, "§cLOCKED")
-                val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta).name(warpModel.name).lore(customLore)
-                guiWarpItem = GuiItem(warpItem) { guiEvent ->
-                    if (guiEvent.isRightClick) {
-                        // Right click to open options
-                        menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp))
-                    }
+            }
+
+            // Add permission-related lore (only show one message at a time, priority order)
+            when {
+                !hasTeleportPermission -> {
+                    customLore.add(2, "§cYou don't have permission to teleport")
+                }
+                isDifferentWorld && !hasInterworldPermission -> {
+                    customLore.add(2, "§cYou don't have permission to teleport across worlds")
+                }
+                isLocked -> {
+                    // No additional message needed if locked
+                }
+                else -> {
+                    customLore.add(2, "Left Click to teleport")
                 }
             }
-            else {
-                customLore.add(2, "Left Click to teleport")
-                val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta).name(warpModel.name).lore(customLore)
-                guiWarpItem = GuiItem(warpItem) {guiEvent ->
 
+            val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta).name(warpModel.name).lore(customLore)
+
+            val guiWarpItem = if (hasPermission && !isLocked) {
+                // Player has permission and warp is not locked to them - allow interaction
+                GuiItem(warpItem) { guiEvent ->
                     if (guiEvent.isRightClick) {
                         // Right click to open options
                         menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp))
@@ -309,6 +326,24 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
                         player.closeInventory()
                         guiEvent.isCancelled = true
                     }
+                }
+            } else {
+                // Player doesn't have permission or warp is locked - show item but disable interaction
+                GuiItem(warpItem) { guiEvent ->
+                    // Only allow right-click for options menu if the player has access to the warp
+                    if (guiEvent.isRightClick && !(warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId)) {
+                        menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp))
+                    } else {
+                        // Show appropriate message for left click or no permission
+                        if (!hasTeleportPermission) {
+                            player.sendActionBar(Component.text("You don't have permission to teleport").color(PrimaryColourPalette.CANCELLED.color))
+                        } else if (isDifferentWorld && !hasInterworldPermission) {
+                            player.sendActionBar(Component.text("You don't have permission to teleport across worlds").color(PrimaryColourPalette.CANCELLED.color))
+                        } else if (warp.isLocked) {
+                            player.sendActionBar(Component.text("This warp is locked").color(PrimaryColourPalette.CANCELLED.color))
+                        }
+                    }
+                    guiEvent.isCancelled = true
                 }
             }
 
