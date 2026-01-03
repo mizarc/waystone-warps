@@ -3,6 +3,8 @@ package dev.mizarc.waystonewarps.interaction.menus.common
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.HopperGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.lore
@@ -11,9 +13,17 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class ConfirmationMenu(val menuNavigator: MenuNavigator, val player: Player,
-                       val title: String, val callbackAction: () -> Unit): Menu {
+class ConfirmationMenu(
+    private val menuNavigator: MenuNavigator, 
+    private val player: Player,
+    private val title: String, 
+    private val callbackAction: () -> Unit
+): Menu, KoinComponent {
+    private val localizationProvider: LocalizationProvider by inject()
+
     override fun open() {
         // Create menu
         val gui = HopperGui(title)
@@ -25,8 +35,8 @@ class ConfirmationMenu(val menuNavigator: MenuNavigator, val player: Player,
 
         // Add no menu item
         val noItem = ItemStack(Material.RED_CONCRETE)
-            .name("No")
-            .lore("Take me back")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_NO_NAME))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_NO_LORE))
 
         val guiNoItem = GuiItem(noItem) { guiEvent ->
             menuNavigator.goBack()
@@ -35,8 +45,8 @@ class ConfirmationMenu(val menuNavigator: MenuNavigator, val player: Player,
 
         // Add yes menu item
         val yesItem = ItemStack(Material.GREEN_CONCRETE)
-            .name("Yes")
-            .lore("Warning, This is a permanent action")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_YES_NAME))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_YES_LORE))
         val guiYesItem = GuiItem(yesItem) { guiEvent ->
             callbackAction()
             menuNavigator.goBack()

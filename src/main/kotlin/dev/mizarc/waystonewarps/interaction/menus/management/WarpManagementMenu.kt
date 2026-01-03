@@ -6,6 +6,8 @@ import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.utils.applyIconMeta
@@ -13,6 +15,7 @@ import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
+import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -23,9 +26,11 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
                          private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val toggleLock: ToggleLock by inject()
+    private val localizationProvider: LocalizationProvider by inject()
 
     override fun open() {
-        val gui = ChestGui(1, "Warp '${warp.name}'")
+        val title = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_TITLE, warp.name)
+        val gui = ChestGui(1, title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
         val pane = StaticPane(0, 0, 9, 1)
@@ -35,20 +40,26 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         val canChangeAccess = PermissionHelper.canChangeAccessControl(player, warp.playerId)
         val privacyIcon: ItemStack = if (warp.isLocked) {
             val item = ItemStack(Material.LEVER)
-                .name("§rAccess is §cPRIVATE")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_PRIVATE))
             if (canChangeAccess) {
-                item.lore("Only whitelisted players can discover and teleport.")
+                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE))
             } else {
-                item.lore("Only whitelisted players can discover and teleport.", "§cYou don't have permission to change this")
+                item.lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE),
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+                )
             }
             item
         } else {
             val item = ItemStack(Material.REDSTONE_TORCH)
-                .name("§rAccess is §aPUBLIC")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_PUBLIC))
             if (canChangeAccess) {
-                item.lore("All players can discover and teleport.")
+                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE))
             } else {
-                item.lore("All players can discover and teleport.", "§cYou don't have permission to change this")
+                item.lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE),
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+                )
             }
             item
         }
@@ -66,16 +77,20 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
 
         // Add player count icon
         val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
+        val playerCount = getWarpPlayerAccess.execute(warp.id).count() - 1
         val playerCountItem = ItemStack(Material.PLAYER_HEAD)
-            .name("§rDiscovered Players:")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_PLAYERS))
         if (canManageWhitelist) {
-            playerCountItem.lore("${getWarpPlayerAccess.execute(warp.id).count() - 1}")
+            playerCountItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_PLAYERS_LORE, playerCount.toString()))
         } else {
-            playerCountItem.lore("${getWarpPlayerAccess.execute(warp.id).count() - 1}", "§cYou don't have permission to manage the whitelist")
+            playerCountItem.lore(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_PLAYERS_LORE, playerCount.toString()),
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+            )
         }
         val guiPlayerCountItem = GuiItem(playerCountItem) {
             if (canManageWhitelist) {
-                menuNavigator.openMenu(WarpPlayerMenu(player, menuNavigator, warp))
+                menuNavigator.openMenu(WarpPlayerMenu(player, menuNavigator, warp, localizationProvider))
             }
         }
         pane.addItem(guiPlayerCountItem, 1, 0)
@@ -83,15 +98,18 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         // Add renaming icon
         val canRename = PermissionHelper.canRename(player, warp.playerId)
         val renamingItem = ItemStack(Material.NAME_TAG)
-            .name("§rRename Warp")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_RENAME))
         if (canRename) {
-            renamingItem.lore("Changes the name that is displayed")
+            renamingItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_RENAME_LORE))
         } else {
-            renamingItem.lore("Changes the name that is displayed", "§cYou don't have permission to rename this waystone")
+            renamingItem.lore(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_RENAME_LORE),
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+            )
         }
         val guiRenamingItem = GuiItem(renamingItem) {
             if (canRename) {
-                menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp))
+                menuNavigator.openMenu(WarpRenamingMenu(player, menuNavigator, warp, localizationProvider))
             }
         }
         pane.addItem(guiRenamingItem, 3, 0)
@@ -99,11 +117,14 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         // Add icon editor button
         val canChangeIcon = PermissionHelper.canChangeIcon(player, warp.playerId)
         val iconEditorItem = ItemStack(Material.valueOf(warp.icon)).applyIconMeta(warp.iconMeta)
-            .name("§rEdit Warp Icon")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ICON))
         if (canChangeIcon) {
-            iconEditorItem.lore("Changes the icon that shows up on the warp list")
+            iconEditorItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ICON_LORE))
         } else {
-            iconEditorItem.lore("Changes the icon that shows up on the warp list", "§cYou don't have permission to change this waystone's icon")
+            iconEditorItem.lore(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ICON_LORE),
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+            )
         }
         val guiIconEditorItem = GuiItem(iconEditorItem) {
             if (canChangeIcon) {
@@ -114,20 +135,24 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
 
         // Add skins menu
         val skinViewItem = ItemStack(Material.valueOf(warp.block))
-            .name("§rView Available Skins")
-            .lore("A list of blocks you can use to re-skin the waystone")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_SKINS))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_SKINS_LORE))
         val guiSkinViewItem = GuiItem(skinViewItem) {
-            menuNavigator.openMenu(WarpSkinsMenu(player, menuNavigator)) }
+            menuNavigator.openMenu(WarpSkinsMenu(player, menuNavigator, localizationProvider))
+        }
         pane.addItem(guiSkinViewItem, 5, 0)
 
         // Add move icon
         val canRelocate = PermissionHelper.canRelocate(player, warp.playerId)
         val moveItem = ItemStack(Material.PISTON)
-            .name("§rMove Warp")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_MOVE))
         if (canRelocate) {
-            moveItem.lore("Place the provided item where you want to move the warp")
+            moveItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_MOVE_LORE))
         } else {
-            moveItem.lore("Place the provided item where you want to move the warp", "§cYou don't have permission to move this waystone")
+            moveItem.lore(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_MOVE_LORE),
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+            )
         }
         val guiMoveItem = GuiItem(moveItem) {
             if (canRelocate) {

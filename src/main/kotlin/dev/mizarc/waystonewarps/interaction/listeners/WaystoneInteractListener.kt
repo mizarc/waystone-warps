@@ -88,7 +88,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     if (event.player.isSneaking) {
                         menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
                     } else {
-                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
                     }
                 } else {
                     menuNavigator.openMenu(WarpManagementMenu(player, menuNavigator, it))
@@ -103,7 +103,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                 }
 
                 if (configService.allowWarpsMenuViaWaystone()) {
-                    menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                    menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
                 }
 
                 // Check if player has permission to discover warps
@@ -121,7 +121,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     clickedBlock.world.playSound(particleLocation, Sound.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 1.0f, 1.0f)
                 } else {
                     if (configService.allowWarpsMenuViaWaystone()) {
-                        menuNavigator.openMenu(WarpMenu(player, menuNavigator))
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
                     }
                     else {
                         player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.INFO.color)

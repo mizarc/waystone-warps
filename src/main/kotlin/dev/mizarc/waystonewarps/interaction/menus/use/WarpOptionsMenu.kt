@@ -8,6 +8,8 @@ import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
@@ -22,14 +24,23 @@ import org.bukkit.inventory.meta.CompassMeta
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WarpOptionsMenu(private val player: Player, private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+class WarpOptionsMenu(
+    private val player: Player, 
+    private val menuNavigator: MenuNavigator, 
+    private val warp: Warp,
+    private val localizationProvider: LocalizationProvider
+): Menu, KoinComponent {
     private val revokeDiscovery: RevokeDiscovery by inject()
     private val isPlayerFavouriteWarp: IsPlayerFavouriteWarp by inject()
     private val toggleFavouriteDiscovery: ToggleFavouriteDiscovery by inject()
 
     override fun open() {
         // Create menu
-        val gui = HopperGui("Warp '${warp.name}'")
+        val gui = HopperGui(localizationProvider.get(
+            player.uniqueId, 
+            LocalizationKeys.MENU_WARP_OPTIONS_TITLE, 
+            warp.name
+        ))
         val pane = StaticPane(0, 0, 5, 1)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
@@ -37,7 +48,9 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         gui.slotsComponent.addPane(pane)
 
         // Add back menu item
-        val backItem = ItemStack(Material.NETHER_STAR).name("Go Back")
+        val backItem = ItemStack(Material.NETHER_STAR).name(
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME)
+        )
         val guiBackItem = GuiItem(backItem) { guiEvent ->
             menuNavigator.goBack()
         }
@@ -47,8 +60,8 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         val guiPointItem: GuiItem
         if (player.inventory.itemInMainHand.type == Material.COMPASS) {
             val pointItem = ItemStack(Material.COMPASS)
-                .name("Locate Waystone")
-                .lore("Your compass will point towards this waystone")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_LOCATE_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_LOCATE_LORE))
             guiPointItem = GuiItem(pointItem) { guiEvent ->
                 givePlayerLodestoneCompass()
             }
@@ -56,8 +69,8 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         }
         else {
             val pointItem = ItemStack(Material.WIND_CHARGE)
-                .name("No Compass")
-                .lore("Hold a compass in hand to use the waystone locator")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_NO_COMPASS_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_NO_COMPASS_LORE))
             guiPointItem = GuiItem(pointItem)
             pane.addItem(guiPointItem, 2, 0)
         }
@@ -65,12 +78,12 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         // Add favourite menu item
         val favouriteItem = if (isPlayerFavouriteWarp.execute(player.uniqueId, warp.id)) {
             ItemStack(Material.DIAMOND)
-                .name("Unfavourite")
-                .lore("Removes this warp from the favourites list")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_UNFAVOURITE_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_UNFAVOURITE_LORE))
         } else {
             ItemStack(Material.COAL)
-                .name("Favourite")
-                .lore("Adds this warp to the favourites list")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_FAVOURITE_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_FAVOURITE_LORE))
         }
         val guiFavouriteItem = GuiItem(favouriteItem) { guiEvent ->
             toggleFavouriteDiscovery.execute(player.uniqueId, warp.id)
@@ -79,19 +92,23 @@ class WarpOptionsMenu(private val player: Player, private val menuNavigator: Men
         pane.addItem(guiFavouriteItem, 3, 0)
 
         // Add delete menu item
-        // Add favourite menu item
         val guiDeleteItem: GuiItem
         if (warp.playerId == player.uniqueId) {
             val deleteItem = ItemStack(Material.SNOWBALL)
-                .name("Cannot Delete")
-                .lore("You own this warp!")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_CANNOT_DELETE_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_CANNOT_DELETE_LORE))
             guiDeleteItem = GuiItem(deleteItem)
         } else {
             val deleteItem = ItemStack(Material.FIRE_CHARGE)
-                .name("Delete")
-                .lore("Removes your access to this warp")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_DELETE_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_DELETE_LORE))
             guiDeleteItem = GuiItem(deleteItem) { guiEvent ->
-                menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player, "Delete access to ${warp.name}") {
+                val confirmMessage = localizationProvider.get(
+                    player.uniqueId, 
+                    LocalizationKeys.MENU_WARP_OPTIONS_CONFIRM_DELETE,
+                    warp.name
+                )
+                menuNavigator.openMenu(ConfirmationMenu(menuNavigator, player, confirmMessage) {
                     revokeDiscovery.execute(player.uniqueId, warp.id)
                     menuNavigator.goBack()
                 })
