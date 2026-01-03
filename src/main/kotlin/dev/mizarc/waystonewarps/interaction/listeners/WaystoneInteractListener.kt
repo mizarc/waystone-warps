@@ -100,6 +100,12 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     menuNavigator.openMenu(WarpMenu(player, menuNavigator))
                 }
 
+                // Check if player has permission to discover warps
+                if (!player.hasPermission("waystonewarps.discover")) {
+                    player.sendActionBar(Component.text("You don't have permission to discover warps").color(PrimaryColourPalette.FAILED.color))
+                    return
+                }
+
                 val result = discoverWarp.execute(player.uniqueId, it.id)
                 if (result) {
                     player.sendActionBar(Component.text("Warp ").color(PrimaryColourPalette.SUCCESS.color)

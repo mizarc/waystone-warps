@@ -23,6 +23,10 @@ permissions:
   waystonewarps.create:
     description: Allows creating waystone warps
     default: true
+    
+  waystonewarps.discover:
+    description: Allows discovering waystone warps
+    default: true
 
   waystonewarps.bypass.access_control:
     description: Can change any waystone to private or public
