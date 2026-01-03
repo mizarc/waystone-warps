@@ -34,6 +34,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Config not being read on the first launch, required restart before the plugin could actually let you do anything.
 - Waystones not being covered by protection plugins even though the block break itself is prevented.
 - Whitelists not being removed from the database when the waystone is removed.
+- Pagination for warps and player access were not showing correctly.
 
 ## [0.3.5]
 
