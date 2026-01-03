@@ -2,10 +2,15 @@ package dev.mizarc.waystonewarps.application.actions.management
 
 import dev.mizarc.waystonewarps.application.results.UpdateWarpNameResult
 import dev.mizarc.waystonewarps.application.services.HologramService
+import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import java.util.*
 
-class UpdateWarpName(private val warpRepository: WarpRepository, private val hologramService: HologramService) {
+class UpdateWarpName(
+    private val warpRepository: WarpRepository, 
+    private val hologramService: HologramService,
+    private val warpEventPublisher: WarpEventPublisher
+) {
     fun execute(
         warpId: UUID,
         editorPlayerId: UUID,
@@ -26,9 +31,11 @@ class UpdateWarpName(private val warpRepository: WarpRepository, private val hol
              return UpdateWarpNameResult.NAME_ALREADY_TAKEN
         }
 
+        val oldWarp = warp.copy()
         warp.name = name
         warpRepository.update(warp)
         hologramService.updateHologram(warp)
+        warpEventPublisher.warpModified(oldWarp, warp)
         return UpdateWarpNameResult.SUCCESS
     }
 }

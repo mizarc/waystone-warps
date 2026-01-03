@@ -5,6 +5,7 @@ import dev.mizarc.waystonewarps.application.services.HologramService
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
 import dev.mizarc.waystonewarps.application.services.StructureParticleService
+import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.discoveries.Discovery
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
@@ -26,7 +27,8 @@ class CreateWarp(private val warpRepository: WarpRepository,
                  private val structureBuilderService: StructureBuilderService,
                  private val discoveryRepository: DiscoveryRepository,
                  private val structureParticleService: StructureParticleService,
-                 private val hologramService: HologramService
+                 private val hologramService: HologramService,
+                 private val warpEventPublisher: WarpEventPublisher
 ) {
 
     /**
@@ -63,6 +65,7 @@ class CreateWarp(private val warpRepository: WarpRepository,
         structureBuilderService.spawnStructure(newWarp)
         structureParticleService.spawnParticles(newWarp)
         hologramService.spawnHologram(newWarp)
+        warpEventPublisher.warpCreated(newWarp)
         return CreateWarpResult.Success(newWarp)
     }
 }

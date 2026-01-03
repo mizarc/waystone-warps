@@ -1,5 +1,6 @@
 package dev.mizarc.waystonewarps.application.actions.administration
 
+import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
@@ -17,7 +18,8 @@ class RemoveAllInvalidWarps(
     private val warpRepository: WarpRepository,
     private val worldService: WorldService,
     private val discoveryRepository: DiscoveryRepository,
-    private val whitelistRepository: WhitelistRepository
+    private val whitelistRepository: WhitelistRepository,
+    private val warpEventPublisher: WarpEventPublisher
 ) {
     /**
      * Removes all warps in invalid worlds.
@@ -39,6 +41,7 @@ class RemoveAllInvalidWarps(
             
             // Remove the warp itself
             warpRepository.remove(warp.id)
+            warpEventPublisher.warpDeleted(warp)
         }
 
         return Pair(invalidWarps.size, allWarps.size)

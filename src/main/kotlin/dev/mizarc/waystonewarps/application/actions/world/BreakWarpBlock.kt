@@ -4,6 +4,7 @@ import dev.mizarc.waystonewarps.application.results.BreakWarpResult
 import dev.mizarc.waystonewarps.application.services.HologramService
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
 import dev.mizarc.waystonewarps.application.services.StructureParticleService
+import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
@@ -16,7 +17,8 @@ class BreakWarpBlock(
     private val discoveryRepository: DiscoveryRepository,
     private val whitelistRepository: WhitelistRepository,
     private val structureParticleService: StructureParticleService,
-    private val hologramService: HologramService
+    private val hologramService: HologramService,
+    private val warpEventPublisher: WarpEventPublisher
 ) {
     fun execute(position: Position3D, worldId: UUID): BreakWarpResult  {
         val warp = warpRepository.getByPosition(position, worldId) ?: return BreakWarpResult.WarpNotFound
@@ -44,6 +46,7 @@ class BreakWarpBlock(
         structureBuilderService.revertStructure(warp)
         structureParticleService.removeParticles(warp)
         hologramService.removeHologram(warp)
+        warpEventPublisher.warpDeleted(warp)
         return BreakWarpResult.Success(warp)
     }
 }
