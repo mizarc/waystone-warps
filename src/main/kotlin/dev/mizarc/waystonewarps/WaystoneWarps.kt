@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.idb.Database
+import dev.mizarc.waystonewarps.api.WaystoneWarpsAPI
 import dev.mizarc.waystonewarps.application.actions.administration.ListInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveAllInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveInvalidWarpsForWorld
@@ -64,6 +65,11 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 class WaystoneWarps: JavaPlugin() {
+    companion object {
+        lateinit var api: WaystoneWarpsAPI
+            private set
+    }
+
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
     private var economy: Economy? = null
@@ -72,7 +78,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var storage: Storage<Database>
 
     // Repositories
-    private lateinit var warpRepository: WarpRepository
+    internal lateinit var warpRepository: WarpRepository
     private lateinit var discoveryRepository: DiscoveryRepository
     private lateinit var playerStateRepository: PlayerStateRepository
     private lateinit var whitelistRepository: WhitelistRepository
@@ -123,6 +129,9 @@ class WaystoneWarps: JavaPlugin() {
         registerCommands()
         registerEvents()
         AddAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
+
+        // Initialise API
+        api = WaystoneWarpsAPI(warpRepository)
 
         for (warp in warpRepository.getAll()) {
             structureParticleService.spawnParticles(warp)
