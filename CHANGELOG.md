@@ -19,13 +19,18 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   - `waystonewarps.bypass.icon`: Allows access to change the waystone icon.
   - `waystonewarps.bypass.relocate`: Allows access to relocate the waystone.
 - Add new command system to remove invalid warp world data:
-  - `/waystonewarps invalids list`: Lists missing worlds containing warps
+  - `/waystonewarps invalids list`: Lists missing worlds containing warps.
   - `/waystonewarps invalids remove <id>` Removes warps for a given world.
   - `/waystonewarps invalids removeall`: Removes all warps for missing worlds.
 - New permissions to use the invalids command system:
-  - `waystonewarps.admin.invalids.list`: Allows usage of the list command
-  - `waystonewarps.admin.invalids.remove`: Allows usage of remove command
-  - `waystonewarps.admin.invalids.removeall`: Allows usage of removeall command
+  - `waystonewarps.admin.invalids.list`: Allows usage of the list command.
+  - `waystonewarps.admin.invalids.remove`: Allows usage of remove command.
+  - `waystonewarps.admin.invalids.removeall`: Allows usage of removeall command.
+- New API to get warps and listen to events:
+  - `WaystoneWarpsAPI`: Provides getters to get warp data.
+  - `WarpCreateEvent`: Called when a warp is created.
+  - `WarpDeleteEvent`: Called when a warp is deleted.
+  - `WarpUpdateEvent`: Called when a warp is updated.
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
