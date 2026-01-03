@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.messaging
 import net.kyori.adventure.text.format.TextColor
 
 enum class PrimaryColourPalette(val color: TextColor?) {
+    PRIMARY(TextColor.fromHexString("#ffaa00")),
     INFO(TextColor.fromHexString("#589bbf")),
     SUCCESS(TextColor.fromHexString("#58bf78")),
     PENDING(TextColor.fromHexString("#e0d01e")),

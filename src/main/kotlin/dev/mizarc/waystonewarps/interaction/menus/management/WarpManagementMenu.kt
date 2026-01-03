@@ -10,12 +10,15 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.applyIconMeta
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.getWarpMoveTool
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.format.TextDecoration
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -38,26 +41,55 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
 
         // Add privacy modes
         val canChangeAccess = PermissionHelper.canChangeAccessControl(player, warp.playerId)
+
         val privacyIcon: ItemStack = if (warp.isLocked) {
+            val accessName = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME)
+            val privateStatus = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PRIVATE)
+            val accessParts = accessName.split("{0}")
+            
+            val privateText = Component.text()
+                .append(Component.text(accessParts[0].trimEnd(), PrimaryColourPalette.PRIMARY.color!!).decoration(TextDecoration.ITALIC, false))
+                .append(Component.text(" "))
+                .append(Component.text(
+                    privateStatus,
+                    PrimaryColourPalette.CANCELLED.color!!
+                ).decoration(TextDecoration.ITALIC, false))
+                .append(if (accessParts.size > 1) Component.text(accessParts[1].trimStart()) else Component.empty())
+                .build()
+
             val item = ItemStack(Material.LEVER)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_PRIVATE))
+                .name(privateText)
             if (canChangeAccess) {
-                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE))
+                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE))
             } else {
                 item.lore(
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE),
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE),
                     localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
                 )
             }
             item
         } else {
+            val accessName = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME)
+            val publicStatus = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PUBLIC)
+            val accessParts = accessName.split("{0}")
+
+            val publicText = Component.text()
+                .append(Component.text(accessParts[0].trimEnd(), PrimaryColourPalette.PRIMARY.color!!).decoration(TextDecoration.ITALIC, false))
+                .append(Component.text(" "))
+                .append(Component.text(
+                    publicStatus,
+                    PrimaryColourPalette.SUCCESS.color!!
+                ).decoration(TextDecoration.ITALIC, false))
+                .append(if (accessParts.size > 1) Component.text(accessParts[1].trimStart()) else Component.empty())
+                .build()
+
             val item = ItemStack(Material.REDSTONE_TORCH)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_PUBLIC))
+                .name(publicText)
             if (canChangeAccess) {
-                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE))
+                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC))
             } else {
                 item.lore(
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE),
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC),
                     localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
                 )
             }

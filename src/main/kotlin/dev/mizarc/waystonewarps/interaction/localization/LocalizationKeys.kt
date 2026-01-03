@@ -82,9 +82,11 @@ object LocalizationKeys {
     
     // Warp Management Menu
     const val MENU_WARP_MANAGEMENT_TITLE = "menu.warp_management.title"
-    const val MENU_WARP_MANAGEMENT_ACCESS_PRIVATE = "menu.warp_management.access.private"
-    const val MENU_WARP_MANAGEMENT_ACCESS_PUBLIC = "menu.warp_management.access.public"
-    const val MENU_WARP_MANAGEMENT_ACCESS_LORE = "menu.warp_management.access.lore"
+    const val MENU_WARP_MANAGEMENT_ACCESS_NAME = "menu.warp_management.access.name"
+    const val MENU_WARP_MANAGEMENT_ACCESS_NAME_PUBLIC = "menu.warp_management.access.name.public"
+    const val MENU_WARP_MANAGEMENT_ACCESS_NAME_PRIVATE = "menu.warp_management.access.name.private"
+    const val MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC = "menu.warp_management.access.lore.public"
+    const val MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE = "menu.warp_management.access.lore.private"
     const val MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM = "menu.warp_management.access.lore_no_perm"
     const val MENU_WARP_MANAGEMENT_PLAYERS = "menu.warp_management.players"
     const val MENU_WARP_MANAGEMENT_PLAYERS_LORE = "menu.warp_management.players.lore"
