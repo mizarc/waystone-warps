@@ -18,7 +18,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   - `waystonewarps.bypass.rename`: Allows access to rename the waystone.
   - `waystonewarps.bypass.icon`: Allows access to change the waystone icon.
   - `waystonewarps.bypass.relocate`: Allows access to relocate the waystone.
-- Add new command system to remove invalid warp world data:
+- New command system to remove invalid warp world data:
   - `/waystonewarps invalids list`: Lists missing worlds containing warps.
   - `/waystonewarps invalids remove <id>` Removes warps for a given world.
   - `/waystonewarps invalids removeall`: Removes all warps for missing worlds.
@@ -31,6 +31,12 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   - `WarpCreateEvent`: Called when a warp is created.
   - `WarpDeleteEvent`: Called when a warp is deleted.
   - `WarpUpdateEvent`: Called when a warp is updated.
+- New permissions to disallow teleportation:
+  - `waystonewarps.teleport`: Disallows teleportation entirely
+  - `waystonewarps.teleport.interworld`: Disallows teleportation to undiscovered warps
+  - `waystonewarps.teleport.cooldown_bypass`: Disallows teleportation to undiscovered warps
+- New permission to disallow the creation of warps:
+  - `waystonewarps.create`
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
