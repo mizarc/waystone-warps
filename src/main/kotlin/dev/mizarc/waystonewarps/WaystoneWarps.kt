@@ -57,6 +57,7 @@ import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
+import org.bukkit.plugin.ServicePriority
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.io.File
@@ -133,6 +134,7 @@ class WaystoneWarps: JavaPlugin() {
 
         // Initialise API
         api = WaystoneWarpsAPI(warpRepository)
+        server.servicesManager.register( WaystoneWarpsAPI::class.java, api, this, ServicePriority.Normal )
 
         for (warp in warpRepository.getAll()) {
             structureParticleService.spawnParticles(warp)
