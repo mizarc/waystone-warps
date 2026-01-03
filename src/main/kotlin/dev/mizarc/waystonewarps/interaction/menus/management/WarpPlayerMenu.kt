@@ -213,8 +213,6 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                 }
             }
             paginatorPane.addItem(guiNextItem, 2, 0)
-
-            gui.update()
         }
 
         updatePaginator()
