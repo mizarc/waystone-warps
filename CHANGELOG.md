@@ -12,9 +12,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Icons for waystones now support metadata including custom model data, armour dyes, trims, firework colours, potion types.
 - Automatic database schema migrations on startup, including schema version tracking.
 - New permissions to allow administrators to manage other players' waystones:
-  - `waystonewarps.bypass.openmenu`: Allows access to open the management menu.
-  - `waystonewarps.bypass.accesscontrol`: Allows access to change the access control.
-  - `waystonewarps.bypass.manageplayers`: Allows access to manage players.
+  - `waystonewarps.bypass.open_menu`: Allows access to open the management menu.
+  - `waystonewarps.bypass.access_control`: Allows access to change the access control.
+  - `waystonewarps.bypass.manage_players`: Allows access to manage players.
   - `waystonewarps.bypass.rename`: Allows access to rename the waystone.
   - `waystonewarps.bypass.icon`: Allows access to change the waystone icon.
   - `waystonewarps.bypass.relocate`: Allows access to relocate the waystone.

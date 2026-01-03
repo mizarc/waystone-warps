@@ -21,14 +21,14 @@ object PermissionHelper {
      * Checks if a player can change access control (public/private) on a waystone
      */
     fun canChangeAccessControl(player: Player, waystoneOwnerId: UUID): Boolean {
-        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.accesscontrol")
+        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.access_control")
     }
 
     /**
      * Checks if a player can manage the whitelist on a waystone
      */
     fun canManageWhitelist(player: Player, waystoneOwnerId: UUID): Boolean {
-        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.manageplayers")
+        return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.manage_players")
     }
 
     /**

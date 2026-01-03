@@ -57,7 +57,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
                 toggleLock.execute(
                     playerId = player.uniqueId,
                     warpId = warp.id,
-                    bypassOwnership = player.hasPermission("waystonewarps.bypass.accesscontrol"),
+                    bypassOwnership = player.hasPermission("waystonewarps.bypass.access_control"),
                 )
                 open()
             }

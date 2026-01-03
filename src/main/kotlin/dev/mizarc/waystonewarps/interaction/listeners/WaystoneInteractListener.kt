@@ -38,7 +38,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val isValidWarpBase: IsValidWarpBase by inject()
 
-    private val openOtherMenuPermission = "waystonewarps.bypass.openmenu"
+    private val openOtherMenuPermission = "waystonewarps.bypass.open_menu"
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     fun onLodestoneInteract(event: PlayerInteractEvent) {

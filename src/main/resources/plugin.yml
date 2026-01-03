@@ -12,23 +12,23 @@ permissions:
     description: Full control of all waystones
     default: op
     children:
-      waystonewarps.bypass.accesscontrol: true
-      waystonewarps.bypass.manageplayers: true
+      waystonewarps.bypass.access_control: true
+      waystonewarps.bypass.manage_players: true
       waystonewarps.bypass.rename: true
       waystonewarps.bypass.icon: true
       waystonewarps.bypass.relocate: true
-      waystonewarps.bypass.openmenu: true
+      waystonewarps.bypass.open_menu: true
       waystonewarps.create: true
 
   waystonewarps.create:
     description: Allows creating waystone warps
     default: true
 
-  waystonewarps.bypass.accesscontrol:
+  waystonewarps.bypass.access_control:
     description: Can change any waystone to private or public
     default: op
 
-  waystonewarps.bypass.manageplayers:
+  waystonewarps.bypass.manage_players:
     description: Can manage whitelist on other waystones
     default: op
 
@@ -44,7 +44,7 @@ permissions:
     description: Can move any waystone
     default: op
 
-  waystonewarps.bypass.openmenu:
+  waystonewarps.bypass.open_menu:
     description: Can open other players' waystone menus
     default: op
 

@@ -259,7 +259,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                         editorPlayerId = player.uniqueId,
                         warpId = warp.id,
                         targetPlayerId = foundPlayer.uniqueId,
-                        bypassOwnership = player.hasPermission("waystonewarps.bypass.manageplayers"),
+                        bypassOwnership = player.hasPermission("waystonewarps.bypass.manage_players"),
                     )
                     result.onSuccess { isWhitelisted ->
                         if (isWhitelisted) {
