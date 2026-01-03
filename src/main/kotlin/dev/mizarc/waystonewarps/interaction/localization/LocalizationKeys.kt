@@ -73,7 +73,6 @@ object LocalizationKeys {
     
     // Player Search Menu
     const val MENU_PLAYER_SEARCH_TITLE = "menu.player_search.title"
-    const val MENU_PLAYER_SEARCH_CONFIRM_ITEM_NAME = "menu.player_search.item.confirm.name"
     
     // Warp Icon Menu
     const val MENU_WARP_ICON_TITLE = "menu.warp_icon.title"

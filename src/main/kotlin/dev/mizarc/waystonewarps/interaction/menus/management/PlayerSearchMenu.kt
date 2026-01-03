@@ -39,7 +39,7 @@ class PlayerSearchMenu(
         // Add confirm menu item.
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR).name(
-            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_PLAYER_SEARCH_CONFIRM_ITEM_NAME)
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME)
         )
         val confirmGuiItem = GuiItem(confirmItem) { _ ->
             menuNavigator.goBackWithData(gui.renameText)
