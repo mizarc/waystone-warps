@@ -37,6 +37,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
   - `waystonewarps.teleport.cooldown_bypass`: Disallows teleportation to undiscovered warps
 - New permission to disallow the creation of warps `waystonewarps.create`
 - New permission to disallow the discovery of warps `waystonewarps.discover`
+- New permission to use the /warpmenu command `waystonewarps.command.warpmenu`
 
 ### Changed
 - Menu buttons are now gold with a grey description for standardisation.
