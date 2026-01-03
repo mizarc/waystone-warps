@@ -164,7 +164,6 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             // Update page number item
             val pageNumberItem = ItemStack(Material.PAPER).name("Page $currentPage of $totalPages")
             val guiPageNumberItem = GuiItem(pageNumberItem)
-            // Clear previous page number
             paginatorPane.addItem(guiPageNumberItem, 1, 0)
 
             // Update left arrow
@@ -201,7 +200,6 @@ class WarpMenu(private val player: Player, private val menuNavigator: MenuNaviga
             }
             paginatorPane.addItem(guiNextItem, 2, 0)
 
-            gui.update()
         }
 
         updatePaginator()
