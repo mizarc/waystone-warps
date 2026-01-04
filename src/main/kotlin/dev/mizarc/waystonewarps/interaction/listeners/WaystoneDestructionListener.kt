@@ -6,6 +6,8 @@ import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.results.BreakWarpResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
@@ -30,6 +32,7 @@ import java.util.*
 class WaystoneDestructionListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val breakWarpBlock: BreakWarpBlock by inject()
+    private val localizationProvider: LocalizationProvider by inject()
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onClaimHubDestroy(event: BlockBreakEvent) {
@@ -43,16 +46,19 @@ class WaystoneDestructionListener: Listener, KoinComponent {
             when (result) {
                 is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)
                 is BreakWarpResult.Breaking -> {
+                    val message = localizationProvider.get(
+                        event.player.uniqueId,
+                        LocalizationKeys.FEEDBACK_WAYSTONE_BREAK_PROGRESS,
+                        result.breaksRemaining
+                    )
                     event.player.sendActionBar(
-                        Component.text("Break ${result.breaksRemaining} more times in 10 seconds " +
-                                "to destroy this waystone").color(TextColor.color(255, 201, 14)))
+                        Component.text(message).color(TextColor.color(255, 201, 14)))
                     event.isCancelled = true
                 }
                 else -> continue
             }
         }
     }
-
 
     @EventHandler
     fun onBlockExplode(event: BlockExplodeEvent) {
@@ -152,8 +158,13 @@ class WaystoneDestructionListener: Listener, KoinComponent {
         }
 
         // Send message when the warp is broken
+        val message = localizationProvider.get(
+            player.uniqueId,
+            LocalizationKeys.FEEDBACK_WAYSTONE_DESTROYED,
+            warp.name
+        )
         player.sendActionBar(
-            Component.text("Waystone '${warp.name}' has been destroyed")
+            Component.text(message)
                 .color(TextColor.color(85, 255, 85)))
     }
 }

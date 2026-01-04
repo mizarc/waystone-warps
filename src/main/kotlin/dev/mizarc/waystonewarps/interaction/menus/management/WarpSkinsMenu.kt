@@ -5,8 +5,11 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
@@ -16,12 +19,16 @@ import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuNavigator): Menu, KoinComponent {
+class WarpSkinsMenu(
+    private val player: Player, 
+    private val menuNavigator: MenuNavigator,
+    private val localizationProvider: LocalizationProvider
+): Menu, KoinComponent {
     private val getAllWarpSkins: GetAllWarpSkins by inject()
 
     override fun open() {
         // Create menu
-        val gui = ChestGui(3, "Available Skins")
+        val gui = ChestGui(3, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_TITLE))
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
@@ -38,16 +45,17 @@ class WarpSkinsMenu(private val player: Player, private val menuNavigator: MenuN
         // Add back menu item
         val navigationPane = StaticPane(0, 0, 1, 3)
         gui.addPane(navigationPane)
-        val confirmItem = ItemStack(Material.NETHER_STAR).name("Back")
-        val confirmGuiItem = GuiItem(confirmItem) { menuNavigator.goBack() }
-        navigationPane.addItem(confirmGuiItem, 0, 0)
+        val backItem = ItemStack(Material.NETHER_STAR)
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
+        val backGuiItem = GuiItem(backItem) { menuNavigator.goBack() }
+        navigationPane.addItem(backGuiItem, 0, 0)
 
         // Add tooltip menu item
         val tooltipItem = ItemStack(Material.PAPER)
-            .name("Blocks here are only for display")
-            .lore("If you own the block, hold the item in your hand and")
-            .lore("right click the base of the waystone to change the skin.")
-        val tooltipGuiItem = GuiItem(tooltipItem) { menuNavigator.goBack() }
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_NAME), PrimaryColourPalette.INFO.color!!)
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_1))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_2))
+        val tooltipGuiItem = GuiItem(tooltipItem) { guiEvent -> guiEvent.isCancelled = true }
         navigationPane.addItem(tooltipGuiItem, 0, 2)
 
         // Display list of blocks

@@ -4,6 +4,8 @@ import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpSkin
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.results.UpdateWarpSkinResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.GameMode
@@ -27,6 +29,7 @@ import org.koin.core.component.inject
 class WaystoneBaseInteractListener: Listener, KoinComponent {
     private val getWarpAtPosition: GetWarpAtPosition by inject()
     private val updateWarpSkin: UpdateWarpSkin by inject()
+    private val localizationProvider: LocalizationProvider by inject()
 
     @EventHandler
     fun onBaseInteract(event: PlayerInteractEvent) {
@@ -59,14 +62,24 @@ class WaystoneBaseInteractListener: Listener, KoinComponent {
             UpdateWarpSkinResult.SUCCESS -> {
                 player.swingMainHand()
                 event.isCancelled = true
-                player.sendActionBar(Component.text("Updated waystone skin!")
+                val message = localizationProvider.get(
+                    player.uniqueId,
+                    LocalizationKeys.FEEDBACK_WAYSTONE_SKIN_UPDATED
+                )
+                player.sendActionBar(Component.text(message)
                     .color(TextColor.color(85, 255, 85)))
                 if (player.gameMode != GameMode.CREATIVE) itemInHand.amount -= 1
                 clickedBlock.world.dropItem(clickedBlock.location, ItemStack(existingBlock))
                 clickedBlock.world.playSound(player.location, Sound.BLOCK_VAULT_CLOSE_SHUTTER,
                     SoundCategory.BLOCKS, 1.0f, 1.0f)
             }
-            UpdateWarpSkinResult.WARP_NOT_FOUND -> player.sendActionBar(Component.text("Waystone is invalid"))
+            UpdateWarpSkinResult.WARP_NOT_FOUND -> {
+                val message = localizationProvider.get(
+                    player.uniqueId,
+                    LocalizationKeys.FEEDBACK_WAYSTONE_INVALID
+                )
+                player.sendActionBar(Component.text(message))
+            }
             else -> {}
         }
     }

@@ -7,6 +7,7 @@ import io.papermc.paper.datacomponent.item.CustomModelData
 import io.papermc.paper.registry.RegistryAccess
 import io.papermc.paper.registry.RegistryKey
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.*
@@ -37,6 +38,14 @@ fun ItemStack.name(name: String, color: TextColor = NamedTextColor.GOLD): ItemSt
     val meta = itemMeta
     meta.addItemFlags(*ItemFlag.entries.toTypedArray())
     meta.displayName(Component.text(name).color(color).decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false))
+    itemMeta = meta
+    return this
+}
+
+fun ItemStack.name(textComponent: Component): ItemStack {
+    val meta = itemMeta
+    meta.addItemFlags(*ItemFlag.entries.toTypedArray())
+    meta.displayName(textComponent)
     itemMeta = meta
     return this
 }

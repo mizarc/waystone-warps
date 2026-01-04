@@ -13,9 +13,12 @@ import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.actions.whitelist.ToggleWhitelist
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
@@ -31,7 +34,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpPlayerMenu(private val player: Player, private val menuNavigator: MenuNavigator,
-                     private val warp: Warp): Menu, KoinComponent {
+                     private val warp: Warp, private val localizationProvider: LocalizationProvider): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val getPlayerWhitelistForWarp: GetWhitelistedPlayers by inject()
     private val toggleWhitelist: ToggleWhitelist by inject()
@@ -44,13 +47,13 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
     override fun open() {
         val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
         if (!canManageWhitelist) {
-            player.sendMessage("§cYou don't have permission to manage the whitelist!")
+            player.sendMessage("§c${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_NO_PERMISSION)}")
             menuNavigator.goBack()
             return
         }
 
         // Create player access menu
-        val gui = ChestGui(6, "Player Access")
+        val gui = ChestGui(6, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_TITLE))
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
@@ -118,21 +121,21 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         gui.addPane(controlsPane)
 
         // Add go back item
-        val exitItem = ItemStack(Material.NETHER_STAR).name("Go Back")
+        val exitItem = ItemStack(Material.NETHER_STAR).name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
         val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
         // Add view mode item
         val viewModeItem = when (viewMode) {
             0 -> ItemStack(Material.SUGAR)
-                .name("Discovered")
-                .lore("Listing players with access to this warp")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_DISCOVERED))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_VIEW_MODE_DISCOVERED_LORE))
             1 -> ItemStack(Material.GLOWSTONE_DUST)
-                .name("Whitelisted")
-                .lore("Listing players who are whitelisted")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_WHITELISTED))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_VIEW_MODE_WHITELISTED_LORE))
             else -> ItemStack(Material.REDSTONE)
-                .name("Online")
-                .lore("Listing all players on the server")
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_ONLINE))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_VIEW_MODE_ONLINE_LORE))
         }
         val guiViewModeItem = GuiItem(viewModeItem) { guiEvent ->
             // Cycle through 0, 1, 2
@@ -146,7 +149,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         controlsPane.addItem(guiViewModeItem, 2, 0)
 
         // Add search button
-        val searchItem = ItemStack(Material.NAME_TAG).name("Search")
+        val searchItem = ItemStack(Material.NAME_TAG)
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_SEARCH))
         val guiSearchItem = GuiItem(searchItem) {
             val playerSearchMenu = PlayerSearchMenu(player, menuNavigator)
             menuNavigator.openMenu(playerSearchMenu)
@@ -155,7 +159,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Add clear search button
         if (playerNameSearch.isNotEmpty()) {
-            val clearSearchItem = ItemStack(Material.MAGMA_CREAM).name("Clear Search")
+            val clearSearchItem = ItemStack(Material.MAGMA_CREAM)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_CLEAR_SEARCH))
             val guiClearSearchItem = GuiItem(clearSearchItem) {
                 playerNameSearch = ""
                 page = 1
@@ -175,7 +180,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             paginatorPane.clear()
 
             // Update page number item
-            val pageNumberItem = ItemStack(Material.PAPER).name("Page $currentPage of $totalPages")
+            val pageNumberItem = ItemStack(Material.PAPER)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME, currentPage.toString(), totalPages.toString()), PrimaryColourPalette.INFO.color!!)
             val guiPageNumberItem = GuiItem(pageNumberItem)
             // Clear previous page number
             paginatorPane.addItem(guiPageNumberItem, 1, 0)
@@ -184,7 +190,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             val prevItem: ItemStack
             val guiPrevItem: GuiItem
             if (currentPage <= 1) {
-                prevItem = ItemStack(Material.ARROW).name("Prev")
+                prevItem = ItemStack(Material.ARROW)
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiPrevItem = GuiItem(prevItem)
             } else {
                 prevItem = ItemStack(Material.SPECTRAL_ARROW).name("Prev")
@@ -201,7 +208,8 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             val nextItem: ItemStack
             val guiNextItem: GuiItem
             if (currentPage >= totalPages) {
-                nextItem = ItemStack(Material.ARROW).name("Next")
+                nextItem = ItemStack(Material.ARROW)
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiNextItem = GuiItem(nextItem)
             } else {
                 nextItem = ItemStack(Material.SPECTRAL_ARROW).name("Next")
@@ -228,17 +236,17 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         val discovered = getWarpPlayerAccess.execute(warp.id)
         val canManageWhitelist = PermissionHelper.canManageWhitelist(player, warp.playerId)
         val stockLore = if (canManageWhitelist) {
-            listOf("Left Click to toggle whitelist")
+            listOf(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_TOGGLE_WHITELIST))
         } else {
-            listOf("§cYou don't have permission to manage the whitelist")
+            listOf("§c${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_NO_PERMISSION)}")
         }
 
         for (foundPlayer in players) {
             // Modify lore text depending on if the player has discovered this warp or is whitelisted
             val customLore = stockLore.toMutableList()
             if (foundPlayer.uniqueId in discovered) {
-                customLore.add(0, "§bDiscovered")
-                customLore.add("Right click to revoke access",)
+                customLore.add(0, "§b${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_DISCOVERED)}")
+                customLore.add(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_REVOKE_ACCESS))
             }
             if (foundPlayer.uniqueId in whitelisted) {
                 customLore.add(0, "§aWhitelisted")
@@ -263,10 +271,10 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                     )
                     result.onSuccess { isWhitelisted ->
                         if (isWhitelisted) {
-                            customLore.add(0, "§aWhitelisted")
+                            customLore.add(0, "§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_WHITELISTED)}")
                         } else {
-                            customLore.remove("§aWhitelisted")
-                            if (viewMode == 1) {
+                            customLore.remove("§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_WHITELISTED)}")
+                        if (viewMode == 1) {
                                 currentPagePane.removeItem(guiPlayerItem)
                             }
                         }
@@ -283,7 +291,11 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
                     && getWarpPlayerAccess.execute(warp.id).contains(foundPlayer.uniqueId)
                 ) {
                     menuNavigator.openMenu(
-                        ConfirmationMenu(menuNavigator, player, "Revoke ${foundPlayer.name}'s access?") {
+                        ConfirmationMenu(
+                            menuNavigator,
+                            player,
+                            "${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_PLAYER_ITEM_PLAYER_LORE_REVOKE_ACCESS)} ${foundPlayer.name ?: "Unknown"}",
+                        ) {
                             revokeDiscovery.execute(foundPlayer.uniqueId, warp.id)
                             if (viewMode == 0) {
                                 currentPagePane.removeItem(guiPlayerItem)

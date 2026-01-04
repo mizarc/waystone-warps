@@ -5,6 +5,8 @@ import co.aikar.commands.annotation.*
 import dev.mizarc.waystonewarps.application.actions.administration.ListInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveAllInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveInvalidWarpsForWorld
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
@@ -21,6 +23,7 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
     private val listInvalidWarps: ListInvalidWarps by inject()
     private val removeAllInvalidWarps: RemoveAllInvalidWarps by inject()
     private val removeInvalidWarpsForWorld: RemoveInvalidWarpsForWorld by inject()
+    private val localizationProvider: LocalizationProvider by inject()
 
     @Subcommand("invalids list")
     @CommandPermission("waystonewarps.admin.invalids.list")
@@ -29,7 +32,12 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
         val warps = listInvalidWarps.listAllInvalidWarps()
 
         if (warps.isEmpty()) {
-            sender.sendMessage(Component.text("No invalid warps found.", NamedTextColor.GREEN))
+            val message = if (sender is Player) {
+                localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_NO_INVALID_WARPS)
+            } else {
+                localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_NO_INVALID_WARPS)
+            }
+            sender.sendMessage(Component.text(message, NamedTextColor.GREEN))
             return
         }
 
@@ -39,24 +47,34 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
             .toList()
             .sortedByDescending { (_, count) -> count }
 
-        val header = Component.text()
-            .content("--- Worlds with invalid warps: (${warps.size} total) ---")
-            .color(NamedTextColor.GOLD)
-            .build()
+        val headerMessage = if (sender is Player) {
+            localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_LIST_HEADER, warps.size)
+        } else {
+            localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_LIST_HEADER, warps.size)
+        }
+        val header = Component.text(headerMessage, NamedTextColor.GOLD)
         sender.sendMessage(header)
         warpsByWorld.forEach { (worldId, count) ->
             val worldIdStr = worldId.toString()
-            val message = Component.text("-", NamedTextColor.GRAY)
-                .append(Component.space())
-                .append(Component.text(worldIdStr, NamedTextColor.RED))
-                .append(Component.text(": ", NamedTextColor.GRAY))
-                .append(Component.text("$count warps", NamedTextColor.WHITE))
+            val worldEntryMessage = if (sender is Player) {
+                localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_LIST_WORLD_ENTRY, worldIdStr, count)
+            } else {
+                localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_LIST_WORLD_ENTRY, worldIdStr, count)
+            }
+            val message = Component.text()
+                .content(worldEntryMessage)
+                .color(NamedTextColor.GRAY)
             
             if (sender is Player) {
                 // For players, add click and hover events
+                val hoverText = if (sender is Player) {
+                    localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_LIST_CLIPBOARD_HOVER)
+                } else {
+                    localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_LIST_CLIPBOARD_HOVER)
+                }
                 val clickableMessage = message
                     .clickEvent(ClickEvent.copyToClipboard(worldIdStr))
-                    .hoverEvent(HoverEvent.showText(Component.text("Click to copy world ID to clipboard", NamedTextColor.GREEN)))
+                    .hoverEvent(HoverEvent.showText(Component.text(hoverText, NamedTextColor.GREEN)))
                 
                 sender.sendMessage(clickableMessage)
             } else {
@@ -77,7 +95,12 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
                 // Try to find world by name if UUID parsing fails
                 val world = Bukkit.getWorld(worldId)
                 if (world == null) {
-                    sender.sendMessage(Component.text("Error: '$worldId' is not a valid UUID or world name", NamedTextColor.RED))
+                    val errorMessage = if (sender is Player) {
+                        localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_REMOVE_INVALID_WORLD, worldId)
+                    } else {
+                        localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_REMOVE_INVALID_WORLD, worldId)
+                    }
+                    sender.sendMessage(Component.text(errorMessage, NamedTextColor.RED))
                     return
                 }
                 world.uid
@@ -87,17 +110,23 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
             val world = Bukkit.getWorld(uuid)
             val worldName = world?.name ?: "Unknown World ($uuid)"
             
-            val message = Component.text()
-                .append(Component.text("Removed ", NamedTextColor.GREEN))
-                .append(Component.text(removed, NamedTextColor.WHITE))
-                .append(Component.text(" warps from world '", NamedTextColor.GREEN))
-                .append(Component.text(worldName, NamedTextColor.YELLOW))
-                .append(Component.text("' ", NamedTextColor.GREEN))
-                .build()
+            val successMessage = if (sender is Player) {
+                localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_REMOVE_SUCCESS, removed, worldName)
+            } else {
+                localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_REMOVE_SUCCESS, removed, worldName)
+            }
+            
+            val message = Component.text(successMessage, NamedTextColor.GREEN)
+                .colorIfAbsent(NamedTextColor.GREEN)
                 
             sender.sendMessage(message)
         } catch (e: Exception) {
-            sender.sendMessage(Component.text("An error occurred while removing warps: ${e.message}", NamedTextColor.RED))
+            val errorMessage = if (sender is Player) {
+                localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_REMOVE_ERROR, e.message ?: "Unknown error")
+            } else {
+                localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_REMOVE_ERROR, e.message ?: "Unknown error")
+            }
+            sender.sendMessage(Component.text(errorMessage, NamedTextColor.RED))
         }
     }
 
@@ -106,6 +135,11 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
     @Description("Remove all warps in invalid worlds")
     fun onRemoveAllInvalids(sender: CommandSender) {
         val (removed, total) = removeAllInvalidWarps.execute()
-        sender.sendMessage("§aRemoved $removed invalid warps.")
+        val message = if (sender is Player) {
+            localizationProvider.get(sender.uniqueId, "command.invalids.remove_all.success", removed)
+        } else {
+            localizationProvider.getConsole("command.invalids.remove_all.success", removed)
+        }
+        sender.sendMessage(Component.text(message, NamedTextColor.GREEN))
     }
 }

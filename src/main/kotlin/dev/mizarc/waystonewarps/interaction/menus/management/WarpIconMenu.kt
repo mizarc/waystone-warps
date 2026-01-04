@@ -7,8 +7,11 @@ import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -28,29 +31,33 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import kotlin.concurrent.thread
 
-class WarpIconMenu(private val player: Player,
-                   private val menuNavigator: MenuNavigator, private val warp: Warp): Menu, KoinComponent {
+class WarpIconMenu(
+    private val player: Player,
+    private val menuNavigator: MenuNavigator, 
+    private val warp: Warp
+): Menu, KoinComponent {
     private val updateWarpIcon: UpdateWarpIcon by inject()
+    private val localizationProvider: LocalizationProvider by inject()
 
     @Suppress("UnstableApiUsage")
     override fun open() {
         // Check if the player has permission to change the icon
         val canChangeIcon = PermissionHelper.canChangeIcon(player, warp.playerId)
         if (!canChangeIcon) {
-            player.sendMessage("§cYou don't have permission to change this waystone's icon!")
             menuNavigator.goBack()
             return
         }
 
-        val gui = FurnaceGui("Set Warp Icon")
+        val title = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_TITLE)
+        val gui = FurnaceGui(title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
         val fuelPane = StaticPane(0, 0, 1, 1)
 
         // Add info paper menu item
         val paperItem = ItemStack(Material.PAPER)
-            .name("Place an item in the top slot to set it as the icon")
-            .lore("Don't worry, you'll get the item back")
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_NAME), PrimaryColourPalette.INFO.color!!)
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_LORE))
         val guiIconEditorItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
         fuelPane.addItem(guiIconEditorItem, 0, 0)
         gui.fuelComponent.addPane(fuelPane)
@@ -78,7 +85,9 @@ class WarpIconMenu(private val player: Player,
 
         // Add confirm menu item
         val outputPane = StaticPane(0, 0, 1, 1)
-        val confirmItem = ItemStack(Material.NETHER_STAR).name("Confirm")
+        val confirmItem = ItemStack(Material.NETHER_STAR)
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME),
+                PrimaryColourPalette.SUCCESS.color!!)
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             guiEvent.isCancelled = true
             val newIcon = gui.ingredientComponent.getItem(0, 0)
@@ -168,9 +177,6 @@ class WarpIconMenu(private val player: Player,
                     iconMeta = iconMeta,
                     bypassOwnership = player.hasPermission("waystonewarps.bypass.icon"),
                 )
-                result.onFailure {
-                    player.sendMessage("§cFailed to update icon: ${it.message}")
-                }
             }
 
             // Go back to edit menu

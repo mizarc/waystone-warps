@@ -38,6 +38,7 @@ import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.domain.world.WorldService
+import dev.mizarc.waystonewarps.infrastructure.localization.PropertiesLocalizationProvider
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
@@ -55,6 +56,7 @@ import dev.mizarc.waystonewarps.infrastructure.services.teleportation.Teleportat
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.plugin.ServicePriority
@@ -96,6 +98,8 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var configService: ConfigService
     private lateinit var scheduler: SchedulerService
     private lateinit var warpEventPublisher: WarpEventPublisher
+    private lateinit var playerLocaleService: PlayerLocaleService
+    private lateinit var localizationProvider: LocalizationProvider
 
     override fun onEnable() {
         // Create plugin folder
@@ -127,6 +131,7 @@ class WaystoneWarps: JavaPlugin() {
         initialiseVaultDependency()
         initialiseRepositories()
         initialiseServices()
+        initialiseLang()
         registerDependencies()
         registerCommands()
         registerEvents()
@@ -193,6 +198,21 @@ class WaystoneWarps: JavaPlugin() {
         hologramService = HologramServiceBukkit(configService)
         worldService = WorldServiceBukkit()
         warpEventPublisher = WarpEventPublisherBukkit()
+        playerLocaleService = PlayerLocaleServicePaper()
+        localizationProvider = PropertiesLocalizationProvider(configService, dataFolder, PlayerLocaleServicePaper())
+    }
+
+    fun initialiseLang() {
+        val defaultLanguageFilenames = listOf(
+            "en.properties"
+        )
+
+        // Move languages to the required folder and add readme for override instructions
+        defaultLanguageFilenames.forEach { filename ->
+            val resourcePathInJar = "lang/defaults/$filename"
+            saveResource(resourcePathInJar, true)
+        }
+        saveResource("lang/overrides/README.txt", true)
     }
 
     private fun registerDependencies() {
@@ -233,6 +253,8 @@ class WaystoneWarps: JavaPlugin() {
             single { ListInvalidWarps(warpRepository, worldService) }
             single { RemoveAllInvalidWarps(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
             single { RemoveInvalidWarpsForWorld(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
+
+            single<LocalizationProvider> { PropertiesLocalizationProvider(configService, dataFolder, playerLocaleService) }
         }
 
         startKoin { modules(repositories, actions) }
