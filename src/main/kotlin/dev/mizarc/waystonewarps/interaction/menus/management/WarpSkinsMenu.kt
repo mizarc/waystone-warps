@@ -46,7 +46,7 @@ class WarpSkinsMenu(
         val navigationPane = StaticPane(0, 0, 1, 3)
         gui.addPane(navigationPane)
         val backItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
         val backGuiItem = GuiItem(backItem) { menuNavigator.goBack() }
         navigationPane.addItem(backGuiItem, 0, 0)
 
