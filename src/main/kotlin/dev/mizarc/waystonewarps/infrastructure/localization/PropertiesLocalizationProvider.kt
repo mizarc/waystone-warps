@@ -31,40 +31,41 @@ private val playerLocaleService: PlayerLocaleService
     }
 
     private fun fetchMessageString(locale: String, key: String, vararg args: Any?): String {
-        // Step 1: Try to get the bundle for the exact requested language code
-        var properties = languages[locale]
+        // Try to get the string from the exact requested language code first
+        languages[locale]?.getProperty(key)?.let { pattern ->
+            return formatPattern(pattern, key, *args)
+        }
 
-        // Step 2: If the exact language code bundle is not found, try the base language
-        if (properties == null) {
-            // Derive the base language code (e.g., "en" from "en_UK").
-            val requestedLocale = Locale.forLanguageTag(locale.replace('_', '-'))
-            val baseLanguage = requestedLocale.language
-
-            // If the derived base language code is different from the requested code and is not empty,
-            // try to get the bundle for this base language.
-            if (baseLanguage != locale && baseLanguage.isNotEmpty()) {
-                properties = languages[baseLanguage]
+        // If not found, try the base language (e.g., "en" from "en_UK")
+        val requestedLocale = Locale.forLanguageTag(locale.replace('_', '-'))
+        val baseLanguage = requestedLocale.language
+        
+        if (baseLanguage != locale && baseLanguage.isNotEmpty()) {
+            languages[baseLanguage]?.getProperty(key)?.let { pattern ->
+                return formatPattern(pattern, key, *args)
             }
         }
 
-        // Step 3: If still not found, fallback to the server's configured default language.
-        if (properties == null) {
-            properties = languages[config.getPluginLanguage()]
+        // If still not found, try the server's configured default language
+        val defaultLang = config.getPluginLanguage()
+        if (defaultLang != locale && defaultLang != baseLanguage) {
+            languages[defaultLang]?.getProperty(key)?.let { pattern ->
+                return formatPattern(pattern, key, *args)
+            }
         }
 
-        // Step 4: If still not found, fallback to the hardcoded base default language ("en").
-        if (properties == null) {
-            properties = languages[baseDefaultLanguageCode]
+        // If still not found, try the hardcoded base default language ("en")
+        if (defaultLang != baseDefaultLanguageCode && baseLanguage != baseDefaultLanguageCode) {
+            languages[baseDefaultLanguageCode]?.getProperty(key)?.let { pattern ->
+                return formatPattern(pattern, key, *args)
+            }
         }
 
-        // If propertiesForLang is still null here, it means none of the fallback languages were successfully loaded.
-        if (properties == null) {
-            return key
-        }
+        // If we get here, the key wasn't found in any of the fallback languages
+        return key
+    }
 
-        // Get the string pattern for the selected language
-        val pattern = properties.getProperty(key) ?: return key
-
+    private fun formatPattern(pattern: String, key: String, vararg args: Any?): String {
         return try {
             if (args.isNotEmpty()) {
                 // If arguments are provided (the args array is not null and not empty), attempt to format the string.
@@ -76,14 +77,14 @@ private val playerLocaleService: PlayerLocaleService
         } catch (_: IllegalArgumentException) {
             // Handle potential formatting errors (e.g., incorrect number/type of args for placeholders).
             println("Failed to format localization key '$key' with arguments: ${args.joinToString()}")
-            return pattern
+            pattern
         } catch (e: Exception) {
             // Catch any other unexpected exceptions during formatting.
             println(
                 "An unexpected error occurred while formatting localization with arguments: " +
                         "${args.joinToString()} - ${e.message}"
             )
-            return pattern
+            pattern
         }
     }
 
