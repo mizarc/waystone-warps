@@ -156,7 +156,6 @@ object LocalizationKeys {
     const val MENU_WARP_ITEM_WARP_LORE_LOCKED = "menu.warp.item.warp.lore.locked"
     const val MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION = "menu.warp.item.warp.lore.no_teleport_permission"
     const val MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION = "menu.warp.item.warp.lore.no_interworld_permission"
-    const val MENU_WARP_ITEM_PAGE_NAME = "menu.warp.item.page.name"
     
     // Warp Skins Menu
     const val MENU_WARP_SKINS_TITLE = "menu.warp_skins.title"

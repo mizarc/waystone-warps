@@ -172,7 +172,7 @@ class WarpMenu(
             // Update page number item
             val pageNumberText = localizationProvider.get(
                 player.uniqueId, 
-                LocalizationKeys.MENU_WARP_ITEM_PAGE_NAME,
+                LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME,
                 currentPage.toString(),
                 totalPages.toString()
             )

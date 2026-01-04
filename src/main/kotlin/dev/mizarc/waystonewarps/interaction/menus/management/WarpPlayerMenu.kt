@@ -181,7 +181,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
             // Update page number item
             val pageNumberItem = ItemStack(Material.PAPER)
-                .name("${currentPage} / ${totalPages}", PrimaryColourPalette.INFO.color!!)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME, currentPage.toString(), totalPages.toString()), PrimaryColourPalette.INFO.color!!)
             val guiPageNumberItem = GuiItem(pageNumberItem)
             // Clear previous page number
             paginatorPane.addItem(guiPageNumberItem, 1, 0)
