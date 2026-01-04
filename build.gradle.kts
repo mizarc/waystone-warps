@@ -24,7 +24,7 @@ fun getProperty(name: String): String {
 }
 
 group = "dev.mizarc"
-version = "0.3.5"
+version = "1.0.0"
 
 repositories {
     mavenLocal()
