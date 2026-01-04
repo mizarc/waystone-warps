@@ -10,6 +10,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -66,7 +67,7 @@ class WarpRenamingMenu(
         // Add confirm menu item.
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME), PrimaryColourPalette.SUCCESS.color!!)
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             // Go back to edit menu if the name hasn't changed
             if (name == warp.name) {
@@ -88,7 +89,7 @@ class WarpRenamingMenu(
                         .name(localizationProvider.get(
                             player.uniqueId, 
                             LocalizationKeys.CONDITION_NAMING_NOT_FOUND
-                        ))
+                        ), PrimaryColourPalette.FAILED.color!!)
                     val guiPaperItem = GuiItem(paperItem)
                     secondPane.addItem(guiPaperItem, 0, 0)
                     lodestoneItem.name(name)
@@ -101,7 +102,7 @@ class WarpRenamingMenu(
                             player.uniqueId, 
                             LocalizationKeys.CONDITION_NAMING_EXISTING,
                             name
-                        ))
+                        ), PrimaryColourPalette.FAILED.color!!)
                     val guiPaperItem = GuiItem(paperItem) {guiEvent ->
                         secondPane.removeItem(0, 0)
                         lodestoneItem.name(name)

@@ -7,6 +7,8 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
+import dev.mizarc.waystonewarps.interaction.utils.color
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
@@ -39,7 +41,8 @@ class PlayerSearchMenu(
         // Add confirm menu item.
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR).name(
-            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME)
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME),
+            PrimaryColourPalette.SUCCESS.color!!
         )
         val confirmGuiItem = GuiItem(confirmItem) { _ ->
             menuNavigator.goBackWithData(gui.renameText)

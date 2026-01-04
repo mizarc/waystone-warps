@@ -7,6 +7,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
@@ -35,7 +36,7 @@ class ConfirmationMenu(
 
         // Add no menu item
         val noItem = ItemStack(Material.RED_CONCRETE)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_NO_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_NO_NAME), PrimaryColourPalette.CANCELLED.color!!)
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_NO_LORE))
 
         val guiNoItem = GuiItem(noItem) { guiEvent ->
@@ -45,7 +46,7 @@ class ConfirmationMenu(
 
         // Add yes menu item
         val yesItem = ItemStack(Material.GREEN_CONCRETE)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_YES_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_YES_NAME), PrimaryColourPalette.SUCCESS.color!!)
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_CONFIRMATION_ITEM_YES_LORE))
         val guiYesItem = GuiItem(yesItem) { guiEvent ->
             callbackAction()

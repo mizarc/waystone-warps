@@ -111,7 +111,7 @@ class WarpMenu(
 
         // Add go back item
         val exitItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CLOSE_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CLOSE_NAME), PrimaryColourPalette.CANCELLED.color!!)
         val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
@@ -176,7 +176,7 @@ class WarpMenu(
                 currentPage.toString(),
                 totalPages.toString()
             )
-            val pageNumberItem = ItemStack(Material.PAPER).name(pageNumberText)
+            val pageNumberItem = ItemStack(Material.PAPER).name(pageNumberText, PrimaryColourPalette.INFO.color!!)
             val guiPageNumberItem = GuiItem(pageNumberItem)
             paginatorPane.addItem(guiPageNumberItem, 1, 0)
 
@@ -185,7 +185,7 @@ class WarpMenu(
             val guiPrevItem: GuiItem
             if (currentPage <= 1) {
                 prevItem = ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME))
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiPrevItem = GuiItem(prevItem)
             } else {
                 prevItem = ItemStack(Material.SPECTRAL_ARROW)
@@ -204,7 +204,8 @@ class WarpMenu(
             val guiNextItem: GuiItem
             if (currentPage >= totalPages) {
                 nextItem = ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME))
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME),
+                        PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiNextItem = GuiItem(nextItem)
             } else {
                 nextItem = ItemStack(Material.SPECTRAL_ARROW)
@@ -241,8 +242,8 @@ class WarpMenu(
             }
             
             val customLore = stockLore.toMutableList()
-            customLore.add(0, "§3$locationText")
-            customLore.add(0, "§6${warpModel.player.name}")
+            customLore.add(0, "§8$locationText")
+            customLore.add(0, "§b${warpModel.player.name}")
 
             val hasTeleportPermission = player.hasPermission("waystonewarps.teleport")
             val isDifferentWorld = warp.worldId != player.world.uid

@@ -9,6 +9,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
@@ -51,7 +52,7 @@ class WarpSkinsMenu(
 
         // Add tooltip menu item
         val tooltipItem = ItemStack(Material.PAPER)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_NAME), PrimaryColourPalette.INFO.color!!)
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_1))
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_2))
         val tooltipGuiItem = GuiItem(tooltipItem) { guiEvent -> guiEvent.isCancelled = true }

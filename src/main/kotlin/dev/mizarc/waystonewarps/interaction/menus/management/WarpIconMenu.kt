@@ -11,6 +11,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
@@ -55,7 +56,7 @@ class WarpIconMenu(
 
         // Add info paper menu item
         val paperItem = ItemStack(Material.PAPER)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_NAME), PrimaryColourPalette.INFO.color!!)
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_LORE))
         val guiIconEditorItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
         fuelPane.addItem(guiIconEditorItem, 0, 0)
@@ -85,7 +86,8 @@ class WarpIconMenu(
         // Add confirm menu item
         val outputPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_CONFIRM_ITEM_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_CONFIRM_ITEM_NAME),
+                PrimaryColourPalette.SUCCESS.color!!)
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             guiEvent.isCancelled = true
             val newIcon = gui.ingredientComponent.getItem(0, 0)

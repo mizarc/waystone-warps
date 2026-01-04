@@ -10,6 +10,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import net.kyori.adventure.text.Component
@@ -47,7 +48,7 @@ class WarpNamingMenu(
         // Add lodestone menu item
         val firstPane = StaticPane(0, 0, 1, 1)
         val lodestoneItem = ItemStack(Material.LODESTONE)
-            .name("")
+            .name("", PrimaryColourPalette.INFO.color!!)
             .lore(localizationProvider.get(
                 player.uniqueId,
                 LocalizationKeys.MENU_WARP_NAMING_ITEM_WARP_LORE,
@@ -66,7 +67,7 @@ class WarpNamingMenu(
         // Add confirm menu item
         val thirdPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME))
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME), PrimaryColourPalette.SUCCESS.color!!)
 
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             val belowLocation = location.clone().subtract(0.0, 1.0, 0.0)
@@ -93,21 +94,21 @@ class WarpNamingMenu(
                     showErrorMessage(
                         gui,
                         secondPane,
-                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_LIMIT)
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_LIMIT, PrimaryColourPalette.FAILED.color!!)
                     )
                 }
                 is CreateWarpResult.NameAlreadyExists -> {
                     showErrorMessage(
                         gui,
                         secondPane,
-                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_EXISTING)
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_EXISTING, PrimaryColourPalette.FAILED.color!!)
                     )
                 }
                 is CreateWarpResult.NameCannotBeBlank -> {
                     showErrorMessage(
                         gui,
                         secondPane,
-                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_BLANK)
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.CONDITION_NAMING_BLANK, PrimaryColourPalette.FAILED.color!!)
                     )
                     lodestoneItem.name("")
                     gui.update()

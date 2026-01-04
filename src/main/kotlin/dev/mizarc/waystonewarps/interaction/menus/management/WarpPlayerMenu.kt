@@ -18,6 +18,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 import dev.mizarc.waystonewarps.interaction.utils.createHead
 import dev.mizarc.waystonewarps.interaction.utils.lore
@@ -120,7 +121,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         gui.addPane(controlsPane)
 
         // Add go back item
-        val exitItem = ItemStack(Material.NETHER_STAR).name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME))
+        val exitItem = ItemStack(Material.NETHER_STAR).name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
         val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
@@ -180,7 +181,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
             // Update page number item
             val pageNumberItem = ItemStack(Material.PAPER)
-                .name("${currentPage} / ${totalPages}")
+                .name("${currentPage} / ${totalPages}", PrimaryColourPalette.INFO.color!!)
             val guiPageNumberItem = GuiItem(pageNumberItem)
             // Clear previous page number
             paginatorPane.addItem(guiPageNumberItem, 1, 0)
@@ -190,7 +191,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             val guiPrevItem: GuiItem
             if (currentPage <= 1) {
                 prevItem = ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME))
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiPrevItem = GuiItem(prevItem)
             } else {
                 prevItem = ItemStack(Material.SPECTRAL_ARROW).name("Prev")
@@ -208,7 +209,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
             val guiNextItem: GuiItem
             if (currentPage >= totalPages) {
                 nextItem = ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME))
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 guiNextItem = GuiItem(nextItem)
             } else {
                 nextItem = ItemStack(Material.SPECTRAL_ARROW).name("Next")

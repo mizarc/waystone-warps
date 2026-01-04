@@ -13,6 +13,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.common.ConfirmationMenu
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Bukkit
@@ -49,7 +50,7 @@ class WarpOptionsMenu(
 
         // Add back menu item
         val backItem = ItemStack(Material.NETHER_STAR).name(
-            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME)
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!
         )
         val guiBackItem = GuiItem(backItem) { guiEvent ->
             menuNavigator.goBack()
@@ -95,7 +96,7 @@ class WarpOptionsMenu(
         val guiDeleteItem: GuiItem
         if (warp.playerId == player.uniqueId) {
             val deleteItem = ItemStack(Material.SNOWBALL)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_CANNOT_DELETE_NAME))
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_CANNOT_DELETE_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)
                 .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_CANNOT_DELETE_LORE))
             guiDeleteItem = GuiItem(deleteItem)
         } else {
