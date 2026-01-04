@@ -1,3 +1,8 @@
+# The language of text elements.
+# EN - Original
+# add more <?>.properties files in the override folder to
+plugin_language: EN
+
 # The amount of waystone warps a player is allowed to create.
 warp_limit: 3
 
