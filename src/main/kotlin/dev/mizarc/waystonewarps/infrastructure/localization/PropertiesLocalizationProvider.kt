@@ -105,7 +105,6 @@ private val playerLocaleService: PlayerLocaleService
             if (specificDefaultFile.exists()) {
                 try {
                     specificDefaultFile.reader(Charsets.UTF_8).use { properties.load(it) }
-                    println("Loaded language: $locale")
                 } catch (_: Exception) {
                     println("Failed to load default language file for $locale")
                 }
@@ -116,7 +115,6 @@ private val playerLocaleService: PlayerLocaleService
             if (overrideFile.exists()) {
                 try {
                     overrideFile.reader(Charsets.UTF_8).use { properties.load(it) }
-                    println("Loaded override language file: $locale")
                 } catch (_: Exception) {
                     println("Failed to load override language file for $locale")
                 }
