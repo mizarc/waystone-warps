@@ -41,7 +41,12 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Localisation support, with languages now contained in properties files in the lang folder. Currently only supports English.
 
 ### Changed
-- Menu buttons are now gold with a grey description for standardisation.
+- Primary menu action buttons are now gold with a grey description for standardisation.
+- Menu buttons that denote alternative actions are as described:
+  - Info only: BLUE
+  - Confirm: GREEN
+  - Cancel/Back: RED
+  - Unavailable: GREY
 
 ### Fixed
 - Config not being read on the first launch, required restart before the plugin could actually let you do anything.
