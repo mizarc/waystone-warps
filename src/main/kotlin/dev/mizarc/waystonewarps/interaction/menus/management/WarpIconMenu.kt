@@ -86,7 +86,7 @@ class WarpIconMenu(
         // Add confirm menu item
         val outputPane = StaticPane(0, 0, 1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_CONFIRM_ITEM_NAME),
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME),
                 PrimaryColourPalette.SUCCESS.color!!)
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             guiEvent.isCancelled = true

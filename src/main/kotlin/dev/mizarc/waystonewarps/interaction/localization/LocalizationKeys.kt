@@ -78,7 +78,6 @@ object LocalizationKeys {
     const val MENU_WARP_ICON_TITLE = "menu.warp_icon.title"
     const val MENU_WARP_ICON_INFO_ITEM_NAME = "menu.warp_icon.info_item.name"
     const val MENU_WARP_ICON_INFO_ITEM_LORE = "menu.warp_icon.info_item.lore"
-    const val MENU_WARP_ICON_CONFIRM_ITEM_NAME = "menu.warp_icon.confirm_item.name"
     
     // Warp Management Menu
     const val MENU_WARP_MANAGEMENT_TITLE = "menu.warp_management.title"
