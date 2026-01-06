@@ -55,6 +55,7 @@ import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
+import dev.mizarc.waystonewarps.interaction.commands.WarpCreateCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.milkbowl.vault.economy.Economy
@@ -263,6 +264,7 @@ class WaystoneWarps: JavaPlugin() {
     private fun registerCommands() {
         commandManager.registerCommand(WarpMenuCommand())
         commandManager.registerCommand(InvalidsCommand())
+        commandManager.registerCommand(WarpCreateCommand())
     }
 
     private fun registerEvents() {
