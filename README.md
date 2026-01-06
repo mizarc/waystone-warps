@@ -10,9 +10,6 @@ Here are some of the cool features you can expect:
 - **Manage Access Easily** - Limit your waystones to only you, open it up to your friends, or leave it out there for the public to find.
 - **Teleportation Fees** - Let your players work for it! Change teleportation costs between xp, items, or even a provided economy plugin.
 
-## Project status
-Beta. Safe to run on testing servers, but would not recommend for production due to frequent breaking changes.
-
 ## Installation
 Download the latest release (.jar file) from the releases tab and place it in your server's plugins folder. 
 
@@ -24,10 +21,26 @@ metadata provider. [LuckPerms](https://luckperms.net/) is a recommended plugin f
 To establish a waystone warp, place down a lodestone on top of a smooth stone block, then right click the lodestone. This opens up a creation menu where you are able to 
 name your warp. Once the waystone warp is established, you will be presented with various options to do with warp management.
 
-To teleport to waystones, use the `/warpmenu` command. A commandless way to handle this will be implemented later, don't worry.
+To discover waystones made by other players, right click a waystone and watch the particles change colours.
+
+To teleport to waystones, right click with a compass in hand. This will bring up a menu listing all your discovered waystons. Click on the waystone of choice to teleport to it.
 
 ## Permissions
-- worldwidewarps.command.warpmenu - Allows the use of the `warpmenu` command to open up the menu that allows players to teleport to warps.
+- waystonewarps.command.warpmenu - Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps.
+- waystonewarps.bypass.open_menu - Allows access to open the management menu.
+- waystonewarps.bypass.access_control - Allows access to change the access control.
+- waystonewarps.bypass.manage_players - Allows access to manage players.
+- waystonewarps.bypass.rename - Allows access to rename the waystone.
+- waystonewarps.bypass.icon - Allows access to change the waystone icon.
+- waystonewarps.bypass.relocate - Allows access to relocate the waystone.
+- waystonewarps.admin.invalids.list - Allows usage of the list command.
+- waystonewarps.admin.invalids.remove - Allows usage of remove command.
+- waystonewarps.admin.invalids.removeall - Allows usage of removeall command.
+- waystonewarps.teleport - Allows teleportation
+- waystonewarps.teleport.interworld - Allows teleportation to undiscovered warps
+- waystonewarps.teleport.cooldown_bypass - Allows bypassing the cooldown timer
+- waystonewarps.create - Allow the creation of warps
+- waystonewarps.discover - Allow the discovery of warps
 
 ## Per Player Limits
 Ensure that you have a Vault provider installed to set limits as described out in the installation section. Each Vault 
