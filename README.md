@@ -76,7 +76,7 @@ Here are the different limits you can set:
 ### Compiling
 
 ```
-git clone https://gitlab.com/Mizarc/waystonewarps.git
+git clone https://github.com/mizarc/waystone-warps.git
 cd waystone-warps/
 ./gradlew build
 ```
