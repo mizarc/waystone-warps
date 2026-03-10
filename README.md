@@ -33,6 +33,7 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 |-----------------|-------------|
 | `waystonewarps.command.warpmenu` | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
 | `waystonewarps.bypass.open_menu` | Allows access to open the management menu. |
+| `waystonewarps.bypass.limit` | Allows creating waystones without being blocked by the warp limit. |
 | `waystonewarps.bypass.access_control` | Allows access to change the access control. |
 | `waystonewarps.bypass.manage_players` | Allows access to manage players. |
 | `waystonewarps.bypass.rename` | Allows access to rename the waystone. |

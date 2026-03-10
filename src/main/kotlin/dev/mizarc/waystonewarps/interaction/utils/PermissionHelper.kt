@@ -4,6 +4,8 @@ import org.bukkit.entity.Player
 import java.util.UUID
 
 object PermissionHelper {
+    const val LIMIT_BYPASS_PERMISSION = "waystonewarps.bypass.limit"
+
     /**
      * Checks if a player can modify a waystone (either they own it or have admin permission)
      */
@@ -50,5 +52,12 @@ object PermissionHelper {
      */
     fun canRelocate(player: Player, waystoneOwnerId: UUID): Boolean {
         return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.relocate")
+    }
+
+    /**
+     * Checks if a player can bypass the owned waystone limit when creating a new waystone.
+     */
+    fun canBypassLimit(player: Player): Boolean {
+        return player.hasPermission(LIMIT_BYPASS_PERMISSION)
     }
 }

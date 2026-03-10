@@ -17,6 +17,7 @@ import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
 
 @CommandAlias("warpcreate")
 @CommandPermission("waystonewarps.create")
@@ -81,7 +82,8 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
             name = name,
             position3D = position,
             worldId = worldId,
-            baseBlock = "LODESTONE"
+            baseBlock = "LODESTONE",
+            bypassLimit = PermissionHelper.canBypassLimit(player)
         )
 
         when (result) {
