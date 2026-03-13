@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on Keep a Changelog, and this project adheres to Semantic Versioning.
 
+## [1.1.1]
+
+### Fixed
+- Tripwire strings and hooks adjacent to waystones no longer being broken when a player teleports in.
+- Tripwire hooks and strings removed from the platform replacement list in the default config.
+
 ## [1.1.0]
 
 ### Added

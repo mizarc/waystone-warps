@@ -49,8 +49,8 @@ interface DiscoveryRepository {
     /**
      * Removes the discovery link between a player and the warp.
      *
-     * @param playerId Unique id of the player.
      * @param warpId Unique id of the warp.
+     * @param playerId Unique id of the player.
      */
-    fun remove(playerId: UUID, warpId: UUID)
+    fun remove(warpId: UUID, playerId: UUID)
 }

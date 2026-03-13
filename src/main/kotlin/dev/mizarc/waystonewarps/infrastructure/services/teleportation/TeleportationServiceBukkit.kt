@@ -228,7 +228,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
     }
 
     private fun subtractMoney(player: Player, teleportCost: Double) {
-        economy?.withdrawPlayer(player, teleportCost.toDouble())
+        economy?.withdrawPlayer(player, teleportCost)
     }
 
     private fun hasEnoughXp(player: Player, teleportCost: Double): Boolean {
@@ -267,7 +267,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                     val block = location.world.getBlockAt(location.blockX + x, location.blockY + y, location.blockZ + z)
 
                     // Break the block and drop its items naturally
-                    if (!block.type.isAir) {
+                    // Skip passable blocks (e.g. tripwire strings) — they don't obstruct players
+                    if (!block.type.isAir && !block.isPassable) {
                         block.breakNaturally()
                     }
                 }
