@@ -267,8 +267,7 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                     val block = location.world.getBlockAt(location.blockX + x, location.blockY + y, location.blockZ + z)
 
                     // Break the block and drop its items naturally
-                    // Skip passable blocks (e.g. tripwire strings) — they don't obstruct players
-                    if (!block.type.isAir && !block.isPassable) {
+                    if (!block.type.isAir) {
                         block.breakNaturally()
                     }
                 }

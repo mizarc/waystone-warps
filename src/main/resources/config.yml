@@ -146,6 +146,8 @@ platform_replace_blocks:
   - WATER
   - LAVA
   - POWDER_SNOW
+  - STRING
+  - TRIPWIRE_HOOK
   - LEVER
   - LADDER
   - BIG_DRIPLEAF
