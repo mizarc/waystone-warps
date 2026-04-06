@@ -50,7 +50,7 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.admin.manage_groups` | Allows managing global warp groups. |
 | `waystonewarps.admin.givewarpstone` | Allows giving Warp Stone items to players. |
 | `waystonewarps.teleport` | Allows teleportation |
-| `waystonewarps.teleport.interworld` | Allows teleportation to undiscovered warps |
+| `waystonewarps.teleport.interworld` | Allows teleportation between different worlds |
 | `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the warmup and cooldown timers |
 | `waystonewarps.create` | Allow the creation of warps |
 | `waystonewarps.discover` | Allow the discovery of warps |
