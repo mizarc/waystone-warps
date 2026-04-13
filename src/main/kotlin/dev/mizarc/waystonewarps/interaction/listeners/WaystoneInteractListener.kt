@@ -5,6 +5,8 @@ import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlay
 import dev.mizarc.waystonewarps.application.actions.world.GetWarpAtPosition
 import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.services.ConfigService
+import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
+import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
@@ -40,6 +42,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val isValidWarpBase: IsValidWarpBase by inject()
     private val localizationProvider: LocalizationProvider by inject()
+    private val warpEventPublisher: WarpEventPublisher by inject()
 
     private val openOtherMenuPermission = "waystonewarps.bypass.open_menu"
 
@@ -67,7 +70,8 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
             val canOpenOtherMenu = player.hasPermission(openOtherMenuPermission)
             val isAdminMenuOpenAttempt = !isOwner && canOpenOtherMenu && player.isSneaking
 
-            if (warp.isLocked && !isOwner && !isAdminMenuOpenAttempt
+            if (warp.accessLevel == WarpAccess.PRIVATE && !isOwner && !isAdminMenuOpenAttempt
+                    && !player.hasPermission("waystonewarps.bypass.private_access")
                     && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId)) {
                 player.sendActionBar(
                     Component.text(localizationProvider.get(player.uniqueId, LocalizationKeys.FEEDBACK_WAYSTONE_PRIVATE))
@@ -75,6 +79,7 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                 )
                 return
             }
+            warpEventPublisher.warpUsed(player.uniqueId, warp)
 
             // Set location of particle spawn
             val particleLocation = clickedBlock.location.clone()
@@ -104,6 +109,14 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
 
                 if (configService.allowWarpsMenuViaWaystone()) {
                     menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
+                }
+
+                // Server warps are always accessible — no discovery needed
+                if (warp.accessLevel == WarpAccess.SERVER) {
+                    if (configService.allowWarpsMenuViaWaystone()) {
+                        menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
+                    }
+                    return
                 }
 
                 // Check if player has permission to discover warps

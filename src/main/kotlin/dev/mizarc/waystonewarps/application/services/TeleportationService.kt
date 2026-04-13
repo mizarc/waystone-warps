@@ -2,7 +2,7 @@ package dev.mizarc.waystonewarps.application.services
 
 import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.domain.warps.Warp
-import java.util.*
+import java.util.UUID
 
 /**
  * Service that handles the teleportation of players.
@@ -31,7 +31,8 @@ interface TeleportationService {
     fun scheduleDelayedTeleport(playerId: UUID, warp: Warp, delaySeconds: Int, onSuccess: () -> Unit,
                                 onPending: () -> Unit, onInsufficientFunds: () -> Unit, onCanceled: () -> Unit,
                                 onWorldNotFound: () -> Unit, onLocked: () -> Unit, onFailure: () -> Unit,
-                                onPermissionDenied: () -> Unit, onInterworldPermissionDenied: () -> Unit)
+                                onPermissionDenied: () -> Unit, onInterworldPermissionDenied: () -> Unit,
+                                onCooldown: (secondsRemaining: Int) -> Unit)
 
     /**
      * Cancels a pending teleport.
@@ -40,4 +41,14 @@ interface TeleportationService {
      * @return Whether there was a player to cancel.
      */
     fun cancelPendingTeleport(playerId: UUID): Result<Unit>
+
+    /**
+     * Calculates the cost for a player to teleport to a warp.
+     * Only meaningful when the cost type is ITEM; otherwise returns the flat configured amount.
+     *
+     * @param playerId The id of the player.
+     * @param warp The destination warp.
+     * @return The calculated cost as a whole number.
+     */
+    fun calculateCost(playerId: UUID, warp: Warp): Int
 }

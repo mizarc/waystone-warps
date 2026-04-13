@@ -2,14 +2,6 @@ package dev.mizarc.waystonewarps.interaction.localization
 
 object LocalizationKeys {
     // -------------------------------------
-    // General Messages
-    // -------------------------------------
-    const val GENERAL_ERROR = "general.error"
-    const val GENERAL_NAME_ERROR = "general.name_error"
-    const val GENERAL_LIST_SEPARATOR = "general.list_separator"
-
-
-    // -------------------------------------
     // Action Feedback
     // -------------------------------------
 
@@ -30,6 +22,14 @@ object LocalizationKeys {
 
     // Waystone Interact
     const val FEEDBACK_WAYSTONE_PRIVATE = "feedback.waystone.private"
+    const val FEEDBACK_WAYSTONE_NOT_OWNER = "feedback.waystone.not_owner"
+
+    // Waystone Creation
+    const val FEEDBACK_CREATE_WORLD_NOT_FOUND = "feedback.create.world_not_found"
+    const val FEEDBACK_CREATE_NOT_WITHIN_RANGE = "feedback.create.not_within_range"
+    const val FEEDBACK_CREATE_NOT_LODESTONE = "feedback.create.not_lodestone"
+    const val FEEDBACK_CREATE_NOT_SMOOTH_STONE = "feedback.create.not_smooth_stone"
+    const val FEEDBACK_CREATE_SUCCESS = "feedback.create.success"
 
     // Teleport Action Bar Messages
     const val FEEDBACK_TELEPORT_PENDING = "feedback.teleport.pending"
@@ -41,6 +41,7 @@ object LocalizationKeys {
     const val FEEDBACK_TELEPORT_CANCELLED = "feedback.teleport.cancelled"
     const val FEEDBACK_TELEPORT_NO_PERMISSION = "feedback.teleport.no_permission"
     const val FEEDBACK_TELEPORT_NO_INTERWORLD_PERMISSION = "feedback.teleport.no_interworld_permission"
+    const val FEEDBACK_TELEPORT_ON_COOLDOWN = "feedback.teleport.on_cooldown"
 
 
     // -------------------------------------
@@ -63,13 +64,11 @@ object LocalizationKeys {
     const val MENU_COMMON_ITEM_BACK_NAME = "menu.common.item.back.name"
     const val MENU_COMMON_ITEM_CLOSE_NAME = "menu.common.item.close.name"
     const val MENU_COMMON_ITEM_CONFIRM_NAME = "menu.common.item.confirm.name"
-    const val MENU_COMMON_ITEM_DESELECT_ALL_NAME = "menu.common.item.deselect_all.name"
     const val MENU_COMMON_ITEM_ERROR_NAME = "menu.common.item.error.name"
     const val MENU_COMMON_ITEM_ERROR_LORE = "menu.common.item.error.lore"
     const val MENU_COMMON_ITEM_NEXT_NAME = "menu.common.item.next.name"
     const val MENU_COMMON_ITEM_PAGE_NAME = "menu.common.item.page.name"
     const val MENU_COMMON_ITEM_PREV_NAME = "menu.common.item.prev.name"
-    const val MENU_COMMON_ITEM_SELECT_ALL_NAME = "menu.common.item.select_all.name"
     
     // Player Search Menu
     const val MENU_PLAYER_SEARCH_TITLE = "menu.player_search.title"
@@ -84,8 +83,10 @@ object LocalizationKeys {
     const val MENU_WARP_MANAGEMENT_ACCESS_NAME = "menu.warp_management.access.name"
     const val MENU_WARP_MANAGEMENT_ACCESS_NAME_PUBLIC = "menu.warp_management.access.name.public"
     const val MENU_WARP_MANAGEMENT_ACCESS_NAME_PRIVATE = "menu.warp_management.access.name.private"
+    const val MENU_WARP_MANAGEMENT_ACCESS_NAME_SERVER = "menu.warp_management.access.name.server"
     const val MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC = "menu.warp_management.access.lore.public"
     const val MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE = "menu.warp_management.access.lore.private"
+    const val MENU_WARP_MANAGEMENT_ACCESS_LORE_SERVER = "menu.warp_management.access.lore.server"
     const val MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM = "menu.warp_management.access.lore_no_perm"
     const val MENU_WARP_MANAGEMENT_PLAYERS = "menu.warp_management.players"
     const val MENU_WARP_MANAGEMENT_PLAYERS_LORE = "menu.warp_management.players.lore"
@@ -156,7 +157,55 @@ object LocalizationKeys {
     const val MENU_WARP_ITEM_WARP_LORE_LOCKED = "menu.warp.item.warp.lore.locked"
     const val MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION = "menu.warp.item.warp.lore.no_teleport_permission"
     const val MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION = "menu.warp.item.warp.lore.no_interworld_permission"
+    const val MENU_WARP_ITEM_WARP_LORE_COST = "menu.warp.item.warp.lore.cost"
     
+    // Warp Groups Browse Menu
+    const val MENU_WARP_GROUPS_TITLE = "menu.warp_groups.title"
+    const val MENU_WARP_GROUPS_ITEM_WARP_COUNT = "menu.warp_groups.item.warp_count"
+    const val MENU_WARP_GROUPS_ITEM_CLICK_TO_BROWSE = "menu.warp_groups.item.click_to_browse"
+    const val MENU_WARP_GROUPS_BUTTON_NAME = "menu.warp_groups.button.name"
+    const val MENU_WARP_GROUPS_BUTTON_LORE = "menu.warp_groups.button.lore"
+
+    // Warp Group Admin Management Menu
+    const val MENU_WARP_GROUP_MANAGEMENT_TITLE = "menu.warp_group_management.title"
+    const val MENU_WARP_GROUP_MANAGEMENT_ITEM_ACTIONS = "menu.warp_group_management.item.actions"
+    const val MENU_WARP_GROUP_MANAGEMENT_CREATE_NAME = "menu.warp_group_management.create.name"
+    const val MENU_WARP_GROUP_MANAGEMENT_CREATE_LORE = "menu.warp_group_management.create.lore"
+    const val MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_NAME = "menu.warp_group_management.admin_button.name"
+    const val MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_LORE = "menu.warp_group_management.admin_button.lore"
+    const val MENU_WARP_GROUP_MANAGEMENT_CONFIRM_DELETE = "menu.warp_group_management.confirm.delete"
+
+    // Warp Group Create / Rename Menus
+    const val MENU_WARP_GROUP_CREATE_TITLE = "menu.warp_group_create.title"
+    const val MENU_WARP_GROUP_RENAME_TITLE = "menu.warp_group_rename.title"
+    const val MENU_WARP_GROUP_RENAME_NAME_TAKEN = "menu.warp_group_rename.name_taken"
+
+    // Warp Group Picker Menu (owner assigns group to their warp)
+    const val MENU_WARP_GROUP_PICKER_TITLE = "menu.warp_group_picker.title"
+    const val MENU_WARP_GROUP_PICKER_ITEM_NONE_NAME = "menu.warp_group_picker.item.none.name"
+    const val MENU_WARP_GROUP_PICKER_ITEM_NONE_LORE = "menu.warp_group_picker.item.none.lore"
+    const val MENU_WARP_GROUP_PICKER_ITEM_CLICK = "menu.warp_group_picker.item.click"
+    const val MENU_WARP_GROUP_PICKER_ITEM_CURRENT = "menu.warp_group_picker.item.current"
+
+    // Warp Management Group button
+    const val MENU_WARP_MANAGEMENT_GROUP = "menu.warp_management.group"
+    const val MENU_WARP_MANAGEMENT_GROUP_LORE = "menu.warp_management.group.lore"
+    const val MENU_WARP_MANAGEMENT_GROUP_NONE = "menu.warp_management.group.none"
+
+    // Warp Title (group-filtered)
+    const val MENU_WARP_TITLE_GROUPED = "menu.warp.title.grouped"
+
+    // Personal Icon Menu
+    const val MENU_PLAYER_WARP_ICON_TITLE = "menu.player_warp_icon.title"
+    const val MENU_PLAYER_WARP_ICON_INFO_NAME = "menu.player_warp_icon.info.name"
+    const val MENU_PLAYER_WARP_ICON_INFO_LORE = "menu.player_warp_icon.info.lore"
+    const val MENU_PLAYER_WARP_ICON_RESET_NAME = "menu.player_warp_icon.reset.name"
+    const val MENU_PLAYER_WARP_ICON_RESET_LORE = "menu.player_warp_icon.reset.lore"
+
+    // Warp Options personal icon button
+    const val MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_NAME = "menu.warp_options.item.personal_icon.name"
+    const val MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_LORE = "menu.warp_options.item.personal_icon.lore"
+
     // Warp Skins Menu
     const val MENU_WARP_SKINS_TITLE = "menu.warp_skins.title"
     const val MENU_WARP_SKINS_ITEM_TOOLTIP_NAME = "menu.warp_skins.item.tooltip.name"
@@ -180,13 +229,8 @@ object LocalizationKeys {
     const val COMMAND_INVALIDS_REMOVE_ERROR = "command.invalids.remove.error"
     const val COMMAND_INVALIDS_REMOVE_INVALID_WORLD = "command.invalids.remove.invalid_world"
     const val COMMAND_INVALIDS_NO_INVALID_WARPS = "command.invalids.no_invalid_warps"
+    const val COMMAND_GIVE_WARPSTONE_SUCCESS_SENDER = "command.give_warpstone.success.sender"
+    const val COMMAND_GIVE_WARPSTONE_SUCCESS_TARGET = "command.give_warpstone.success.target"
 
 
-    // -------------------------------------
-    // Items
-    // -------------------------------------
-
-    // Move Tool
-    const val ITEM_MOVE_TOOL_NAME = "item.move_tool.name"
-    const val ITEM_MOVE_TOOL_LORE = "item.move_tool.lore"
 }

@@ -7,6 +7,8 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
+import dev.mizarc.waystonewarps.application.actions.management.GetPlayerWarpIcon
+import dev.mizarc.waystonewarps.interaction.menus.management.PlayerWarpIconMenu
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
@@ -35,6 +37,7 @@ class WarpOptionsMenu(
     private val revokeDiscovery: RevokeDiscovery by inject()
     private val isPlayerFavouriteWarp: IsPlayerFavouriteWarp by inject()
     private val toggleFavouriteDiscovery: ToggleFavouriteDiscovery by inject()
+    private val getPlayerWarpIcon: GetPlayerWarpIcon by inject()
 
     override fun open() {
         // Create menu
@@ -57,6 +60,20 @@ class WarpOptionsMenu(
             menuNavigator.goBack()
         }
         pane.addItem(guiBackItem, 0, 0)
+
+        // Add personal icon button (slot 1)
+        val hasPersonalIcon = getPlayerWarpIcon.execute(player.uniqueId, warp.id) != null
+        val personalIconLore = if (hasPersonalIcon) {
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_PLAYER_WARP_ICON_RESET_LORE)
+        } else {
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_LORE)
+        }
+        val personalIconItem = ItemStack(Material.FILLED_MAP)
+            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_NAME))
+            .lore(personalIconLore)
+        pane.addItem(GuiItem(personalIconItem) {
+            menuNavigator.openMenu(PlayerWarpIconMenu(player, menuNavigator, warp))
+        }, 1, 0)
 
         // Add point menu item
         val guiPointItem: GuiItem

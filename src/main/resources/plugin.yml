@@ -2,6 +2,7 @@ name: WaystoneWarps
 version: 0.0.0-PLACEHOLDER
 api-version: '1.21'
 main: dev.mizarc.waystonewarps.WaystoneWarps
+soft-depend: [Towny]
 libraries:
   - org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0
   - org.jetbrains.kotlin:kotlin-stdlib:2.3.0
@@ -12,6 +13,10 @@ permissions:
   waystonewarps.command.warpmenu:
     description: Allows access to the warp menu command
     default: true
+
+  waystone.*:
+    description: Numeric waystone limit permissions, for example waystone.4 or waystone.19
+    default: false
 
   waystonewarps.bypass.*:
     description: Full control of all waystones
@@ -24,6 +29,9 @@ permissions:
       waystonewarps.bypass.icon: true
       waystonewarps.bypass.relocate: true
       waystonewarps.bypass.open_menu: true
+      waystonewarps.bypass.break: true
+      waystonewarps.bypass.private_access: true
+      waystonewarps.bypass.cost: true
       waystonewarps.create: true
 
   waystonewarps.create:
@@ -62,6 +70,26 @@ permissions:
     description: Can open other players' waystone menus
     default: op
 
+  waystonewarps.bypass.break:
+    description: Can break any waystone regardless of ownership
+    default: op
+
+  waystonewarps.bypass.private_access:
+    description: Can access private waystones without being whitelisted
+    default: op
+
+  waystonewarps.bypass.cost:
+    description: Can teleport without paying waystone costs
+    default: op
+
+  waystonewarps.admin.set_server_warp:
+    description: Can set a waystone to server access level (visible and accessible to all players)
+    default: op
+
+  waystonewarps.admin.manage_groups:
+    description: Can create, rename, and delete warp groups
+    default: op
+
   waystonewarps.admin.invalids.*:
     description: Access to all invalid warp management commands
     default: op
@@ -91,5 +119,9 @@ permissions:
     default: op
 
   waystonewarps.teleport.cooldown_bypass:
-    description: Bypasses the cooldown between teleportations
+    description: Bypasses both the teleport warmup timer and the post-teleport cooldown
+    default: op
+
+  waystonewarps.admin.givewarpstone:
+    description: Allows giving warpstone items to players
     default: op

@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.infrastructure.services
 import dev.mizarc.waystonewarps.application.services.StructureParticleService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import org.bukkit.Bukkit
@@ -36,7 +37,9 @@ class StructureParticleServiceBukkit(private val plugin: JavaPlugin,
 
                         if (warp.playerId == player.uniqueId) {
                             player.spawnParticle(Particle.HAPPY_VILLAGER, location, 1, 0.5, 0.5, 0.5)
-                        } else if (warp.isLocked && !whitelisted) {
+                        } else if (warp.accessLevel == WarpAccess.SERVER) {
+                            player.spawnParticle(Particle.SCRAPE, location, 1, 0.5, 0.5, 0.5)
+                        } else if (warp.accessLevel == WarpAccess.PRIVATE && !whitelisted) {
                             player.spawnParticle(Particle.WAX_ON, location, 1, 0.5, 0.5, 0.5)
                         } else {
                             val particle = if (discovered != null) Particle.SCRAPE else Particle.WAX_OFF

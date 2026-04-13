@@ -31,6 +31,7 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 
 | Permission Node | Description |
 |-----------------|-------------|
+| `waystone.<number>` | Sets a player's waystone creation limit, for example `waystone.4` or `waystone.19`. Highest matching value wins. |
 | `waystonewarps.command.warpmenu` | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
 | `waystonewarps.bypass.open_menu` | Allows access to open the management menu. |
 | `waystonewarps.bypass.limit` | Allows creating waystones without being blocked by the warp limit. |
@@ -39,12 +40,18 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.bypass.rename` | Allows access to rename the waystone. |
 | `waystonewarps.bypass.icon` | Allows access to change the waystone icon. |
 | `waystonewarps.bypass.relocate` | Allows access to relocate the waystone. |
+| `waystonewarps.bypass.break` | Allows breaking any waystone regardless of ownership. |
+| `waystonewarps.bypass.private_access` | Allows access to private waystones without being whitelisted. |
+| `waystonewarps.bypass.cost` | Allows teleporting without paying waystone costs. |
 | `waystonewarps.admin.invalids.list` | Allows usage of the list command. |
 | `waystonewarps.admin.invalids.remove` | Allows usage of remove command. |
 | `waystonewarps.admin.invalids.removeall` | Allows usage of removeall command. |
+| `waystonewarps.admin.set_server_warp` | Allows setting a waystone to server access level. |
+| `waystonewarps.admin.manage_groups` | Allows managing global warp groups. |
+| `waystonewarps.admin.givewarpstone` | Allows giving Warp Stone items to players. |
 | `waystonewarps.teleport` | Allows teleportation |
 | `waystonewarps.teleport.interworld` | Allows teleportation to undiscovered warps |
-| `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the cooldown timer |
+| `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the warmup and cooldown timers |
 | `waystonewarps.create` | Allow the creation of warps |
 | `waystonewarps.discover` | Allow the discovery of warps |
 
@@ -64,6 +71,7 @@ For groups:
 
 Here are the different limits you can set:
 - `waystonewarps.warp_limit` - Defines how many waystone warps a player can create.
+- `waystone.<number>` - Defines how many waystone warps a player can create via permission. This takes priority over Vault metadata.
 - `waystonewarps.teleport_cost` - Defines how much it costs to teleport.
 - `waystonewarps.teleport_timer` - Defines how long it takes to teleport.
 

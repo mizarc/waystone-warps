@@ -5,8 +5,10 @@ import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
+import dev.mizarc.waystonewarps.application.actions.groups.GetAllWarpGroups
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
@@ -30,6 +32,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
                          private val warp: Warp): Menu, KoinComponent {
     private val getWarpPlayerAccess: GetWarpPlayerAccess by inject()
     private val toggleLock: ToggleLock by inject()
+    private val getAllWarpGroups: GetAllWarpGroups by inject()
     private val localizationProvider: LocalizationProvider by inject()
 
     override fun open() {
@@ -42,66 +45,81 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
 
         // Add privacy modes
         val canChangeAccess = PermissionHelper.canChangeAccessControl(player, warp.playerId)
+        val canSetServer = player.hasPermission("waystonewarps.admin.set_server_warp")
+        // SERVER warps can only be toggled by someone who also has canSetServer
+        val canToggleAccess = canChangeAccess && (warp.accessLevel != WarpAccess.SERVER || canSetServer)
 
-        val privacyIcon: ItemStack = if (warp.isLocked) {
+        fun buildAccessLabel(statusText: String, statusColor: TextColor): Component {
             val accessName = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME)
-            val privateStatus = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PRIVATE)
             val accessParts = accessName.split("{0}")
-            
-            val privateText = Component.text()
+            return Component.text()
                 .append(Component.text(accessParts[0].trimEnd(), PrimaryColourPalette.PRIMARY.color!!).decoration(TextDecoration.ITALIC, false))
                 .append(Component.text(" "))
-                .append(Component.text(
-                    privateStatus,
-                    PrimaryColourPalette.CANCELLED.color!!
-                ).decoration(TextDecoration.ITALIC, false))
+                .append(Component.text(statusText, statusColor).decoration(TextDecoration.ITALIC, false))
                 .append(if (accessParts.size > 1) Component.text(accessParts[1].trimStart()) else Component.empty())
                 .build()
+        }
 
-            val item = ItemStack(Material.LEVER)
-                .name(privateText)
-            if (canChangeAccess) {
-                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE))
-            } else {
-                item.lore(
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE),
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+        val privacyIcon: ItemStack = when (warp.accessLevel) {
+            WarpAccess.PRIVATE -> {
+                val item = ItemStack(Material.LEVER).name(
+                    buildAccessLabel(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PRIVATE),
+                        PrimaryColourPalette.CANCELLED.color!!
+                    )
                 )
+                if (canToggleAccess) {
+                    item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE))
+                } else {
+                    item.lore(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PRIVATE),
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+                    )
+                }
+                item
             }
-            item
-        } else {
-            val accessName = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME)
-            val publicStatus = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PUBLIC)
-            val accessParts = accessName.split("{0}")
-
-            val publicText = Component.text()
-                .append(Component.text(accessParts[0].trimEnd(), PrimaryColourPalette.PRIMARY.color!!).decoration(TextDecoration.ITALIC, false))
-                .append(Component.text(" "))
-                .append(Component.text(
-                    publicStatus,
-                    PrimaryColourPalette.SUCCESS.color!!
-                ).decoration(TextDecoration.ITALIC, false))
-                .append(if (accessParts.size > 1) Component.text(accessParts[1].trimStart()) else Component.empty())
-                .build()
-
-            val item = ItemStack(Material.REDSTONE_TORCH)
-                .name(publicText)
-            if (canChangeAccess) {
-                item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC))
-            } else {
-                item.lore(
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC),
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+            WarpAccess.SERVER -> {
+                val item = ItemStack(Material.BEACON).name(
+                    buildAccessLabel(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_SERVER),
+                        TextColor.color(255, 215, 0)
+                    )
                 )
+                if (canToggleAccess) {
+                    item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_SERVER))
+                } else {
+                    item.lore(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_SERVER),
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+                    )
+                }
+                item
             }
-            item
+            WarpAccess.PUBLIC -> {
+                val item = ItemStack(Material.REDSTONE_TORCH).name(
+                    buildAccessLabel(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_PUBLIC),
+                        PrimaryColourPalette.SUCCESS.color!!
+                    )
+                )
+                if (canToggleAccess) {
+                    item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC))
+                } else {
+                    item.lore(
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_PUBLIC),
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
+                    )
+                }
+                item
+            }
         }
         val guiPrivacyItem = GuiItem(privacyIcon) {
-            if (canChangeAccess) {
+            if (canToggleAccess) {
                 toggleLock.execute(
                     playerId = player.uniqueId,
                     warpId = warp.id,
                     bypassOwnership = player.hasPermission("waystonewarps.bypass.access_control"),
+                    canSetServer = canSetServer
                 )
                 open()
             }
@@ -174,6 +192,28 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
             menuNavigator.openMenu(WarpSkinsMenu(player, menuNavigator, localizationProvider))
         }
         pane.addItem(guiSkinViewItem, 5, 0)
+
+        // Add group assignment button
+        val currentGroup = warp.groupId?.let { getAllWarpGroups.execute().firstOrNull { g -> g.id == it } }
+        val groupLabel = currentGroup?.name
+            ?: localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_NONE)
+        val canAssignGroup = PermissionHelper.canRename(player, warp.playerId)
+        val groupItem = ItemStack(Material.BOOKSHELF)
+            .name("${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP)}: $groupLabel")
+        if (canAssignGroup) {
+            groupItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE))
+        } else {
+            groupItem.lore(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE),
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+            )
+        }
+        val guiGroupItem = GuiItem(groupItem) {
+            if (canAssignGroup) {
+                menuNavigator.openMenu(WarpGroupPickerMenu(player, menuNavigator, warp, localizationProvider))
+            }
+        }
+        pane.addItem(guiGroupItem, 6, 0)
 
         // Add move icon
         val canRelocate = PermissionHelper.canRelocate(player, warp.playerId)

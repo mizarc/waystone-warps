@@ -4,10 +4,18 @@
 plugin_language: EN
 
 # The amount of waystone warps a player is allowed to create.
+# Players can override this with a numeric permission, such as waystone.4 or waystone.19.
 warp_limit: 3
 
 # The time it takes for the teleport to occur.
 teleport_timer: 5
+
+# The cooldown in seconds after a successful teleport before the player can use a waystone again.
+teleport_cooldown: 30
+
+# If waystone teleportation should charge players.
+# When false, all teleport cost settings below are ignored.
+waystone-cost: false
 
 # The type of cost that is required for teleportation. This can be set to:
 # - ITEM
@@ -19,10 +27,29 @@ teleport_cost_type: ITEM
 # item to consume on teleport.
 teleport_cost_item: ENDER_PEARL
 
+# If set, only items with this exact item_model component will be accepted as
+# the teleport cost item. Leave empty to accept any item of the above material.
+# Example: minecraft:warpstone
+teleport_cost_item_model: ""
+
 # The amount it costs to teleport. This is the amount of item if set to item,
 # amount of xp levels if set to xp, and the amount of money if set to money.
-# Decimals can be used for money type.
+# Decimals can be used for money type. Only used when distance scaling is disabled.
 teleport_cost_amount: 4
+
+# If enabled, the teleport cost scales with the distance to the destination waystone.
+# Only applies when teleport_cost_type is set to ITEM.
+teleport_cost_distance_scaling: true
+
+# The minimum cost (in items) when distance scaling is enabled. Used for very short distances.
+teleport_cost_min: 1
+
+# The maximum cost (in items) when distance scaling is enabled.
+teleport_cost_max: 30
+
+# The distance (in blocks) at which the maximum cost is reached.
+# Uses a square-root curve, so costs rise quickly at short range and flatten at long range.
+teleport_cost_scale_distance: 10000.0
 
 # If the player can open the warp list menu via right-clicking on a compass.
 warps_menu_via_compass: true

@@ -4,6 +4,7 @@ import IconMeta
 import co.aikar.idb.Database
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import kotlinx.serialization.json.Json
@@ -44,16 +45,16 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     }
 
     override fun getByPosition(position: Position3D, worldId: UUID): Warp? {
-        return warps.values.firstOrNull { it.position == position }
+        return warps.values.firstOrNull { it.position == position && it.worldId == worldId }
     }
 
     override fun add(warp: Warp) {
         warps[warp.id] = warp
         val iconMetaJsonString = iconMetaJson.encodeToString(warp.iconMeta)
         storage.connection.executeInsert("INSERT INTO warps (id, playerId, creationTime, name, worldId, " +
-                "positionX, positionY, positionZ, icon, iconMeta, block, isLocked) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+                "positionX, positionY, positionZ, icon, iconMeta, block, accessLevel, groupId) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
             warp.id, warp.playerId, warp.creationTime, warp.name, warp.worldId,
-            warp.position.x, warp.position.y, warp.position.z, warp.icon, iconMetaJsonString, warp.block, warp.isLocked)
+            warp.position.x, warp.position.y, warp.position.z, warp.icon, iconMetaJsonString, warp.block, warp.accessLevel.name, warp.groupId)
     }
 
     override fun update(warp: Warp) {
@@ -61,15 +62,16 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         warps[warp.id] = warp
         val iconMetaJsonString = iconMetaJson.encodeToString(warp.iconMeta)
         storage.connection.executeUpdate("UPDATE warps SET playerId=?, creationTime=?, name=?, worldId=?, " +
-                "positionX=?, positionY=?, positionZ=?, icon=?, iconMeta=?, block=?, isLocked=? WHERE id=?",
+                "positionX=?, positionY=?, positionZ=?, icon=?, iconMeta=?, block=?, accessLevel=?, groupId=? WHERE id=?",
             warp.playerId, warp.creationTime, warp.name, warp.worldId, warp.position.x, warp.position.y,
-            warp.position.z, warp.icon, iconMetaJsonString, warp.block, warp.isLocked, warp.id)
+            warp.position.z, warp.icon, iconMetaJsonString, warp.block, warp.accessLevel.name, warp.groupId, warp.id)
         return
     }
 
     override fun remove(id: UUID) {
         warps.remove(id)
         storage.connection.executeUpdate("DELETE FROM warps WHERE id=?", id)
+        storage.connection.executeUpdate("DELETE FROM player_warp_icons WHERE warpId=?", id)
     }
 
     private fun preload() {
@@ -78,14 +80,11 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
         for (result in results) {
             val iconMeta = runCatching {
                 val raw = result.getString("iconMeta")
-                println(raw)
                 if (raw.isNullOrBlank()) IconMeta() else iconMetaJson.decodeFromString<IconMeta>(raw)
             }.getOrElse { ex ->
                 ex.printStackTrace()
                 IconMeta()
             }
-            println("preloading")
-            println(iconMeta)
 
             warps[UUID.fromString(result.getString("id"))] = Warp(
                 UUID.fromString(result.getString("id")),
@@ -100,7 +99,9 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
                 result.getString("icon"),
                 iconMeta,
                 result.getString("block"),
-                result.getInt("isLocked") != 0)
+                runCatching { WarpAccess.valueOf(result.getString("accessLevel") ?: "PUBLIC") }.getOrDefault(WarpAccess.PUBLIC),
+                result.getString("groupId")?.let { runCatching { UUID.fromString(it) }.getOrNull() }
+            )
         }
     }
 }

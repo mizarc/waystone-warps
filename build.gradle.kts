@@ -1,4 +1,5 @@
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     kotlin("jvm") version "2.3.0"
@@ -41,6 +42,9 @@ repositories {
     maven {
         url = uri("https://jitpack.io")
     }
+    maven {
+        url = uri("https://repo.glaremasters.me/repository/towny/")
+    }
 }
 
 dependencies {
@@ -55,10 +59,22 @@ dependencies {
     implementation("com.github.stefvanschie.inventoryframework:IF:0.12.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("me.xdrop:fuzzywuzzy:1.3.1")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.102.0.12")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+kotlin {
+    jvmToolchain(25)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_22)
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(22)
 }
 
 tasks.test {
@@ -91,10 +107,12 @@ tasks.processResources {
 tasks.register<Copy>("deploy") {
     dependsOn(tasks.shadowJar)
     from(layout.buildDirectory.dir("libs"))
-    println("Target deployment path: ${getProperty("plugin.server.path")}")
     into(getProperty("plugin.server.path"))
     rename { fileName -> "${rootProject.name}-${version}.jar" }
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    doFirst {
+        logger.lifecycle("Target deployment path: ${getProperty("plugin.server.path")}")
+    }
 }
 
 tasks.build {
