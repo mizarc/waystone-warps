@@ -56,6 +56,7 @@ class WarpMenu(
     private var viewMode = 0  // 0 = All, Favourites, Owned
     private var page = 1
     private var warpNameSearch: String = ""
+    private var usableOnly = true  // if true filters out unusable (other world, locked, etc.)
 
     override fun open() {
         val title = if (groupName != null) {
@@ -172,14 +173,27 @@ class WarpMenu(
         }
         controlsPane.addItem(guiViewModeItem, 2, 0)
 
-        // Add search button
-        val searchItem = ItemStack(Material.NAME_TAG)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_SEARCH_NAME))
-        val guiSearchItem = GuiItem(searchItem) {
-            val warpSearchMenu = WarpSearchMenu(player, menuNavigator, localizationProvider)
-            menuNavigator.openMenu(warpSearchMenu)
+        // Add clear/search button depending on state
+        if (warpNameSearch.isNotEmpty()) {
+            // Add clear search button
+            val clearSearchItem = ItemStack(Material.MAGMA_CREAM)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_CLEAR_SEARCH_NAME))
+            val guiClearSearchItem = GuiItem(clearSearchItem) {
+                warpNameSearch = ""
+                page = 1
+                open()
+            }
+            controlsPane.addItem(guiClearSearchItem, 3, 0)
+        } else {
+            // Add search button
+            val searchItem = ItemStack(Material.NAME_TAG)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_SEARCH_NAME))
+            val guiSearchItem = GuiItem(searchItem) {
+                val warpSearchMenu = WarpSearchMenu(player, menuNavigator, localizationProvider)
+                menuNavigator.openMenu(warpSearchMenu)
+            }
+            controlsPane.addItem(guiSearchItem, 3, 0)
         }
-        controlsPane.addItem(guiSearchItem, 3, 0)
 
         // Add manage groups button (slot 5) — admin only
         if (player.hasPermission("waystonewarps.admin.manage_groups")) {
@@ -191,17 +205,31 @@ class WarpMenu(
             }, 5, 0)
         }
 
-        // Add clear search button
-        if (warpNameSearch.isNotEmpty()) {
-            val clearSearchItem = ItemStack(Material.MAGMA_CREAM)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_CLEAR_SEARCH_NAME))
-            val guiClearSearchItem = GuiItem(clearSearchItem) {
-                warpNameSearch = ""
-                page = 1
-                open()
-            }
-            controlsPane.addItem(guiClearSearchItem, 4, 0)
+        // Add filter item
+        val filterItem = when (usableOnly) {
+            true -> ItemStack(Material.BUCKET)
+                .name(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_USABLE_NAME),
+                )
+                .lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_USABLE_LORE),
+                )
+
+            false -> ItemStack(Material.WATER_BUCKET)
+                .name(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_UNUSABLE_NAME),
+                )
+                .lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_UNUSABLE_LORE),
+                )
         }
+        val guiFilterItem = GuiItem(filterItem) { guiEvent ->
+            // invert usable filter
+            usableOnly = !usableOnly
+            page = 1
+            open()
+        }
+        controlsPane.addItem(guiFilterItem, 4, 0)
 
         return controlsPane
     }
@@ -302,6 +330,13 @@ class WarpMenu(
 
             // Check if the warp is locked for this player
             val isLocked = warp.accessLevel == WarpAccess.PRIVATE && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId && !player.hasPermission("waystonewarps.bypass.private_access")
+
+            // Skip to next warp if we are filtering
+            if (usableOnly) {
+                if (!hasPermission || isLocked) {
+                    continue
+                }
+            }
 
             // Add the locked status if applicable
             if (isLocked) {

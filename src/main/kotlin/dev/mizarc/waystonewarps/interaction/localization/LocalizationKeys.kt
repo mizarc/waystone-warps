@@ -158,6 +158,10 @@ object LocalizationKeys {
     const val MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION = "menu.warp.item.warp.lore.no_teleport_permission"
     const val MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION = "menu.warp.item.warp.lore.no_interworld_permission"
     const val MENU_WARP_ITEM_WARP_LORE_COST = "menu.warp.item.warp.lore.cost"
+    const val MENU_WARP_ITEM_FILTER_USABLE_NAME = "menu.warp.item.filter.usable.name"
+    const val MENU_WARP_ITEM_FILTER_USABLE_LORE = "menu.warp.item.filter.usable.lore"
+    const val MENU_WARP_ITEM_FILTER_UNUSABLE_NAME = "menu.warp.item.filter.unusable.name"
+    const val MENU_WARP_ITEM_FILTER_UNUSABLE_LORE = "menu.warp.item.filter.unusable.lore"
     
     // Warp Groups Browse Menu
     const val MENU_WARP_GROUPS_TITLE = "menu.warp_groups.title"
