@@ -4,7 +4,7 @@ import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
 import org.bukkit.configuration.file.FileConfiguration
 
-class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigService {
+class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigService {
 
     override fun getPluginLanguage(): String {
         return configFile.getString("plugin_language", "en").toString()
@@ -83,5 +83,9 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
 
     override fun hologramsEnabled(): Boolean {
         return configFile.getBoolean("holograms_enabled")
+    }
+
+    override fun worldNameEnabled(): Boolean {
+        return configFile.getBoolean("world_name_enabled")
     }
 }

@@ -308,7 +308,11 @@ class WarpMenu(
         for (warp in warps) {
             val warpModel = warp.toViewModel()
             val locationText = warpModel.location?.let { location ->
-                "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                if (configService.worldNameEnabled()) {
+                    "${location.world.name}: ${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                } else {
+                    "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                }
             } ?: run {
                 "Location not found"
             }
