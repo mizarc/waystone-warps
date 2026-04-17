@@ -15,6 +15,7 @@ import dev.mizarc.waystonewarps.application.actions.management.GetPlayerWarpIcon
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
+import dev.mizarc.waystonewarps.application.services.WorldGroupService
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
@@ -52,6 +53,7 @@ class WarpMenu(
     private val getPlayerWarpIcon: GetPlayerWarpIcon by inject()
     private val teleportationService: TeleportationService by inject()
     private val configService: ConfigService by inject()
+    private val worldGroupService: WorldGroupService? by inject()
 
     private var viewMode = 0  // 0 = All, Favourites, Owned
     private var page = 1
@@ -330,7 +332,13 @@ class WarpMenu(
             val hasTeleportPermission = player.hasPermission("waystonewarps.teleport")
             val isDifferentWorld = warp.worldId != player.world.uid
             val hasInterworldPermission = !isDifferentWorld || player.hasPermission("waystonewarps.teleport.interworld")
-            val hasPermission = hasTeleportPermission && hasInterworldPermission
+            val hasIntergroupPermission =
+                hasInterworldPermission || (
+                        player.hasPermission("waystonewarps.teleport.interworldgroup") &&
+                        worldGroupService != null &&
+                        worldGroupService!!.inSameGroup(warp.worldId, player.world.uid)
+                )
+            val hasPermission = hasTeleportPermission && (hasInterworldPermission || hasIntergroupPermission)
 
             // Check if the warp is locked for this player
             val isLocked = warp.accessLevel == WarpAccess.PRIVATE && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId && !player.hasPermission("waystonewarps.bypass.private_access")
@@ -354,7 +362,7 @@ class WarpMenu(
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION)
                     }")
                 }
-                isDifferentWorld && !hasInterworldPermission -> {
+                !hasInterworldPermission && !hasIntergroupPermission -> {
                     customLore.add(2, "§c${
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION)
                     }")

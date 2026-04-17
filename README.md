@@ -18,6 +18,8 @@ For additional functionality such as per player/rank permissions and warp limits
 [Vault](https://www.spigotmc.org/resources/vault.34315/) as well as a compatible permission and chat
 metadata provider. [LuckPerms](https://luckperms.net/) is a recommended plugin for handling both.
 
+Additionally cross-world warps can be limited to world groups if [Multiverse-Inventories](https://mvplugins.org/inventories/) is installed.
+
 ## Getting Started
 
 To establish a waystone warp, place down a lodestone on top of a smooth stone block, then right click the lodestone. This opens up a creation menu where you are able to 
@@ -51,6 +53,7 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.admin.givewarpstone` | Allows giving Warp Stone items to players. |
 | `waystonewarps.teleport` | Allows teleportation |
 | `waystonewarps.teleport.interworld` | Allows teleportation between different worlds |
+| `waystonewarps.teleport.interworldgroup` | Allows teleportation between different worlds of same world group (requires [Multiverse-Inventories](https://mvplugins.org/inventories/)) |
 | `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the warmup and cooldown timers |
 | `waystonewarps.create` | Allow the creation of warps |
 | `waystonewarps.discover` | Allow the discovery of warps |

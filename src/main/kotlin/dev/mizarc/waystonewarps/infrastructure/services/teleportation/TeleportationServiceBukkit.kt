@@ -6,6 +6,7 @@ import dev.mizarc.waystonewarps.application.services.MovementMonitorService
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.application.services.TownyService
+import dev.mizarc.waystonewarps.application.services.WorldGroupService
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.application.services.scheduling.Task
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerState
@@ -33,7 +34,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
                                  private val playerStateRepository: PlayerStateRepository,
                                  private val scheduler: SchedulerService,
                                  private val economy: Economy?,
-                                 private val townyService: TownyService?): TeleportationService {
+                                 private val townyService: TownyService?,
+                                 private val worldGroupService: WorldGroupService?): TeleportationService {
     private val activeTeleportations = ConcurrentHashMap<UUID, PendingTeleport>()
 
     override fun teleportPlayer(playerId: UUID, warp: Warp): TeleportResult {
@@ -54,9 +56,25 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             }
         }
 
-        // Check inter-world teleport permission if changing worlds
+        // Check inter-world/inter-world-group teleport permission if changing worlds
         val currentWorld = player.world.uid
-        if (warp.worldId != currentWorld && !player.hasPermission("waystonewarps.teleport.interworld")) {
+        var hasCrossWorld = false
+
+        if (warp.worldId == currentWorld) {
+            hasCrossWorld = true
+        } else if (
+            worldGroupService != null &&
+            worldGroupService.inSameGroup(
+                warp.worldId,
+                currentWorld
+            ) &&
+            player.hasPermission("waystonewarps.teleport.interworldgroup")
+        ) {
+            hasCrossWorld = true
+        } else if (warp.worldId != currentWorld && player.hasPermission("waystonewarps.teleport.interworld")) {
+            hasCrossWorld = true
+        }
+        if (!hasCrossWorld) {
             return TeleportResult.INTERWORLD_PERMISSION_DENIED
         }
 

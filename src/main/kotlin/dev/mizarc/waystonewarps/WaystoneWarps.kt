@@ -114,6 +114,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var metadata: Chat
     private var economy: Economy? = null
     private var townyService: TownyService? = null
+    private var worldGroupService: WorldGroupService? = null
 
     // Storage
     private lateinit var storage: Storage<Database>
@@ -174,6 +175,7 @@ class WaystoneWarps: JavaPlugin() {
         initialiseConfig()
         initialiseVaultDependency()
         initialiseTownyDependency()
+        initialiseMultiverseInventoriesDependency()
         initialiseRepositories()
         initialiseServices()
         initialiseLang()
@@ -211,6 +213,13 @@ class WaystoneWarps: JavaPlugin() {
         if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
             townyService = TownyServiceBukkit()
             logger.info("Towny detected; same-town warp travel will be free.")
+        }
+    }
+
+    private fun initialiseMultiverseInventoriesDependency(){
+        if (Bukkit.getPluginManager().getPlugin("Multiverse-Inventories") != null) {
+            worldGroupService = WorldGroupBukkitMultiverse(this)
+            logger.info("Multiverse-Inventories detected; inter-world-group warps can be enabled")
         }
     }
 
@@ -264,8 +273,10 @@ class WaystoneWarps: JavaPlugin() {
         }
         structureBuilderService = StructureBuilderServiceBukkit(this, configService)
         scheduler = SchedulerServiceBukkit(this)
-        teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
-            movementMonitorService, whitelistRepository, playerStateRepository, scheduler, economy, townyService)
+        teleportationService = TeleportationServiceBukkit(
+            playerAttributeService, configService, movementMonitorService, whitelistRepository,
+            playerStateRepository, scheduler, economy, townyService, worldGroupService
+        )
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
         playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
         hologramService = HologramServiceBukkit(configService)
@@ -300,6 +311,7 @@ class WaystoneWarps: JavaPlugin() {
             single<ConfigService> { configService }
             single<TeleportationService> { teleportationService }
             single<WarpEventPublisher> { warpEventPublisher }
+            single<WorldGroupService?> { worldGroupService }
         }
 
         val actions = module {
