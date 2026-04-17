@@ -133,6 +133,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var teleportationService: TeleportationService
     private lateinit var structureParticleService: StructureParticleService
     private lateinit var playerParticleService: PlayerParticleService
+    private lateinit var playerCountdownService: PlayerCountdownService
     private lateinit var worldService: WorldService
     private lateinit var hologramService: HologramService
     private lateinit var configService: ConfigService
@@ -272,6 +273,7 @@ class WaystoneWarps: JavaPlugin() {
         warpEventPublisher = WarpEventPublisherBukkit()
         playerLocaleService = PlayerLocaleServicePaper()
         localizationProvider = PropertiesLocalizationProvider(configService, dataFolder, PlayerLocaleServicePaper())
+        playerCountdownService = PlayerCountdownServiceBukkit(this, localizationProvider, playerAttributeService)
     }
 
     fun initialiseLang() {
@@ -311,7 +313,7 @@ class WaystoneWarps: JavaPlugin() {
             single { BreakWarpBlock(warpRepository, structureBuilderService,
                 discoveryRepository, whitelistRepository, structureParticleService, hologramService, warpEventPublisher) }
             single { TeleportPlayerImmediately(teleportationService) }
-            single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService,
+            single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService, playerCountdownService,
                 discoveryRepository, warpEventPublisher, get())}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository, warpEventPublisher) }

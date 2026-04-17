@@ -2,6 +2,7 @@ package dev.mizarc.waystonewarps.application.actions.teleport
 
 import dev.mizarc.waystonewarps.application.results.TeleportResult
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
+import dev.mizarc.waystonewarps.application.services.PlayerCountdownService
 import dev.mizarc.waystonewarps.application.services.PlayerParticleService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
@@ -13,6 +14,7 @@ import java.util.*
 class TeleportPlayer(private val teleportationService: TeleportationService,
                      private val playerAttributeService: PlayerAttributeService,
                      private val playerParticleService: PlayerParticleService,
+                     private val playerCountdownService: PlayerCountdownService,
                      private val discoveryRepository: DiscoveryRepository,
                      private val warpEventPublisher: WarpEventPublisher,
                      private val teleportPlayerImmediately: TeleportPlayerImmediately) {
@@ -40,42 +42,52 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                     }
                     playerParticleService.removeParticles(playerId)
                     playerParticleService.spawnPostParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onPending = {
                     onPending()
                     playerParticleService.spawnPreParticles(playerId)
+                    playerCountdownService.startCountdown(playerId, warp)
                 },
                 onInsufficientFunds = {
                     onInsufficientFunds()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onCanceled = {
                     onCanceled()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onWorldNotFound = {
                     onWorldNotFound()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onLocked = {
                     onLocked()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onFailure = {
                     onFailure()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onPermissionDenied = {
                     onPermissionDenied()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onInterworldPermissionDenied = {
                     onInterworldPermissionDenied()
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 },
                 onCooldown = { secondsRemaining ->
                     onCooldown(secondsRemaining)
                     playerParticleService.removeParticles(playerId)
+                    playerCountdownService.cancelCountdown(playerId)
                 }
             )
             return
