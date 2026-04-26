@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.domain.warps.Warp
@@ -36,8 +37,8 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         val gui = ChestGui(1, title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
-        val pane = StaticPane(0, 0, 9, 1)
-        gui.addPane(pane)
+        val pane = StaticPane(9, 1)
+        gui.addPane(Slot.fromXY(0, 0), pane)
 
         // Add privacy modes
         val canChangeAccess = PermissionHelper.canChangeAccessControl(player, warp.playerId)

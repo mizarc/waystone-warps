@@ -8,6 +8,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
@@ -82,7 +83,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
         // Pane of players
         val playerPane = displayPlayers(filteredPlayers, warp, gui)
-        gui.addPane(playerPane)
+        gui.addPane(Slot.fromXY(1, 2), playerPane)
 
         // Add paginator pane
         addPaginator(gui, playerPane.pages.coerceAtLeast(1), page) { newPage ->
@@ -102,7 +103,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
     private fun addControlsSection(gui: ChestGui): StaticPane {
         // Add outline
-        val outlinePane = OutlinePane(0, 1, 9, 5)
+        val outlinePane = OutlinePane(9, 5)
         val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
         val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
         outlinePane.applyMask(Mask(
@@ -114,11 +115,11 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         ))
         outlinePane.addItem(guiDividerItem)
         outlinePane.setRepeat(true)
-        gui.addPane(outlinePane)
+        gui.addPane(Slot.fromXY(0, 1), outlinePane)
 
         // Add controls pane
-        val controlsPane = StaticPane(0, 0, 6, 1)
-        gui.addPane(controlsPane)
+        val controlsPane = StaticPane(6, 1)
+        gui.addPane(Slot.fromXY(0, 0), controlsPane)
 
         // Add go back item
         val exitItem = ItemStack(Material.NETHER_STAR).name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
@@ -174,7 +175,7 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
     private fun addPaginator(gui: ChestGui, totalPages: Int, page: Int, updateContent: (Int) -> Unit) {
         var currentPage = page // Make currentPage mutable
-        val paginatorPane = StaticPane(6, 0, 3, 1)
+        val paginatorPane = StaticPane(3, 1)
 
         fun updatePaginator() {
             paginatorPane.clear()
@@ -224,12 +225,12 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
         }
 
         updatePaginator()
-        gui.addPane(paginatorPane)
+        gui.addPane(Slot.fromXY(6, 0), paginatorPane)
     }
 
     private fun displayPlayers(players: List<OfflinePlayer>, warp: Warp, gui: Gui): PaginatedPane {
-        val playerPane = PaginatedPane(1, 2, 7, 3)
-        var currentPagePane = OutlinePane(0, 0, 7, 3)
+        val playerPane = PaginatedPane(7, 3)
+        var currentPagePane = OutlinePane(7, 3)
         var playerCounter = 0
 
         val whitelisted = getPlayerWhitelistForWarp.execute(warp.id)
@@ -311,15 +312,15 @@ class WarpPlayerMenu(private val player: Player, private val menuNavigator: Menu
 
             // Check if the current page is full (21 players)
             if (playerCounter >= 21) {
-                playerPane.addPage(currentPagePane)
-                currentPagePane = OutlinePane(0, 0, 7, 3)
+                playerPane.addPage(Slot.fromXY(0, 0), currentPagePane)
+                currentPagePane = OutlinePane(7, 3)
                 playerCounter = 0
             }
         }
 
         // Add the last page if it's not empty
         if (playerCounter > 0) {
-            playerPane.addPage(currentPagePane)
+            playerPane.addPage(Slot.fromXY(0 ,0), currentPagePane)
         }
 
         return playerPane

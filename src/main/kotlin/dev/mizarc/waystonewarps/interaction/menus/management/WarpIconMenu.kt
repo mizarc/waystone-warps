@@ -5,6 +5,7 @@ import com.destroystokyo.paper.profile.ProfileProperty
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.FurnaceGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
@@ -52,7 +53,7 @@ class WarpIconMenu(
         val gui = FurnaceGui(title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
-        val fuelPane = StaticPane(0, 0, 1, 1)
+        val fuelPane = StaticPane(1, 1)
 
         // Add info paper menu item
         val paperItem = ItemStack(Material.PAPER)
@@ -60,10 +61,10 @@ class WarpIconMenu(
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ICON_INFO_ITEM_LORE))
         val guiIconEditorItem = GuiItem(paperItem) { guiEvent -> guiEvent.isCancelled = true }
         fuelPane.addItem(guiIconEditorItem, 0, 0)
-        gui.fuelComponent.addPane(fuelPane)
+        gui.fuelComponent.addPane(Slot.fromXY(0, 0), fuelPane)
 
         // Allow item to be placed in the slot
-        val inputPane = StaticPane(0, 0, 1, 1)
+        val inputPane = StaticPane(1, 1)
         inputPane.setOnClick {guiEvent ->
             guiEvent.isCancelled = true
             val itemOnCursor = guiEvent.cursor
@@ -81,16 +82,16 @@ class WarpIconMenu(
                 player.setItemOnCursor(itemOnCursor)
             }
         }
-        gui.ingredientComponent.addPane(inputPane)
+        gui.ingredientComponent.addPane(Slot.fromXY(0, 0), inputPane)
 
         // Add confirm menu item
-        val outputPane = StaticPane(0, 0, 1, 1)
+        val outputPane = StaticPane(1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
             .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME),
                 PrimaryColourPalette.SUCCESS.color!!)
         val confirmGuiItem = GuiItem(confirmItem) { guiEvent ->
             guiEvent.isCancelled = true
-            val newIcon = gui.ingredientComponent.getItem(0, 0)
+            val newIcon = inputPane.getItem(Slot.fromXY(0, 0))?.item
             val registryAccess = RegistryAccess.registryAccess()
 
             // Set icon if the item in slot
@@ -183,7 +184,7 @@ class WarpIconMenu(
             menuNavigator.goBack()
         }
         outputPane.addItem(confirmGuiItem, 0, 0)
-        gui.outputComponent.addPane(outputPane)
+        gui.outputComponent.addPane(Slot.fromXY(0, 0), outputPane)
         gui.show(player)
     }
 }

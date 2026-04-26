@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.use
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.HopperGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
@@ -42,11 +43,11 @@ class WarpOptionsMenu(
             LocalizationKeys.MENU_WARP_OPTIONS_TITLE, 
             warp.name
         ))
-        val pane = StaticPane(0, 0, 5, 1)
+        val pane = StaticPane(5, 1)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
-        gui.slotsComponent.addPane(pane)
+        gui.slotsComponent.addPane(Slot.fromXY(0, 0), pane)
 
         // Add back menu item
         val backItem = ItemStack(Material.NETHER_STAR).name(
