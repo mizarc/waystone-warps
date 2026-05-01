@@ -54,7 +54,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:26.1.2.build.53-stable")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
     compileOnly("io.insert-koin:koin-core-jvm:4.1.1")
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT")
@@ -62,8 +62,8 @@ dependencies {
     compileOnly("com.zaxxer:HikariCP:7.0.2")
     implementation("com.github.stefvanschie.inventoryframework:IF:0.12.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
-    compileOnly("me.xdrop:fuzzywuzzy:1.3.1")
-    compileOnly("com.palmergames.bukkit.towny:towny:0.102.0.12")
+    compileOnly("me.xdrop:fuzzywuzzy:1.4.0")
+    compileOnly("com.palmergames.bukkit.towny:towny:0.102.0.14")
     compileOnly("org.mvplugins.multiverse.inventories:multiverse-inventories:5.3.2")
 }
 
@@ -74,12 +74,12 @@ java {
 kotlin {
     jvmToolchain(25)
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_22)
+        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(22)
+    options.release.set(25)
 }
 
 tasks.test {

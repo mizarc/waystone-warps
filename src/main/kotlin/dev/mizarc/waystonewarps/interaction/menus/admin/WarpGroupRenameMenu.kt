@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.admin
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.groups.RenameWarpGroup
 import dev.mizarc.waystonewarps.application.actions.groups.RenameWarpGroupResult
 import dev.mizarc.waystonewarps.domain.warps.WarpGroup
@@ -36,17 +37,20 @@ class WarpGroupRenameMenu(
             if (!isConfirming) newName = input else isConfirming = false
         }
 
-        val firstPane = StaticPane(0, 0, 1, 1)
+        val firstPane = StaticPane(1, 1)
         val bookItem = ItemStack(Material.BOOKSHELF).name(group.name)
         firstPane.addItem(GuiItem(bookItem) { it.isCancelled = true }, 0, 0)
-        gui.firstItemComponent.addPane(firstPane)
+        gui.firstItemComponent.addPane(Slot.fromXY(0, 0), firstPane)
 
-        val secondPane = StaticPane(0, 0, 1, 1)
-        gui.secondItemComponent.addPane(secondPane)
+        val secondPane = StaticPane(1, 1)
+        gui.secondItemComponent.addPane(Slot.fromXY(0, 0), secondPane)
 
-        val thirdPane = StaticPane(0, 0, 1, 1)
+        val thirdPane = StaticPane(1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME), PrimaryColourPalette.SUCCESS.color!!)
+            .name(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME),
+                PrimaryColourPalette.SUCCESS.color!!
+            )
         val confirmGuiItem = GuiItem(confirmItem) {
             when (renameWarpGroup.execute(group.id, newName)) {
                 RenameWarpGroupResult.SUCCESS -> menuNavigator.goBack()
@@ -54,7 +58,12 @@ class WarpGroupRenameMenu(
                 RenameWarpGroupResult.NOT_FOUND -> menuNavigator.goBack()
                 RenameWarpGroupResult.NAME_TAKEN -> {
                     val errorItem = ItemStack(Material.PAPER)
-                        .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_RENAME_NAME_TAKEN), PrimaryColourPalette.FAILED.color!!)
+                        .name(
+                            localizationProvider.get(
+                                player.uniqueId,
+                                LocalizationKeys.MENU_WARP_GROUP_RENAME_NAME_TAKEN
+                            ), PrimaryColourPalette.FAILED.color!!
+                        )
                     secondPane.addItem(GuiItem(errorItem) {
                         secondPane.removeItem(0, 0)
                         isConfirming = true
@@ -66,7 +75,7 @@ class WarpGroupRenameMenu(
             }
         }
         thirdPane.addItem(confirmGuiItem, 0, 0)
-        gui.resultComponent.addPane(thirdPane)
+        gui.resultComponent.addPane(Slot.fromXY(0, 0), thirdPane)
         gui.show(player)
     }
 }

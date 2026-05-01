@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.groups.DeleteWarpGroup
 import dev.mizarc.waystonewarps.application.actions.groups.GetAllWarpGroups
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
@@ -35,44 +36,53 @@ class WarpGroupManagementMenu(
     private var page = 1
 
     override fun open() {
-        val gui = ChestGui(6, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_TITLE))
+        val gui =
+            ChestGui(6, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_TITLE))
         gui.setOnTopClick { it.isCancelled = true }
 
         // Border
-        val outlinePane = OutlinePane(0, 1, 9, 5)
+        val outlinePane = OutlinePane(9, 5)
         val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
-        outlinePane.applyMask(Mask(
-            "111111111",
-            "100000001",
-            "100000001",
-            "100000001",
-            "111111111"
-        ))
+        outlinePane.applyMask(
+            Mask(
+                "111111111",
+                "100000001",
+                "100000001",
+                "100000001",
+                "111111111"
+            )
+        )
         outlinePane.addItem(GuiItem(dividerItem) { it.isCancelled = true })
         outlinePane.setRepeat(true)
-        gui.addPane(outlinePane)
+        gui.addPane(Slot.fromXY(0, 1), outlinePane)
 
-        val controlsPane = StaticPane(0, 0, 6, 1)
+        val controlsPane = StaticPane(6, 1)
 
         // Back button
         val backItem = ItemStack(Material.NETHER_STAR)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
+            .name(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME),
+                PrimaryColourPalette.CANCELLED.color!!
+            )
         controlsPane.addItem(GuiItem(backItem) { menuNavigator.goBack() }, 0, 0)
 
         // Create group button
         val createItem = ItemStack(Material.WRITABLE_BOOK)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_CREATE_NAME), PrimaryColourPalette.SUCCESS.color!!)
+            .name(
+                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_CREATE_NAME),
+                PrimaryColourPalette.SUCCESS.color!!
+            )
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_CREATE_LORE))
         controlsPane.addItem(GuiItem(createItem) {
             menuNavigator.openMenu(WarpGroupCreateMenu(player, menuNavigator, localizationProvider))
         }, 1, 0)
-        gui.addPane(controlsPane)
+        gui.addPane(Slot.fromXY(0, 0), controlsPane)
 
         val groups = getAllWarpGroups.execute()
 
         // Build paginated group list
-        val groupPane = PaginatedPane(1, 2, 7, 3)
-        var currentPagePane = OutlinePane(0, 0, 7, 3)
+        val groupPane = PaginatedPane(7, 3)
+        var currentPagePane = OutlinePane(7, 3)
         var counter = 0
 
         for (group in groups) {
@@ -80,7 +90,11 @@ class WarpGroupManagementMenu(
             val groupItem = ItemStack(Material.BOOKSHELF)
                 .name(group.name)
                 .lore(
-                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_ITEM_WARP_COUNT, warpCount.toString()),
+                    localizationProvider.get(
+                        player.uniqueId,
+                        LocalizationKeys.MENU_WARP_GROUPS_ITEM_WARP_COUNT,
+                        warpCount.toString()
+                    ),
                     localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_ITEM_ACTIONS)
                 )
             currentPagePane.addItem(GuiItem(groupItem) { guiEvent ->
@@ -102,14 +116,14 @@ class WarpGroupManagementMenu(
             })
             counter++
             if (counter >= 21) {
-                groupPane.addPage(currentPagePane)
-                currentPagePane = OutlinePane(0, 0, 7, 3)
+                groupPane.addPage(Slot.fromXY(0, 0), currentPagePane)
+                currentPagePane = OutlinePane(7, 3)
                 counter = 0
             }
         }
-        if (counter > 0) groupPane.addPage(currentPagePane)
-        if (groups.isEmpty()) groupPane.addPage(OutlinePane(0, 0, 7, 3))
-        gui.addPane(groupPane)
+        if (counter > 0) groupPane.addPage(Slot.fromXY(0, 0), currentPagePane)
+        if (groups.isEmpty()) groupPane.addPage(Slot.fromXY(0, 0), OutlinePane(7, 3))
+        gui.addPane(Slot.fromXY(1, 2), groupPane)
 
         addPaginator(gui, groupPane.pages.coerceAtLeast(1), page) { newPage ->
             page = newPage
@@ -121,43 +135,83 @@ class WarpGroupManagementMenu(
 
     private fun addPaginator(gui: ChestGui, totalPages: Int, page: Int, updateContent: (Int) -> Unit) {
         var currentPage = page
-        val paginatorPane = StaticPane(6, 0, 3, 1)
+        val paginatorPane = StaticPane(3, 1)
 
         fun updatePaginator() {
             paginatorPane.clear()
             val pageItem = ItemStack(Material.PAPER)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME,
-                    currentPage.toString(), totalPages.toString()), PrimaryColourPalette.INFO.color!!)
+                .name(
+                    localizationProvider.get(
+                        player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME,
+                        currentPage.toString(), totalPages.toString()
+                    ), PrimaryColourPalette.INFO.color!!
+                )
             paginatorPane.addItem(GuiItem(pageItem), 1, 0)
 
             if (currentPage <= 1) {
-                paginatorPane.addItem(GuiItem(ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)), 0, 0)
+                paginatorPane.addItem(
+                    GuiItem(
+                        ItemStack(Material.ARROW)
+                            .name(
+                                localizationProvider.get(
+                                    player.uniqueId,
+                                    LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME
+                                ), PrimaryColourPalette.UNAVAILABLE.color!!
+                            )
+                    ), 0, 0
+                )
             } else {
-                paginatorPane.addItem(GuiItem(ItemStack(Material.SPECTRAL_ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME))) {
-                    currentPage--
-                    updateContent(currentPage)
-                    updatePaginator()
-                    gui.update()
-                }, 0, 0)
+                paginatorPane.addItem(
+                    GuiItem(
+                        ItemStack(Material.SPECTRAL_ARROW)
+                            .name(
+                                localizationProvider.get(
+                                    player.uniqueId,
+                                    LocalizationKeys.MENU_COMMON_ITEM_PREV_NAME
+                                )
+                            )
+                    ) {
+                        currentPage--
+                        updateContent(currentPage)
+                        updatePaginator()
+                        gui.update()
+                    }, 0, 0
+                )
             }
 
             if (currentPage >= totalPages) {
-                paginatorPane.addItem(GuiItem(ItemStack(Material.ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME), PrimaryColourPalette.UNAVAILABLE.color!!)), 2, 0)
+                paginatorPane.addItem(
+                    GuiItem(
+                        ItemStack(Material.ARROW)
+                            .name(
+                                localizationProvider.get(
+                                    player.uniqueId,
+                                    LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME
+                                ), PrimaryColourPalette.UNAVAILABLE.color!!
+                            )
+                    ), 2, 0
+                )
             } else {
-                paginatorPane.addItem(GuiItem(ItemStack(Material.SPECTRAL_ARROW)
-                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME))) {
-                    currentPage++
-                    updateContent(currentPage)
-                    updatePaginator()
-                    gui.update()
-                }, 2, 0)
+                paginatorPane.addItem(
+                    GuiItem(
+                        ItemStack(Material.SPECTRAL_ARROW)
+                            .name(
+                                localizationProvider.get(
+                                    player.uniqueId,
+                                    LocalizationKeys.MENU_COMMON_ITEM_NEXT_NAME
+                                )
+                            )
+                    ) {
+                        currentPage++
+                        updateContent(currentPage)
+                        updatePaginator()
+                        gui.update()
+                    }, 2, 0
+                )
             }
         }
 
         updatePaginator()
-        gui.addPane(paginatorPane)
+        gui.addPane(Slot.fromXY(6, 0), paginatorPane)
     }
 }
