@@ -6,25 +6,21 @@ plugins {
     kotlin("plugin.serialization") version "2.3.0"
 }
 
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
+group = providers.gradleProperty("projectGroup").get()
+version = providers.gradleProperty("projectVersion").get()
 
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use { inputStream ->
-        localProperties.load(inputStream)
+val localPropertiesProvider = providers.fileContents(layout.projectDirectory.file("local.properties"))
+    .asText
+    .map { content ->
+        Properties().apply { load(content.reader()) }
     }
-}
 
-fun getProperty(name: String): String {
-    val localValue = localProperties.getProperty(name)
-    if (localValue != null) {
-        return localValue
-    }
-    return providers.gradleProperty(name).getOrElse("")
+fun getProperty(key: String): String {
+    return localPropertiesProvider
+        .map { it.getProperty(key) }
+        .orElse(providers.gradleProperty(key))
+        .getOrElse("")
 }
-
-group = "dev.mizarc"
-version = "1.0.0"
 
 repositories {
     mavenLocal()
@@ -72,6 +68,25 @@ tasks.test {
 
 tasks.shadowJar {
     archiveClassifier = null
+}
+
+tasks.processResources {
+    val realName = rootProject.name
+    val realVersion = project.version.toString()
+
+    // Ensure Gradle re-runs this task if the version changes
+    inputs.property("name", realName)
+    inputs.property("version", realVersion)
+
+    filesMatching("plugin.yml") {
+        filter { line ->
+            when {
+                line.trim().startsWith("name:") -> "name: $realName"
+                line.trim().startsWith("version:") -> "version: $realVersion"
+                else -> line
+            }
+        }
+    }
 }
 
 tasks.register<Copy>("deploy") {
