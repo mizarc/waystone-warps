@@ -1,5 +1,5 @@
 name: WaystoneWarps
-version: 1.0.0
+version: 0.0.0-PLACEHOLDER
 api-version: '1.21'
 main: dev.mizarc.waystonewarps.WaystoneWarps
 libraries:

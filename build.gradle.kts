@@ -70,6 +70,25 @@ tasks.shadowJar {
     archiveClassifier = null
 }
 
+tasks.processResources {
+    val realName = rootProject.name
+    val realVersion = project.version.toString()
+
+    // Ensure Gradle re-runs this task if the version changes
+    inputs.property("name", realName)
+    inputs.property("version", realVersion)
+
+    filesMatching("plugin.yml") {
+        filter { line ->
+            when {
+                line.trim().startsWith("name:") -> "name: $realName"
+                line.trim().startsWith("version:") -> "version: $realVersion"
+                else -> line
+            }
+        }
+    }
+}
+
 tasks.register<Copy>("deploy") {
     dependsOn(tasks.shadowJar)
     from(layout.buildDirectory.dir("libs"))
