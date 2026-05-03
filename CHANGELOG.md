@@ -7,6 +7,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ## [1.1.0]
 
 ### Added
+- Support for Minecraft 26.1.
 - Simplified Chinese (zh_cn) localization.
 - New `/warpcreate command` to create a new waystone via command.
 
