@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.common
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.HopperGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
@@ -28,11 +29,11 @@ class ConfirmationMenu(
     override fun open() {
         // Create menu
         val gui = HopperGui(title)
-        val pane = StaticPane(1, 0, 3, 1)
+        val pane = StaticPane(3, 1)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
         gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
-        gui.slotsComponent.addPane(pane)
+        gui.slotsComponent.addPane(Slot.fromXY(1, 0), pane)
 
         // Add no menu item
         val noItem = ItemStack(Material.RED_CONCRETE)

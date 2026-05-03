@@ -6,6 +6,7 @@ import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.PaginatedPane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
 import com.github.stefvanschie.inventoryframework.pane.util.Mask
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.GetFavouritedWarpAccess
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
@@ -72,7 +73,7 @@ class WarpMenu(
 
         // Display warps
         val warpPane = displayWarps(filteredWarps)
-        gui.addPane(warpPane)
+        gui.addPane(Slot.fromXY(1, 2), warpPane)
 
         // Add warp paginator
         addPaginator(gui, warpPane.pages.coerceAtLeast(1), page) { newPage ->
@@ -91,7 +92,7 @@ class WarpMenu(
 
     private fun addControlsSection(gui: ChestGui): StaticPane {
         // Add outline
-        val outlinePane = OutlinePane(0, 1, 9, 5)
+        val outlinePane = OutlinePane(9, 5)
         val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
         val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
         outlinePane.applyMask(Mask(
@@ -103,11 +104,11 @@ class WarpMenu(
         ))
         outlinePane.addItem(guiDividerItem)
         outlinePane.setRepeat(true)
-        gui.addPane(outlinePane)
+        gui.addPane(Slot.fromXY(0, 1), outlinePane)
 
         // Add controls pane
-        val controlsPane = StaticPane(0, 0, 6, 1)
-        gui.addPane(controlsPane)
+        val controlsPane = StaticPane(6, 1)
+        gui.addPane(Slot.fromXY(0, 0), controlsPane)
 
         // Add go back item
         val exitItem = ItemStack(Material.NETHER_STAR)
@@ -164,7 +165,7 @@ class WarpMenu(
 
     private fun addPaginator(gui: ChestGui, totalPages: Int, page: Int, updateContent: (Int) -> Unit) {
         var currentPage = page // Make currentPage mutable
-        val paginatorPane = StaticPane(6, 0, 3, 1)
+        val paginatorPane = StaticPane(3, 1)
 
         fun updatePaginator() {
             paginatorPane.clear()
@@ -222,12 +223,12 @@ class WarpMenu(
         }
 
         updatePaginator()
-        gui.addPane(paginatorPane)
+        gui.addPane(Slot.fromXY(6, 0), paginatorPane)
     }
 
     private fun displayWarps(warps: List<Warp>): PaginatedPane {
-        val playerPane = PaginatedPane(1, 2, 7, 3)
-        var currentPagePane = OutlinePane(0, 0, 7, 3)
+        val playerPane = PaginatedPane(7, 3)
+        var currentPagePane = OutlinePane(7, 3)
         var playerCounter = 0
         val stockLore = listOf(
             localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_RIGHT_CLICK)
@@ -390,15 +391,15 @@ class WarpMenu(
 
             // Check if the current page is full (21 players)
             if (playerCounter >= 21) {
-                playerPane.addPage(currentPagePane)
-                currentPagePane = OutlinePane(0, 0, 7, 3)
+                playerPane.addPage(Slot.fromXY(1, 2), currentPagePane)
+                currentPagePane = OutlinePane(7, 3)
                 playerCounter = 0
             }
         }
 
         // Add the last page if it's not empty
         if (playerCounter > 0) {
-            playerPane.addPage(currentPagePane)
+            playerPane.addPage(Slot.fromXY(0, 0), currentPagePane)
         }
 
         return playerPane

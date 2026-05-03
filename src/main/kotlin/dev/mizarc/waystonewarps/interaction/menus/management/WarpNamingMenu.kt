@@ -3,6 +3,7 @@ package dev.mizarc.waystonewarps.interaction.menus.management
 import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.AnvilGui
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
@@ -46,7 +47,7 @@ class WarpNamingMenu(
         }
 
         // Add lodestone menu item
-        val firstPane = StaticPane(0, 0, 1, 1)
+        val firstPane = StaticPane(1, 1)
         val lodestoneItem = ItemStack(Material.LODESTONE)
             .name("", PrimaryColourPalette.INFO.color!!)
             .lore(localizationProvider.get(
@@ -58,14 +59,14 @@ class WarpNamingMenu(
             ))
         val guiItem = GuiItem(lodestoneItem) { guiEvent -> guiEvent.isCancelled = true }
         firstPane.addItem(guiItem, 0, 0)
-        gui.firstItemComponent.addPane(firstPane)
+        gui.firstItemComponent.addPane(Slot.fromXY(0, 0), firstPane)
 
         // Add message menu item if name is already taken
-        val secondPane = StaticPane(0, 0, 1, 1)
-        gui.secondItemComponent.addPane(secondPane)
+        val secondPane = StaticPane(1, 1)
+        gui.secondItemComponent.addPane(Slot.fromXY(0, 0),  secondPane)
 
         // Add confirm menu item
-        val thirdPane = StaticPane(0, 0, 1, 1)
+        val thirdPane = StaticPane(1, 1)
         val confirmItem = ItemStack(Material.NETHER_STAR)
             .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_CONFIRM_NAME), PrimaryColourPalette.SUCCESS.color!!)
 
@@ -118,7 +119,7 @@ class WarpNamingMenu(
 
         // GUI display
         thirdPane.addItem(confirmGuiItem, 0, 0)
-        gui.resultComponent.addPane(thirdPane)
+        gui.resultComponent.addPane(Slot.fromXY(0,  0), thirdPane)
         gui.show(player)
     }
 

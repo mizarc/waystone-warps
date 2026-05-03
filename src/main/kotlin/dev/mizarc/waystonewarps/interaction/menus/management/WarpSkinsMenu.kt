@@ -4,6 +4,7 @@ import com.github.stefvanschie.inventoryframework.gui.GuiItem
 import com.github.stefvanschie.inventoryframework.gui.type.ChestGui
 import com.github.stefvanschie.inventoryframework.pane.OutlinePane
 import com.github.stefvanschie.inventoryframework.pane.StaticPane
+import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
@@ -34,17 +35,17 @@ class WarpSkinsMenu(
             guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
 
         // Add divider pane
-        val dividerPane = StaticPane(1, 0, 1, 3)
+        val dividerPane = StaticPane(1, 3)
         val dividerItem = ItemStack(Material.BLACK_STAINED_GLASS_PANE).name(" ")
         val guiDividerItem = GuiItem(dividerItem) { guiEvent -> guiEvent.isCancelled = true }
         for (i in 0..2) {
             dividerPane.addItem(guiDividerItem, 0, i)
         }
-        gui.addPane(dividerPane)
+        gui.addPane(Slot.fromXY(1, 0), dividerPane)
 
         // Add back menu item
-        val navigationPane = StaticPane(0, 0, 1, 3)
-        gui.addPane(navigationPane)
+        val navigationPane = StaticPane(1, 3)
+        gui.addPane(Slot.fromXY(0, 0), navigationPane)
         val backItem = ItemStack(Material.NETHER_STAR)
             .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_COMMON_ITEM_BACK_NAME), PrimaryColourPalette.CANCELLED.color!!)
         val backGuiItem = GuiItem(backItem) { menuNavigator.goBack() }
@@ -67,12 +68,12 @@ class WarpSkinsMenu(
     private fun displayBlockList(gui: ChestGui) {
         val blocks = getAllWarpSkins.execute().mapNotNull { it -> runCatching { Material.valueOf(it) }.getOrNull() }
 
-        val blockListPane = OutlinePane(2, 0, 7, 3)
+        val blockListPane = OutlinePane(7, 3)
         for (block in blocks) {
             val blockItem = ItemStack(block)
             val blockGuiItem = GuiItem(blockItem) { guiEvent -> guiEvent.isCancelled = true }
             blockListPane.addItem(blockGuiItem)
         }
-        gui.addPane(blockListPane)
+        gui.addPane(Slot.fromXY(2, 0), blockListPane)
     }
 }
