@@ -29,7 +29,6 @@ class PlayerCountdownServiceBukkit(
         val player = Bukkit.getPlayer(playerId) ?: return
 
         // Create boss bar countdown if specified in config
-        println(configService.bossBarEnabled())
         val bossBar = if (configService.bossBarEnabled()) {
             Bukkit.createBossBar(
                 localizationProvider.get(

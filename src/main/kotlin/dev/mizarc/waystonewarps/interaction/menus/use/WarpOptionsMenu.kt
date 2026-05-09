@@ -7,8 +7,6 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
-import dev.mizarc.waystonewarps.application.actions.management.GetPlayerWarpIcon
-import dev.mizarc.waystonewarps.interaction.menus.management.PlayerWarpIconMenu
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toLocation
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
@@ -29,21 +27,20 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpOptionsMenu(
-    private val player: Player, 
-    private val menuNavigator: MenuNavigator, 
+    private val player: Player,
+    private val menuNavigator: MenuNavigator,
     private val warp: Warp,
     private val localizationProvider: LocalizationProvider
 ): Menu, KoinComponent {
     private val revokeDiscovery: RevokeDiscovery by inject()
     private val isPlayerFavouriteWarp: IsPlayerFavouriteWarp by inject()
     private val toggleFavouriteDiscovery: ToggleFavouriteDiscovery by inject()
-    private val getPlayerWarpIcon: GetPlayerWarpIcon by inject()
 
     override fun open() {
         // Create menu
         val gui = HopperGui(localizationProvider.get(
-            player.uniqueId, 
-            LocalizationKeys.MENU_WARP_OPTIONS_TITLE, 
+            player.uniqueId,
+            LocalizationKeys.MENU_WARP_OPTIONS_TITLE,
             warp.name
         ))
         val pane = StaticPane(5, 1)
@@ -61,19 +58,6 @@ class WarpOptionsMenu(
         }
         pane.addItem(guiBackItem, 0, 0)
 
-        // Add personal icon button (slot 1)
-        val hasPersonalIcon = getPlayerWarpIcon.execute(player.uniqueId, warp.id) != null
-        val personalIconLore = if (hasPersonalIcon) {
-            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_PLAYER_WARP_ICON_RESET_LORE)
-        } else {
-            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_LORE)
-        }
-        val personalIconItem = ItemStack(Material.FILLED_MAP)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_NAME))
-            .lore(personalIconLore)
-        pane.addItem(GuiItem(personalIconItem) {
-            menuNavigator.openMenu(PlayerWarpIconMenu(player, menuNavigator, warp))
-        }, 1, 0)
 
         // Add point menu item
         val guiPointItem: GuiItem
@@ -123,7 +107,7 @@ class WarpOptionsMenu(
                 .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_DELETE_LORE))
             guiDeleteItem = GuiItem(deleteItem) { guiEvent ->
                 val confirmMessage = localizationProvider.get(
-                    player.uniqueId, 
+                    player.uniqueId,
                     LocalizationKeys.MENU_WARP_OPTIONS_CONFIRM_DELETE,
                     warp.name
                 )

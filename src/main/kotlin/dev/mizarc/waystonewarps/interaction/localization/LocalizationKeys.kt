@@ -199,17 +199,7 @@ object LocalizationKeys {
     // Warp Title (group-filtered)
     const val MENU_WARP_TITLE_GROUPED = "menu.warp.title.grouped"
 
-    // Personal Icon Menu
-    const val MENU_PLAYER_WARP_ICON_TITLE = "menu.player_warp_icon.title"
-    const val MENU_PLAYER_WARP_ICON_INFO_NAME = "menu.player_warp_icon.info.name"
-    const val MENU_PLAYER_WARP_ICON_INFO_LORE = "menu.player_warp_icon.info.lore"
-    const val MENU_PLAYER_WARP_ICON_RESET_NAME = "menu.player_warp_icon.reset.name"
-    const val MENU_PLAYER_WARP_ICON_RESET_LORE = "menu.player_warp_icon.reset.lore"
-
-    // Warp Options personal icon button
-    const val MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_NAME = "menu.warp_options.item.personal_icon.name"
-    const val MENU_WARP_OPTIONS_ITEM_PERSONAL_ICON_LORE = "menu.warp_options.item.personal_icon.lore"
-
+    
     // Warp Skins Menu
     const val MENU_WARP_SKINS_TITLE = "menu.warp_skins.title"
     const val MENU_WARP_SKINS_ITEM_TOOLTIP_NAME = "menu.warp_skins.item.tooltip.name"

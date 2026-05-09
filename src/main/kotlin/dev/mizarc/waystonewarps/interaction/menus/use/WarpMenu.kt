@@ -11,7 +11,6 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetFavouritedWarpA
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
-import dev.mizarc.waystonewarps.application.actions.management.GetPlayerWarpIcon
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
 import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
@@ -50,7 +49,6 @@ class WarpMenu(
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val getFavouritedWarpAccess: GetFavouritedWarpAccess by inject()
     private val getOwnedWarps: GetOwnedWarps by inject()
-    private val getPlayerWarpIcon: GetPlayerWarpIcon by inject()
     private val teleportationService: TeleportationService by inject()
     private val configService: ConfigService by inject()
     private val worldGroupService: WorldGroupService? by inject()
@@ -375,12 +373,8 @@ class WarpMenu(
                 }
             }
 
-            val personalIcon = getPlayerWarpIcon.execute(player.uniqueId, warp.id)
-            val warpItem = if (personalIcon != null) {
-                ItemStack(Material.valueOf(personalIcon.icon)).applyIconMeta(personalIcon.iconMeta)
-            } else {
-                ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta)
-            }.name(warpModel.name).lore(customLore)
+            val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta)
+                .name(warpModel.name).lore(customLore)
 
             val guiWarpItem = if (hasPermission && !isLocked) {
                 // Player has permission and warp is not locked to them - allow interaction

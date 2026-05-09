@@ -32,9 +32,6 @@ import dev.mizarc.waystonewarps.application.actions.groups.RenameWarpGroup
 import dev.mizarc.waystonewarps.application.actions.management.AssignWarpGroup
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
-import dev.mizarc.waystonewarps.application.actions.management.GetPlayerWarpIcon
-import dev.mizarc.waystonewarps.application.actions.management.RemovePlayerWarpIcon
-import dev.mizarc.waystonewarps.application.actions.management.SetPlayerWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpIcon
 import dev.mizarc.waystonewarps.application.actions.management.UpdateWarpName
@@ -52,7 +49,6 @@ import dev.mizarc.waystonewarps.application.services.TownyService
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
-import dev.mizarc.waystonewarps.domain.warps.PlayerWarpIconRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpGroupRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
@@ -69,9 +65,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration0
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_AddWarpIconMeta
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration2_AddWarpAccessLevel
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration3_AddWarpGroups
-import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration4_AddPlayerWarpIcons
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.SchemaMigrator
-import dev.mizarc.waystonewarps.infrastructure.persistence.playericons.PlayerWarpIconRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
 import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositorySQLite
@@ -125,7 +119,6 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var playerStateRepository: PlayerStateRepository
     private lateinit var whitelistRepository: WhitelistRepository
     private lateinit var warpGroupRepository: WarpGroupRepository
-    private lateinit var playerWarpIconRepository: PlayerWarpIconRepository
 
     // Services
     private lateinit var movementMonitorService: MovementMonitorService
@@ -158,7 +151,6 @@ class WaystoneWarps: JavaPlugin() {
                     Migration1_AddWarpIconMeta(),
                     Migration2_AddWarpAccessLevel(),
                     Migration3_AddWarpGroups(),
-                    Migration4_AddPlayerWarpIcons(),
                 ),
             ).migrateToLatest()
         } catch (ex: Exception) {
@@ -260,7 +252,6 @@ class WaystoneWarps: JavaPlugin() {
         playerStateRepository = PlayerStateRepositoryMemory()
         whitelistRepository = WhitelistRepositorySQLite(storage)
         warpGroupRepository = WarpGroupRepositorySQLite(storage)
-        playerWarpIconRepository = PlayerWarpIconRepositorySQLite(storage)
     }
 
     private fun initialiseServices() {
@@ -307,7 +298,6 @@ class WaystoneWarps: JavaPlugin() {
             single<PlayerStateRepository> { playerStateRepository }
             single<WhitelistRepository> { whitelistRepository }
             single<WarpGroupRepository> { warpGroupRepository }
-            single<PlayerWarpIconRepository> { playerWarpIconRepository }
             single<ConfigService> { configService }
             single<TeleportationService> { teleportationService }
             single<WarpEventPublisher> { warpEventPublisher }
@@ -353,10 +343,6 @@ class WaystoneWarps: JavaPlugin() {
             single { GetAllWarpGroups(warpGroupRepository) }
             single { AssignWarpGroup(warpRepository, warpGroupRepository) }
 
-            // Personal icon actions
-            single { SetPlayerWarpIcon(playerWarpIconRepository) }
-            single { RemovePlayerWarpIcon(playerWarpIconRepository) }
-            single { GetPlayerWarpIcon(playerWarpIconRepository) }
 
             single<LocalizationProvider> { PropertiesLocalizationProvider(configService, dataFolder, playerLocaleService) }
         }
