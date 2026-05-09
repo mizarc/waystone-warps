@@ -88,4 +88,8 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigSer
     override fun worldNameEnabled(): Boolean {
         return configFile.getBoolean("world_name_enabled")
     }
+
+    override fun bossBarEnabled(): Boolean {
+        return configFile.getBoolean("boss_bar_enabled", false)
+    }
 }

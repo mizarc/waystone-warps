@@ -284,7 +284,7 @@ class WaystoneWarps: JavaPlugin() {
         warpEventPublisher = WarpEventPublisherBukkit()
         playerLocaleService = PlayerLocaleServicePaper()
         localizationProvider = PropertiesLocalizationProvider(configService, dataFolder, PlayerLocaleServicePaper())
-        playerCountdownService = PlayerCountdownServiceBukkit(this, localizationProvider, playerAttributeService)
+        playerCountdownService = PlayerCountdownServiceBukkit(this, localizationProvider, playerAttributeService, configService)
     }
 
     fun initialiseLang() {

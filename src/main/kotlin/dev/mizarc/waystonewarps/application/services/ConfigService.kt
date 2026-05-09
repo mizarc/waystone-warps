@@ -23,4 +23,5 @@ interface ConfigService {
     fun allowWarpsMenuViaWaystone(): Boolean
     fun hologramsEnabled(): Boolean
     fun worldNameEnabled(): Boolean
+    fun bossBarEnabled(): Boolean
 }
