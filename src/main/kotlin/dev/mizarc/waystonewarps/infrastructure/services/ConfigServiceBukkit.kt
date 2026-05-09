@@ -92,4 +92,8 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigSer
     override fun bossBarEnabled(): Boolean {
         return configFile.getBoolean("boss_bar_enabled", false)
     }
+
+    override fun warpGroupsEnabled(): Boolean {
+        return configFile.getBoolean("warp_groups_enabled", false)
+    }
 }

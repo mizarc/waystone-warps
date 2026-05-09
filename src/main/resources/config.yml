@@ -67,6 +67,9 @@ world_name_enabled: true
 # If a boss bar should be displayed during teleport countdown.
 boss_bar_enabled: false
 
+# If the warp group system should be enabled, allowing you to tag warps to appear in a given category.
+warp_groups_enabled: false
+
 # The blocks that can be used to transform the waystone appearance. This
 # contains all the required blocks that make up the waystone that must be in the
 # following order:

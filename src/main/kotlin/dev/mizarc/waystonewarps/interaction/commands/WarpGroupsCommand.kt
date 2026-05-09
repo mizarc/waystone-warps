@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand
 import co.aikar.commands.annotation.CommandAlias
 import co.aikar.commands.annotation.CommandPermission
 import co.aikar.commands.annotation.Default
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
 import dev.mizarc.waystonewarps.interaction.menus.admin.WarpGroupManagementMenu
@@ -15,9 +16,14 @@ import org.koin.core.component.inject
 @CommandPermission("waystonewarps.admin.manage_groups")
 class WarpGroupsCommand : BaseCommand(), KoinComponent {
     private val localizationProvider: LocalizationProvider by inject()
+    private val configService: ConfigService by inject()
 
     @Default
     fun onWarpGroups(player: Player) {
+        if (!configService.warpGroupsEnabled()) {
+            player.sendMessage("§cWarp groups are disabled in the configuration.")
+            return
+        }
         val menuNavigator = MenuNavigator(player)
         WarpGroupManagementMenu(player, menuNavigator, localizationProvider).open()
     }

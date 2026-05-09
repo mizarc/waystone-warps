@@ -24,4 +24,5 @@ interface ConfigService {
     fun hologramsEnabled(): Boolean
     fun worldNameEnabled(): Boolean
     fun bossBarEnabled(): Boolean
+    fun warpGroupsEnabled(): Boolean
 }

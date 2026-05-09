@@ -7,6 +7,7 @@ import com.github.stefvanschie.inventoryframework.pane.util.Slot
 import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAccess
 import dev.mizarc.waystonewarps.application.actions.groups.GetAllWarpGroups
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.domain.warps.WarpAccess
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
@@ -34,6 +35,7 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
     private val toggleLock: ToggleLock by inject()
     private val getAllWarpGroups: GetAllWarpGroups by inject()
     private val localizationProvider: LocalizationProvider by inject()
+    private val configService: ConfigService by inject()
 
     override fun open() {
         val title = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_TITLE, warp.name)
@@ -194,26 +196,28 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
         pane.addItem(guiSkinViewItem, 5, 0)
 
         // Add group assignment button
-        val currentGroup = warp.groupId?.let { getAllWarpGroups.execute().firstOrNull { g -> g.id == it } }
-        val groupLabel = currentGroup?.name
-            ?: localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_NONE)
-        val canAssignGroup = PermissionHelper.canRename(player, warp.playerId)
-        val groupItem = ItemStack(Material.BOOKSHELF)
-            .name("${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP)}: $groupLabel")
-        if (canAssignGroup) {
-            groupItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE))
-        } else {
-            groupItem.lore(
-                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE),
-                localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
-            )
-        }
-        val guiGroupItem = GuiItem(groupItem) {
+        if (configService.warpGroupsEnabled()) {
+            val currentGroup = warp.groupId?.let { getAllWarpGroups.execute().firstOrNull { g -> g.id == it } }
+            val groupLabel = currentGroup?.name
+                ?: localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_NONE)
+            val canAssignGroup = PermissionHelper.canRename(player, warp.playerId)
+            val groupItem = ItemStack(Material.BOOKSHELF)
+                .name("${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP)}: $groupLabel")
             if (canAssignGroup) {
-                menuNavigator.openMenu(WarpGroupPickerMenu(player, menuNavigator, warp, localizationProvider))
+                groupItem.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE))
+            } else {
+                groupItem.lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_GROUP_LORE),
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_COMMON_NO_PERMISSION)
+                )
             }
+            val guiGroupItem = GuiItem(groupItem) {
+                if (canAssignGroup) {
+                    menuNavigator.openMenu(WarpGroupPickerMenu(player, menuNavigator, warp, localizationProvider))
+                }
+            }
+            pane.addItem(guiGroupItem, 6, 0)
         }
-        pane.addItem(guiGroupItem, 6, 0)
 
         // Add move icon
         val canRelocate = PermissionHelper.canRelocate(player, warp.playerId)

@@ -136,18 +136,20 @@ class WarpMenu(
         controlsPane.addItem(guiExitItem, 0, 0)
 
         // Add groups browse button (slot 1) — or group info label when in group-filtered mode
-        if (groupId != null) {
-            val groupInfoItem = ItemStack(Material.BOOKSHELF)
-                .name(groupName ?: "")
-                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
-            controlsPane.addItem(GuiItem(groupInfoItem) { it.isCancelled = true }, 1, 0)
-        } else {
-            val groupsItem = ItemStack(Material.BOOKSHELF)
-                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_NAME))
-                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
-            controlsPane.addItem(GuiItem(groupsItem) {
-                menuNavigator.openMenu(WarpGroupBrowseMenu(player, menuNavigator, localizationProvider))
-            }, 1, 0)
+        if (configService.warpGroupsEnabled()) {
+            if (groupId != null) {
+                val groupInfoItem = ItemStack(Material.BOOKSHELF)
+                    .name(groupName ?: "")
+                    .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
+                controlsPane.addItem(GuiItem(groupInfoItem) { it.isCancelled = true }, 1, 0)
+            } else {
+                val groupsItem = ItemStack(Material.BOOKSHELF)
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_NAME))
+                    .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
+                controlsPane.addItem(GuiItem(groupsItem) {
+                    menuNavigator.openMenu(WarpGroupBrowseMenu(player, menuNavigator, localizationProvider))
+                }, 1, 0)
+            }
         }
 
         // Add view mode item
@@ -196,7 +198,7 @@ class WarpMenu(
         }
 
         // Add manage groups button (slot 5) — admin only
-        if (player.hasPermission("waystonewarps.admin.manage_groups")) {
+        if (configService.warpGroupsEnabled() && player.hasPermission("waystonewarps.admin.manage_groups")) {
             val manageGroupsItem = ItemStack(Material.WRITABLE_BOOK)
                 .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_NAME))
                 .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_LORE))
@@ -243,7 +245,7 @@ class WarpMenu(
 
             // Update page number item
             val pageNumberText = localizationProvider.get(
-                player.uniqueId, 
+                player.uniqueId,
                 LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME,
                 currentPage.toString(),
                 totalPages.toString()
@@ -316,7 +318,7 @@ class WarpMenu(
             } ?: run {
                 "Location not found"
             }
-            
+
             val customLore = stockLore.toMutableList()
             if (configService.isTeleportCostEnabled() && configService.getTeleportCostType() == CostType.ITEM) {
                 val cost = teleportationService.calculateCost(player.uniqueId, warp)
