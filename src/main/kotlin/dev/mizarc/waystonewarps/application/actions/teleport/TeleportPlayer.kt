@@ -102,6 +102,7 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                 val discovery = discoveryRepository.getByWarpAndPlayer(warp.id, playerId) ?: return
                 discovery.lastVisitedTime = Instant.now()
                 discoveryRepository.update(discovery)
+                playerParticleService.spawnPostParticles(playerId)
             }
             TeleportResult.INSUFFICIENT_FUNDS -> onInsufficientFunds()
             TeleportResult.WORLD_NOT_FOUND -> onWorldNotFound()
