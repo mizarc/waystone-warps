@@ -58,7 +58,6 @@ class SchemaMigrator(
         }
 
         return when {
-            hasTable("player_warp_icons") -> 4
             hasColumn("warps", "groupId") -> 3
             hasColumn("warps", "accessLevel") -> 2
             hasColumn("warps", "iconMeta") -> 1

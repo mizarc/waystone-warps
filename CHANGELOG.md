@@ -9,7 +9,11 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ### Added
 - Support for Minecraft 26.1.
 - Simplified Chinese (zh_cn) localization.
-- New `/warpcreate command` to create a new waystone via command.
+- New `/warpcreate command` to create a new waystone via command. 
+- Boss bar teleport timer. Can be optionally toggled via config.
+- Towny support, which allows for free travel between two of the same town.
+- New permission to use the `/warpcreate command`: `waystonewarps.command.warpcreate`
+
 
 ## [1.0.0]
 

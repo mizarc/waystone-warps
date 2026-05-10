@@ -71,7 +71,6 @@ class WarpRepositorySQLite(private val storage: Storage<Database>): WarpReposito
     override fun remove(id: UUID) {
         warps.remove(id)
         storage.connection.executeUpdate("DELETE FROM warps WHERE id=?", id)
-        storage.connection.executeUpdate("DELETE FROM player_warp_icons WHERE warpId=?", id)
     }
 
     private fun preload() {
