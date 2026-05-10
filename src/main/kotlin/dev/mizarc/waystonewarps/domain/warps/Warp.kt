@@ -16,7 +16,8 @@ import kotlin.concurrent.thread
  * @property icon The name of the material to use as an icon.
  */
 class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name: String, var worldId: UUID,
-           var position: Position3D, var icon: String, var iconMeta: IconMeta, var block: String, var isLocked: Boolean) {
+           var position: Position3D, var icon: String, var iconMeta: IconMeta, var block: String,
+           var accessLevel: WarpAccess, var groupId: UUID? = null) {
     var breakCount = 3
 
     private val defaultBreakCount = 3
@@ -32,7 +33,7 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
      * @param block The base block being used for the physical appearance.
      */
     constructor(worldId: UUID, playerId: UUID, position: Position3D, name: String, block: String) : this(
-        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", IconMeta(), block, false)
+        UUID.randomUUID(), playerId, Instant.now(), name, worldId, position, "LODESTONE", IconMeta(), block, WarpAccess.PUBLIC)
 
     /**
      * Resets the break count after a set period of time.
@@ -78,7 +79,8 @@ class Warp(val id: UUID, val playerId: UUID, val creationTime: Instant, var name
                 fireworkStarColorRgb = iconMeta.fireworkStarColorRgb
             ),
             block = block,
-            isLocked = isLocked
+            accessLevel = accessLevel,
+            groupId = groupId
         ).also {
             it.breakCount = this.breakCount
         }

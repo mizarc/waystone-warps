@@ -7,5 +7,6 @@ enum class TeleportResult {
     LOCKED,
     PERMISSION_DENIED,
     INTERWORLD_PERMISSION_DENIED,
+    ON_COOLDOWN,
     FAILED
 }

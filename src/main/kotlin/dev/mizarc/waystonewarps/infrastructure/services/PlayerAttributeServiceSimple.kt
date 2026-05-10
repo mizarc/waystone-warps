@@ -6,14 +6,14 @@ import java.util.*
 
 class PlayerAttributeServiceSimple(private val configService: ConfigService): PlayerAttributeService {
     override fun getWarpLimit(playerId: UUID): Int {
-        return configService.getWarpLimit()
+        return PermissionWarpLimit.get(playerId) ?: configService.getWarpLimit()
     }
 
     override fun getTeleportCost(playerId: UUID): Double {
-        return configService.getTeleportCostAmount()
+        return PermissionWarpCost.get(playerId) ?: configService.getTeleportCostAmount()
     }
 
     override fun getTeleportTimer(playerId: UUID): Int {
-        return configService.getTeleportTimer()
+        return PermissionWarpTimer.get(playerId) ?: configService.getTeleportTimer()
     }
 }

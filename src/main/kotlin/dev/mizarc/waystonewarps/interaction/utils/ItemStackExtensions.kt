@@ -15,7 +15,6 @@ import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
-import org.bukkit.material.MaterialData
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 import java.util.function.Consumer
@@ -73,16 +72,6 @@ fun ItemStack.lore(text: List<String>, color: TextColor = NamedTextColor.GRAY): 
     return this
 }
 
-fun ItemStack.durability(durability: Int): ItemStack {
-    setDurability(durability.toShort())
-    return this
-}
-
-fun ItemStack.data(data: Int): ItemStack {
-    setData(MaterialData(type, data.toByte()))
-    return this
-}
-
 fun ItemStack.enchantment(enchantment: Enchantment, level: Int): ItemStack {
     addUnsafeEnchantment(enchantment, level)
     return this
@@ -93,14 +82,9 @@ fun ItemStack.enchantment(enchantment: Enchantment): ItemStack {
     return this
 }
 
-fun ItemStack.type(material: Material): ItemStack {
-    type = material
-    return this
-}
-
 fun ItemStack.clearLore(): ItemStack {
-    val meta = itemMeta
-    meta!!.lore = ArrayList()
+    val meta = itemMeta ?: return this
+    meta.lore(emptyList())
     itemMeta = meta
     return this
 }
@@ -268,14 +252,3 @@ fun ItemStack.applyIconMeta(meta: IconMeta): ItemStack {
     return this
 }
 
-private fun String.c(): String {
-    return ChatColor.translateAlternateColorCodes('&', this)
-}
-
-private fun List<String>.c(): List<String> {
-    val tempStringList = ArrayList<String>()
-    for (text in this) {
-        tempStringList.add(text.c())
-    }
-    return tempStringList
-}

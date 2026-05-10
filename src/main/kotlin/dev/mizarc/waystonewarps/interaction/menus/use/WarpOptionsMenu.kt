@@ -27,8 +27,8 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpOptionsMenu(
-    private val player: Player, 
-    private val menuNavigator: MenuNavigator, 
+    private val player: Player,
+    private val menuNavigator: MenuNavigator,
     private val warp: Warp,
     private val localizationProvider: LocalizationProvider
 ): Menu, KoinComponent {
@@ -39,8 +39,8 @@ class WarpOptionsMenu(
     override fun open() {
         // Create menu
         val gui = HopperGui(localizationProvider.get(
-            player.uniqueId, 
-            LocalizationKeys.MENU_WARP_OPTIONS_TITLE, 
+            player.uniqueId,
+            LocalizationKeys.MENU_WARP_OPTIONS_TITLE,
             warp.name
         ))
         val pane = StaticPane(5, 1)
@@ -57,6 +57,7 @@ class WarpOptionsMenu(
             menuNavigator.goBack()
         }
         pane.addItem(guiBackItem, 0, 0)
+
 
         // Add point menu item
         val guiPointItem: GuiItem
@@ -106,7 +107,7 @@ class WarpOptionsMenu(
                 .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_OPTIONS_ITEM_DELETE_LORE))
             guiDeleteItem = GuiItem(deleteItem) { guiEvent ->
                 val confirmMessage = localizationProvider.get(
-                    player.uniqueId, 
+                    player.uniqueId,
                     LocalizationKeys.MENU_WARP_OPTIONS_CONFIRM_DELETE,
                     warp.name
                 )

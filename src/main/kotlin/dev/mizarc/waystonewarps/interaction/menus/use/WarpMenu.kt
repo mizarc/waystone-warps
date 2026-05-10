@@ -12,11 +12,17 @@ import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
 import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
 import dev.mizarc.waystonewarps.application.actions.whitelist.GetWhitelistedPlayers
+import dev.mizarc.waystonewarps.application.services.ConfigService
+import dev.mizarc.waystonewarps.application.services.TeleportationService
+import dev.mizarc.waystonewarps.application.services.WorldGroupService
 import dev.mizarc.waystonewarps.domain.warps.Warp
+import dev.mizarc.waystonewarps.domain.warps.WarpAccess
+import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.menus.Menu
 import dev.mizarc.waystonewarps.interaction.menus.MenuNavigator
+import dev.mizarc.waystonewarps.interaction.menus.admin.WarpGroupManagementMenu
 import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import dev.mizarc.waystonewarps.interaction.models.toViewModel
 import dev.mizarc.waystonewarps.interaction.utils.applyIconMeta
@@ -29,24 +35,36 @@ import me.xdrop.fuzzywuzzy.FuzzySearch
 import net.kyori.adventure.text.Component
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 class WarpMenu(
-    private val player: Player, 
+    private val player: Player,
     private val menuNavigator: MenuNavigator,
-    private val localizationProvider: LocalizationProvider
+    private val localizationProvider: LocalizationProvider,
+    private val groupId: UUID? = null,
+    private val groupName: String? = null
 ): Menu, KoinComponent {
     private val getPlayerWarpAccess: GetPlayerWarpAccess by inject()
     private val teleportPlayer: TeleportPlayer by inject()
     private val getWhitelistedPlayers: GetWhitelistedPlayers by inject()
     private val getFavouritedWarpAccess: GetFavouritedWarpAccess by inject()
     private val getOwnedWarps: GetOwnedWarps by inject()
+    private val teleportationService: TeleportationService by inject()
+    private val configService: ConfigService by inject()
+    private val worldGroupService: WorldGroupService? by inject()
 
     private var viewMode = 0  // 0 = All, Favourites, Owned
     private var page = 1
     private var warpNameSearch: String = ""
+    private var usableOnly = true  // if true filters out unusable (other world, locked, etc.)
 
     override fun open() {
-        val gui = ChestGui(6, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_TITLE))
+        val title = if (groupName != null) {
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_TITLE_GROUPED, groupName)
+        } else {
+            localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_TITLE)
+        }
+        val gui = ChestGui(6, title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
 
         // Add controls pane
@@ -59,6 +77,7 @@ class WarpMenu(
             2 -> getOwnedWarps.execute(player.uniqueId)
             else -> emptyList()
         }.sortedBy { it.name }
+            .let { list -> if (groupId != null) list.filter { it.groupId == groupId } else list }
 
         // Filter by warp name if specified
         val filteredWarps = if (warpNameSearch.isNotBlank()) {
@@ -116,6 +135,23 @@ class WarpMenu(
         val guiExitItem = GuiItem(exitItem) { menuNavigator.goBack() }
         controlsPane.addItem(guiExitItem, 0, 0)
 
+        // Add groups browse button (slot 1) — or group info label when in group-filtered mode
+        if (configService.warpGroupsEnabled()) {
+            if (groupId != null) {
+                val groupInfoItem = ItemStack(Material.BOOKSHELF)
+                    .name(groupName ?: "")
+                    .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
+                controlsPane.addItem(GuiItem(groupInfoItem) { it.isCancelled = true }, 1, 0)
+            } else {
+                val groupsItem = ItemStack(Material.BOOKSHELF)
+                    .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_NAME))
+                    .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUPS_BUTTON_LORE))
+                controlsPane.addItem(GuiItem(groupsItem) {
+                    menuNavigator.openMenu(WarpGroupBrowseMenu(player, menuNavigator, localizationProvider))
+                }, 1, 0)
+            }
+        }
+
         // Add view mode item
         val viewModeItem = when (viewMode) {
             0 -> ItemStack(Material.SUGAR)
@@ -139,17 +175,9 @@ class WarpMenu(
         }
         controlsPane.addItem(guiViewModeItem, 2, 0)
 
-        // Add search button
-        val searchItem = ItemStack(Material.NAME_TAG)
-            .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_SEARCH_NAME))
-        val guiSearchItem = GuiItem(searchItem) {
-            val warpSearchMenu = WarpSearchMenu(player, menuNavigator, localizationProvider)
-            menuNavigator.openMenu(warpSearchMenu)
-        }
-        controlsPane.addItem(guiSearchItem, 3, 0)
-
-        // Add clear search button
+        // Add clear/search button depending on state
         if (warpNameSearch.isNotEmpty()) {
+            // Add clear search button
             val clearSearchItem = ItemStack(Material.MAGMA_CREAM)
                 .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_CLEAR_SEARCH_NAME))
             val guiClearSearchItem = GuiItem(clearSearchItem) {
@@ -157,8 +185,53 @@ class WarpMenu(
                 page = 1
                 open()
             }
-            controlsPane.addItem(guiClearSearchItem, 4, 0)
+            controlsPane.addItem(guiClearSearchItem, 3, 0)
+        } else {
+            // Add search button
+            val searchItem = ItemStack(Material.NAME_TAG)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_SEARCH_NAME))
+            val guiSearchItem = GuiItem(searchItem) {
+                val warpSearchMenu = WarpSearchMenu(player, menuNavigator, localizationProvider)
+                menuNavigator.openMenu(warpSearchMenu)
+            }
+            controlsPane.addItem(guiSearchItem, 3, 0)
         }
+
+        // Add manage groups button (slot 5) — admin only
+        if (configService.warpGroupsEnabled() && player.hasPermission("waystonewarps.admin.manage_groups")) {
+            val manageGroupsItem = ItemStack(Material.WRITABLE_BOOK)
+                .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_NAME))
+                .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_MANAGEMENT_ADMIN_BUTTON_LORE))
+            controlsPane.addItem(GuiItem(manageGroupsItem) {
+                menuNavigator.openMenu(WarpGroupManagementMenu(player, menuNavigator, localizationProvider))
+            }, 5, 0)
+        }
+
+        // Add filter item
+        val filterItem = when (usableOnly) {
+            true -> ItemStack(Material.BUCKET)
+                .name(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_USABLE_NAME),
+                )
+                .lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_USABLE_LORE),
+                )
+
+            false -> ItemStack(Material.WATER_BUCKET)
+                .name(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_UNUSABLE_NAME),
+                )
+                .lore(
+                    localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_FILTER_UNUSABLE_LORE),
+                )
+        }
+        val guiFilterItem = GuiItem(filterItem) { guiEvent ->
+            // invert usable filter
+            usableOnly = !usableOnly
+            page = 1
+            open()
+        }
+        controlsPane.addItem(guiFilterItem, 4, 0)
 
         return controlsPane
     }
@@ -172,7 +245,7 @@ class WarpMenu(
 
             // Update page number item
             val pageNumberText = localizationProvider.get(
-                player.uniqueId, 
+                player.uniqueId,
                 LocalizationKeys.MENU_COMMON_ITEM_PAGE_NAME,
                 currentPage.toString(),
                 totalPages.toString()
@@ -237,22 +310,45 @@ class WarpMenu(
         for (warp in warps) {
             val warpModel = warp.toViewModel()
             val locationText = warpModel.location?.let { location ->
-                "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                if (configService.worldNameEnabled()) {
+                    "${location.world.name}: ${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                } else {
+                    "${location.blockX}, ${location.blockY}, ${location.blockZ}"
+                }
             } ?: run {
                 "Location not found"
             }
-            
+
             val customLore = stockLore.toMutableList()
+            if (configService.isTeleportCostEnabled() && configService.getTeleportCostType() == CostType.ITEM) {
+                val cost = teleportationService.calculateCost(player.uniqueId, warp)
+                if (cost > 0) {
+                    customLore.add(0, "§6${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_COST, cost)}")
+                }
+            }
             customLore.add(0, "§8$locationText")
             customLore.add(0, "§b${warpModel.player.name}")
 
             val hasTeleportPermission = player.hasPermission("waystonewarps.teleport")
             val isDifferentWorld = warp.worldId != player.world.uid
             val hasInterworldPermission = !isDifferentWorld || player.hasPermission("waystonewarps.teleport.interworld")
-            val hasPermission = hasTeleportPermission && hasInterworldPermission
+            val hasIntergroupPermission =
+                hasInterworldPermission || (
+                        player.hasPermission("waystonewarps.teleport.interworldgroup") &&
+                        worldGroupService != null &&
+                        worldGroupService!!.inSameGroup(warp.worldId, player.world.uid)
+                )
+            val hasPermission = hasTeleportPermission && (hasInterworldPermission || hasIntergroupPermission)
 
             // Check if the warp is locked for this player
-            val isLocked = warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId
+            val isLocked = warp.accessLevel == WarpAccess.PRIVATE && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId && !player.hasPermission("waystonewarps.bypass.private_access")
+
+            // Skip to next warp if we are filtering
+            if (usableOnly) {
+                if (!hasPermission || isLocked) {
+                    continue
+                }
+            }
 
             // Add the locked status if applicable
             if (isLocked) {
@@ -266,7 +362,7 @@ class WarpMenu(
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION)
                     }")
                 }
-                isDifferentWorld && !hasInterworldPermission -> {
+                !hasInterworldPermission && !hasIntergroupPermission -> {
                     customLore.add(2, "§c${
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION)
                     }")
@@ -279,7 +375,8 @@ class WarpMenu(
                 }
             }
 
-            val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta).name(warpModel.name).lore(customLore)
+            val warpItem = ItemStack(warpModel.icon).applyIconMeta(warp.iconMeta)
+                .name(warpModel.name).lore(customLore)
 
             val guiWarpItem = if (hasPermission && !isLocked) {
                 // Player has permission and warp is not locked to them - allow interaction
@@ -353,6 +450,13 @@ class WarpMenu(
                                         localizationProvider.get(player.uniqueId, LocalizationKeys.FEEDBACK_TELEPORT_NO_INTERWORLD_PERMISSION)
                                     ).color(PrimaryColourPalette.CANCELLED.color)
                                 )
+                            },
+                            onCooldown = { secondsRemaining ->
+                                player.sendActionBar(
+                                    Component.text(
+                                        localizationProvider.get(player.uniqueId, LocalizationKeys.FEEDBACK_TELEPORT_ON_COOLDOWN, secondsRemaining)
+                                    ).color(PrimaryColourPalette.CANCELLED.color)
+                                )
                             }
                         )
                         player.closeInventory()
@@ -363,7 +467,7 @@ class WarpMenu(
                 // Player doesn't have permission or warp is locked - show item but disable interaction
                 GuiItem(warpItem) { guiEvent ->
                     // Only allow right-click for options menu if the player has access to the warp
-                    if (guiEvent.isRightClick && !(warp.isLocked && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId)) {
+                    if (guiEvent.isRightClick && !(warp.accessLevel == WarpAccess.PRIVATE && !getWhitelistedPlayers.execute(warp.id).contains(player.uniqueId) && player.uniqueId != warp.playerId && !player.hasPermission("waystonewarps.bypass.private_access"))) {
                         menuNavigator.openMenu(WarpOptionsMenu(player, menuNavigator, warp, localizationProvider))
                     } else {
                         // Show appropriate message for left click or no permission
@@ -375,7 +479,7 @@ class WarpMenu(
                             player.sendActionBar(Component.text(
                                 localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION)
                             ).color(PrimaryColourPalette.CANCELLED.color))
-                        } else if (warp.isLocked) {
+                        } else if (warp.accessLevel == WarpAccess.PRIVATE) {
                             player.sendActionBar(Component.text(
                                 localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_LOCKED)
                             ).color(PrimaryColourPalette.CANCELLED.color))

@@ -1,7 +1,5 @@
 package dev.mizarc.waystonewarps.domain.playerstate
 
-import org.bukkit.OfflinePlayer
-import org.bukkit.entity.Player
 import java.util.UUID
 
 /**

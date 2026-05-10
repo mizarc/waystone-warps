@@ -10,6 +10,7 @@ import dev.mizarc.waystonewarps.application.actions.discovery.DiscoverWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetFavouritedWarpAccess
 import dev.mizarc.waystonewarps.application.actions.teleport.LogPlayerMovement
 import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayer
+import dev.mizarc.waystonewarps.application.actions.teleport.TeleportPlayerImmediately
 import dev.mizarc.waystonewarps.application.actions.world.BreakWarpBlock
 import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.GetPlayerWarpAccess
@@ -18,6 +19,11 @@ import dev.mizarc.waystonewarps.application.actions.discovery.GetWarpPlayerAcces
 import dev.mizarc.waystonewarps.application.actions.discovery.IsPlayerFavouriteWarp
 import dev.mizarc.waystonewarps.application.actions.discovery.RevokeDiscovery
 import dev.mizarc.waystonewarps.application.actions.discovery.ToggleFavouriteDiscovery
+import dev.mizarc.waystonewarps.application.actions.groups.CreateWarpGroup
+import dev.mizarc.waystonewarps.application.actions.groups.DeleteWarpGroup
+import dev.mizarc.waystonewarps.application.actions.groups.GetAllWarpGroups
+import dev.mizarc.waystonewarps.application.actions.groups.RenameWarpGroup
+import dev.mizarc.waystonewarps.application.actions.management.AssignWarpGroup
 import dev.mizarc.waystonewarps.application.actions.management.GetAllWarpSkins
 import dev.mizarc.waystonewarps.application.actions.management.GetOwnedWarps
 import dev.mizarc.waystonewarps.application.actions.management.ToggleLock
@@ -32,20 +38,27 @@ import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.actions.world.MoveWarp
 import dev.mizarc.waystonewarps.application.actions.world.RemoveAllDisplays
 import dev.mizarc.waystonewarps.application.services.*
+import dev.mizarc.waystonewarps.application.services.TeleportationService
+import dev.mizarc.waystonewarps.application.services.TownyService
 import dev.mizarc.waystonewarps.application.services.scheduling.SchedulerService
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
 import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
+import dev.mizarc.waystonewarps.domain.warps.WarpGroupRepository
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import dev.mizarc.waystonewarps.domain.whitelist.WhitelistRepository
 import dev.mizarc.waystonewarps.domain.world.WorldService
 import dev.mizarc.waystonewarps.infrastructure.localization.PropertiesLocalizationProvider
 import net.milkbowl.vault.chat.Chat
 import org.bukkit.plugin.java.JavaPlugin
+import dev.mizarc.waystonewarps.interaction.commands.WarpGroupsCommand
 import dev.mizarc.waystonewarps.interaction.commands.WarpMenuCommand
 import dev.mizarc.waystonewarps.infrastructure.persistence.discoveries.DiscoveryRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.playerstate.PlayerStateRepositoryMemory
+import dev.mizarc.waystonewarps.infrastructure.persistence.groups.WarpGroupRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration0_CreateInitialTables
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration1_AddWarpIconMeta
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration2_AddWarpAccessLevel
+import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.Migration3_AddWarpGroups
 import dev.mizarc.waystonewarps.infrastructure.persistence.migrations.SchemaMigrator
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.SQLiteStorage
 import dev.mizarc.waystonewarps.infrastructure.persistence.storage.Storage
@@ -53,6 +66,7 @@ import dev.mizarc.waystonewarps.infrastructure.persistence.warps.WarpRepositoryS
 import dev.mizarc.waystonewarps.infrastructure.persistence.whitelist.WhitelistRepositorySQLite
 import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
+import dev.mizarc.waystonewarps.infrastructure.services.TownyServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
 import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.commands.WarpCreateCommand
@@ -60,11 +74,14 @@ import dev.mizarc.waystonewarps.interaction.listeners.*
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
+import org.bukkit.Material
+import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.ServicePriority
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 import java.io.File
 import java.io.IOException
+import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -72,11 +89,16 @@ class WaystoneWarps: JavaPlugin() {
     companion object {
         lateinit var api: WaystoneWarpsAPI
             private set
+
+        @JvmStatic
+        fun getAPI(): WaystoneWarpsAPI = api
     }
 
     private lateinit var commandManager: PaperCommandManager
     private lateinit var metadata: Chat
     private var economy: Economy? = null
+    private var townyService: TownyService? = null
+    private var worldGroupService: WorldGroupService? = null
 
     // Storage
     private lateinit var storage: Storage<Database>
@@ -86,6 +108,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var discoveryRepository: DiscoveryRepository
     private lateinit var playerStateRepository: PlayerStateRepository
     private lateinit var whitelistRepository: WhitelistRepository
+    private lateinit var warpGroupRepository: WarpGroupRepository
 
     // Services
     private lateinit var movementMonitorService: MovementMonitorService
@@ -94,6 +117,7 @@ class WaystoneWarps: JavaPlugin() {
     private lateinit var teleportationService: TeleportationService
     private lateinit var structureParticleService: StructureParticleService
     private lateinit var playerParticleService: PlayerParticleService
+    private lateinit var playerCountdownService: PlayerCountdownService
     private lateinit var worldService: WorldService
     private lateinit var hologramService: HologramService
     private lateinit var configService: ConfigService
@@ -115,6 +139,8 @@ class WaystoneWarps: JavaPlugin() {
                 migrations = listOf(
                     Migration0_CreateInitialTables(),
                     Migration1_AddWarpIconMeta(),
+                    Migration2_AddWarpAccessLevel(),
+                    Migration3_AddWarpGroups(),
                 ),
             ).migrateToLatest()
         } catch (ex: Exception) {
@@ -130,6 +156,8 @@ class WaystoneWarps: JavaPlugin() {
         // Initialise everything else
         initialiseConfig()
         initialiseVaultDependency()
+        initialiseTownyDependency()
+        initialiseMultiverseInventoriesDependency()
         initialiseRepositories()
         initialiseServices()
         initialiseLang()
@@ -162,9 +190,24 @@ class WaystoneWarps: JavaPlugin() {
         }
     }
 
+    private fun initialiseTownyDependency() {
+        if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
+            townyService = TownyServiceBukkit()
+            logger.info("Towny detected; same-town warp travel will be free.")
+        }
+    }
+
+    private fun initialiseMultiverseInventoriesDependency(){
+        if (Bukkit.getPluginManager().getPlugin("Multiverse-Inventories") != null) {
+            worldGroupService = WorldGroupBukkitMultiverse(this)
+            logger.info("Multiverse-Inventories detected; inter-world-group warps can be enabled")
+        }
+    }
+
     private fun initialiseConfig() {
         saveDefaultConfig()
         reloadConfig()
+        mergeConfig()
         getResource("config.yml")?.use { defaultConfigStream ->
             val sampleConfigFile = File(dataFolder, "sample-config.yml")
             try {
@@ -175,11 +218,29 @@ class WaystoneWarps: JavaPlugin() {
         } ?: logger.warning("Default config file not found in the plugin resources")
     }
 
+    private fun mergeConfig() {
+        val defaults = getResource("config.yml")?.use { stream ->
+            YamlConfiguration.loadConfiguration(InputStreamReader(stream))
+        } ?: return
+        var changed = false
+        for (key in defaults.getKeys(true)) {
+            if (!config.isSet(key)) {
+                config.set(key, defaults.get(key))
+                changed = true
+            }
+        }
+        if (changed) {
+            saveConfig()
+            reloadConfig()
+        }
+    }
+
     private fun initialiseRepositories() {
         warpRepository = WarpRepositorySQLite(storage)
         discoveryRepository = DiscoveryRepositorySQLite(storage)
         playerStateRepository = PlayerStateRepositoryMemory()
         whitelistRepository = WhitelistRepositorySQLite(storage)
+        warpGroupRepository = WarpGroupRepositorySQLite(storage)
     }
 
     private fun initialiseServices() {
@@ -192,8 +253,10 @@ class WaystoneWarps: JavaPlugin() {
         }
         structureBuilderService = StructureBuilderServiceBukkit(this, configService)
         scheduler = SchedulerServiceBukkit(this)
-        teleportationService = TeleportationServiceBukkit(playerAttributeService, configService,
-            movementMonitorService, whitelistRepository, scheduler, economy)
+        teleportationService = TeleportationServiceBukkit(
+            playerAttributeService, configService, movementMonitorService, whitelistRepository,
+            playerStateRepository, scheduler, economy, townyService, worldGroupService
+        )
         structureParticleService = StructureParticleServiceBukkit(this, discoveryRepository, whitelistRepository)
         playerParticleService = PlayerParticleServiceBukkit(this, playerAttributeService)
         hologramService = HologramServiceBukkit(configService)
@@ -201,6 +264,7 @@ class WaystoneWarps: JavaPlugin() {
         warpEventPublisher = WarpEventPublisherBukkit()
         playerLocaleService = PlayerLocaleServicePaper()
         localizationProvider = PropertiesLocalizationProvider(configService, dataFolder, PlayerLocaleServicePaper())
+        playerCountdownService = PlayerCountdownServiceBukkit(this, localizationProvider, playerAttributeService, configService)
     }
 
     fun initialiseLang() {
@@ -222,6 +286,11 @@ class WaystoneWarps: JavaPlugin() {
             single<DiscoveryRepository> { discoveryRepository }
             single<PlayerStateRepository> { playerStateRepository }
             single<WhitelistRepository> { whitelistRepository }
+            single<WarpGroupRepository> { warpGroupRepository }
+            single<ConfigService> { configService }
+            single<TeleportationService> { teleportationService }
+            single<WarpEventPublisher> { warpEventPublisher }
+            single<WorldGroupService?> { worldGroupService }
         }
 
         val actions = module {
@@ -234,10 +303,11 @@ class WaystoneWarps: JavaPlugin() {
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
                 discoveryRepository, whitelistRepository, structureParticleService, hologramService, warpEventPublisher) }
-            single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService,
-                discoveryRepository)}
+            single { TeleportPlayerImmediately(teleportationService) }
+            single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService, playerCountdownService,
+                discoveryRepository, warpEventPublisher, get())}
             single { LogPlayerMovement(movementMonitorService) }
-            single { DiscoverWarp(discoveryRepository) }
+            single { DiscoverWarp(discoveryRepository, warpEventPublisher) }
             single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService, warpEventPublisher) }
             single { ToggleLock(warpRepository, warpEventPublisher) }
             single { GetWhitelistedPlayers(whitelistRepository) }
@@ -255,6 +325,14 @@ class WaystoneWarps: JavaPlugin() {
             single { RemoveAllInvalidWarps(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
             single { RemoveInvalidWarpsForWorld(warpRepository, worldService, discoveryRepository, whitelistRepository, warpEventPublisher) }
 
+            // Group actions
+            single { CreateWarpGroup(warpGroupRepository) }
+            single { DeleteWarpGroup(warpGroupRepository, warpRepository) }
+            single { RenameWarpGroup(warpGroupRepository) }
+            single { GetAllWarpGroups(warpGroupRepository) }
+            single { AssignWarpGroup(warpRepository, warpGroupRepository) }
+
+
             single<LocalizationProvider> { PropertiesLocalizationProvider(configService, dataFolder, playerLocaleService) }
         }
 
@@ -265,7 +343,9 @@ class WaystoneWarps: JavaPlugin() {
         commandManager.registerCommand(WarpMenuCommand())
         commandManager.registerCommand(InvalidsCommand())
         commandManager.registerCommand(WarpCreateCommand())
+        commandManager.registerCommand(WarpGroupsCommand())
     }
+
 
     private fun registerEvents() {
         server.pluginManager.registerEvents(WaystoneInteractListener(configService), this)

@@ -8,8 +8,22 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Added
 - Support for Minecraft 26.1.
+- New `/warpcreate` command to create a new waystone via command. Permission to use: `waystonewarps.command.warpcreate`
+- New "Global" access type for warps. Warps with this access can be used without discovery.
+- Boss bar teleport timer. Can be optionally toggled via config.
+- Warp groups feature, optionally enabled via config. Allows players to put their warp under a group for easier browsing. Groups are admin-defined.
+- Player override values can be set without a metadata provider such as Vault. Permissions are as follows:
+  - `waystonewarps.warp_limit.<number>`: Sets a player's waystone creation limit, for example `waystonewarps.warp_limit.4` or `waystonewarps.warp_limit.19`. Highest matching value wins.
+  - `waystonewarps.warp_limit.*`: Allows unlimited waystone creation.
+  - `waystonewarps.teleport_cost.<number>`: Sets a player's teleport cost multiplier, for example `waystonewarps.teleport_cost.0.5` for half price. Lowest matching value wins.
+  - `waystonewarps.teleport_cost.*`: Allows free teleportation (zero cost).
+  - `waystonewarps.teleport_timer.<number>`: Sets a player's teleport timer in seconds, for example `waystonewarps.teleport_timer.3` for 3-second timer. Lowest matching value wins.
+  - `waystonewarps.teleport_timer.*`: Allows instant teleportation (zero timer).
+- Towny support, which allows for free travel between two of the same town.
 - Simplified Chinese (zh_cn) localization.
-- New `/warpcreate command` to create a new waystone via command.
+
+### Fixed
+- Teleport particles and sound not appearing when teleportation is instant.
 
 ## [1.0.0]
 

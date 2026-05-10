@@ -51,4 +51,5 @@ object PermissionHelper {
     fun canRelocate(player: Player, waystoneOwnerId: UUID): Boolean {
         return canModifyWaystone(player, waystoneOwnerId, "waystonewarps.bypass.relocate")
     }
+
 }

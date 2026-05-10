@@ -2,6 +2,7 @@ name: WaystoneWarps
 version: 0.0.0-PLACEHOLDER
 api-version: '1.21'
 main: dev.mizarc.waystonewarps.WaystoneWarps
+soft-depend: [Towny]
 libraries:
   - org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0
   - org.jetbrains.kotlin:kotlin-stdlib:2.3.0
@@ -13,6 +14,10 @@ permissions:
     description: Allows access to the warp menu command
     default: true
 
+  waystonewarps.warp_limit.*:
+    description: Warp limit permissions, for example waystonewarps.warp_limit.4 or waystonewarps.warp_limit.19
+    default: false
+
   waystonewarps.bypass.*:
     description: Full control of all waystones
     default: op
@@ -23,12 +28,15 @@ permissions:
       waystonewarps.bypass.icon: true
       waystonewarps.bypass.relocate: true
       waystonewarps.bypass.open_menu: true
+      waystonewarps.bypass.break: true
+      waystonewarps.bypass.private_access: true
+      waystonewarps.bypass.cost: true
       waystonewarps.create: true
 
   waystonewarps.create:
     description: Allows creating waystone warps
     default: true
-    
+
   waystonewarps.discover:
     description: Allows discovering waystone warps
     default: true
@@ -55,6 +63,26 @@ permissions:
 
   waystonewarps.bypass.open_menu:
     description: Can open other players' waystone menus
+    default: op
+
+  waystonewarps.bypass.break:
+    description: Can break any waystone regardless of ownership
+    default: op
+
+  waystonewarps.bypass.private_access:
+    description: Can access private waystones without being whitelisted
+    default: op
+
+  waystonewarps.bypass.cost:
+    description: Can teleport without paying waystone costs
+    default: op
+
+  waystonewarps.admin.global_warp:
+    description: Can set a waystone to global access level (visible and accessible to all players)
+    default: op
+
+  waystonewarps.admin.manage_groups:
+    description: Can create, rename, and delete warp groups
     default: op
 
   waystonewarps.admin.invalids.*:
@@ -85,6 +113,12 @@ permissions:
     description: Allows teleportation between different worlds
     default: op
 
-  waystonewarps.teleport.cooldown_bypass:
-    description: Bypasses the cooldown between teleportations
+  waystonewarps.teleport.interworldgroup:
+    description: Allows teleportation between different worlds of same world group
     default: op
+
+  waystonewarps.teleport.cooldown_bypass:
+    description: Bypasses both the teleport warmup timer and the post-teleport cooldown
+    default: op
+
+

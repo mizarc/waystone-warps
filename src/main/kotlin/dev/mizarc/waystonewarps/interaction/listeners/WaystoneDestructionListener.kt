@@ -8,6 +8,7 @@ import dev.mizarc.waystonewarps.domain.warps.Warp
 import dev.mizarc.waystonewarps.infrastructure.mappers.toPosition3D
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
+import dev.mizarc.waystonewarps.interaction.messaging.PrimaryColourPalette
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.TextColor
 import org.bukkit.Material
@@ -39,9 +40,19 @@ class WaystoneDestructionListener: Listener, KoinComponent {
         val bottomBlockPosition = event.block.location.toPosition3D()
         val topBlockPosition = event.block.location.clone().apply { y += 1 }.toPosition3D()
 
-        // Break and perform action based on result
         val positions = listOf(topBlockPosition, bottomBlockPosition)
         for (position in positions) {
+            val existingWarp = getWarpAtPosition.execute(position, event.block.world.uid) ?: continue
+
+            // Only the warp owner or players with bypass permission can break a waystone
+            if (existingWarp.playerId != event.player.uniqueId && !event.player.hasPermission("waystonewarps.bypass.break")) {
+                event.isCancelled = true
+                event.player.sendActionBar(
+                    Component.text(localizationProvider.get(event.player.uniqueId, LocalizationKeys.FEEDBACK_WAYSTONE_NOT_OWNER))
+                        .color(PrimaryColourPalette.FAILED.color))
+                return
+            }
+
             val result = breakWarpBlock.execute(position, event.block.world.uid)
             when (result) {
                 is BreakWarpResult.Success -> triggerSuccess(event.player, result.warp)

@@ -4,7 +4,7 @@ import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.CostType
 import org.bukkit.configuration.file.FileConfiguration
 
-class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigService {
+class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigService {
 
     override fun getPluginLanguage(): String {
         return configFile.getString("plugin_language", "en").toString()
@@ -18,6 +18,14 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
         return configFile.getInt("teleport_timer", 5)
     }
 
+    override fun getTeleportCooldown(): Int {
+        return configFile.getInt("teleport_cooldown", 30)
+    }
+
+    override fun isTeleportCostEnabled(): Boolean {
+        return configFile.getBoolean("waystone-cost", false)
+    }
+
     override fun getTeleportCostType(): CostType {
         return runCatching {
             CostType.valueOf(configFile.getString("teleport_cost_type", "ITEM").toString())
@@ -28,8 +36,28 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
         return configFile.getString("teleport_cost_item", "ENDER_PEARL").toString()
     }
 
+    override fun getTeleportCostItemModel(): String {
+        return configFile.getString("teleport_cost_item_model", "").toString()
+    }
+
     override fun getTeleportCostAmount(): Double {
         return configFile.getDouble("teleport_cost_amount", 3.0)
+    }
+
+    override fun isTeleportCostDistanceScaling(): Boolean {
+        return configFile.getBoolean("teleport_cost_distance_scaling", true)
+    }
+
+    override fun getTeleportCostMin(): Int {
+        return configFile.getInt("teleport_cost_min", 1)
+    }
+
+    override fun getTeleportCostMax(): Int {
+        return configFile.getInt("teleport_cost_max", 30)
+    }
+
+    override fun getTeleportCostScaleDistance(): Double {
+        return configFile.getDouble("teleport_cost_scale_distance", 10000.0)
     }
 
     override fun getPlatformReplaceBlocks(): Set<String> {
@@ -55,5 +83,17 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration): ConfigServ
 
     override fun hologramsEnabled(): Boolean {
         return configFile.getBoolean("holograms_enabled")
+    }
+
+    override fun worldNameEnabled(): Boolean {
+        return configFile.getBoolean("world_name_enabled")
+    }
+
+    override fun bossBarEnabled(): Boolean {
+        return configFile.getBoolean("boss_bar_enabled", false)
+    }
+
+    override fun warpGroupsEnabled(): Boolean {
+        return configFile.getBoolean("warp_groups_enabled", false)
     }
 }

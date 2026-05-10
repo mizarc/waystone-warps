@@ -67,11 +67,7 @@ class InvalidsCommand : BaseCommand(), KoinComponent {
             
             if (sender is Player) {
                 // For players, add click and hover events
-                val hoverText = if (sender is Player) {
-                    localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_LIST_CLIPBOARD_HOVER)
-                } else {
-                    localizationProvider.getConsole(LocalizationKeys.COMMAND_INVALIDS_LIST_CLIPBOARD_HOVER)
-                }
+                val hoverText = localizationProvider.get(sender.uniqueId, LocalizationKeys.COMMAND_INVALIDS_LIST_CLIPBOARD_HOVER)
                 val clickableMessage = message
                     .clickEvent(ClickEvent.copyToClipboard(worldIdStr))
                     .hoverEvent(HoverEvent.showText(Component.text(hoverText, NamedTextColor.GREEN)))

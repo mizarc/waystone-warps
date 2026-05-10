@@ -14,9 +14,14 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
 
 import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
+import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
+import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
+import org.bukkit.block.BlockFace
 
 @CommandAlias("warpcreate")
 @CommandPermission("waystonewarps.create")
@@ -25,6 +30,8 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
 
     private val createWarp: CreateWarp by inject()
     private val localization: LocalizationProvider by inject()
+    private val configService: ConfigService by inject()
+    private val isValidWarpBase: IsValidWarpBase by inject()
 
     /**
      * Handles the **warpcreate** command.
@@ -44,21 +51,23 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
         val targetBlock = player.getTargetBlockExact(10)
         if (targetBlock == null) {
             player.sendMessage(
-                localization.get(playerId, "feedback.create.not_within_range")
+                localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_NOT_WITHIN_RANGE)
             )
             return
         }
 
         if (targetBlock.type != Material.LODESTONE) {
             player.sendMessage(
-                localization.get(playerId, "feedback.create.not_lodestone")
+                localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_NOT_LODESTONE)
             )
             return
         }
 
-        if (targetBlock.getRelative(org.bukkit.block.BlockFace.DOWN).type != Material.SMOOTH_STONE) {
+        // Check all possible waystone base types
+        val validBaseFound = checkWaystoneStructure(targetBlock)
+        if (!validBaseFound) {
             player.sendMessage(
-                localization.get(playerId, "feedback.create.not_smooth_stone")
+                localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_NOT_SMOOTH_STONE)
             )
             return
         }
@@ -71,41 +80,94 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
         )
         val worldId = blockLoc.world?.uid ?: run {
             player.sendMessage(
-                localization.get(playerId, "feedback.create.world_not_found")
+                localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_WORLD_NOT_FOUND)
             )
             return
         }
 
+        // Determine the base block type from the structure
+        val baseBlockType = determineBaseBlockType(targetBlock)
+        
         val result = createWarp.execute(
             playerId = playerId,
             name = name,
             position3D = position,
             worldId = worldId,
-            baseBlock = "LODESTONE"
+            baseBlock = baseBlockType
         )
 
         when (result) {
             is CreateWarpResult.Success -> {
                 player.sendMessage(
-                    localization.get(playerId, "feedback.create.success")
+                    localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_SUCCESS)
                 )
             }
             CreateWarpResult.LimitExceeded -> {
                 player.sendMessage(
-                    localization.get(playerId, "condition.naming.limit")
+                    localization.get(playerId, LocalizationKeys.CONDITION_NAMING_LIMIT)
                 )
             }
             CreateWarpResult.NameCannotBeBlank -> {
                 player.sendMessage(
-                    localization.get(playerId,"condition.naming.blank")
+                    localization.get(playerId, LocalizationKeys.CONDITION_NAMING_BLANK)
                 )
             }
             CreateWarpResult.NameAlreadyExists -> {
                 player.sendMessage(
-                    localization.get(playerId,"condition.naming.existing")
+                    localization.get(playerId, LocalizationKeys.CONDITION_NAMING_EXISTING)
                 )
             }
         }
 
+    }
+
+    /**
+     * Checks if the target lodestone has a valid waystone structure beneath it
+     */
+    private fun checkWaystoneStructure(lodestone: org.bukkit.block.Block): Boolean {
+        val allSkinTypes = configService.getAllSkinTypes()
+        
+        for (skinType in allSkinTypes) {
+            val structureBlocks = configService.getStructureBlocks(skinType)
+            if (structureBlocks.size >= 3) {
+                // Check the block directly below the lodestone (index 2 in structure)
+                val lowerBlockType = structureBlocks[2]
+                try {
+                    val lowerMaterial = Material.valueOf(lowerBlockType)
+                    if (lodestone.getRelative(BlockFace.DOWN).type == lowerMaterial) {
+                        return true
+                    }
+                } catch (e: IllegalArgumentException) {
+                    // Skip invalid material names
+                    continue
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * Determines the base block type based on the waystone structure
+     */
+    private fun determineBaseBlockType(lodestone: org.bukkit.block.Block): String {
+        val allSkinTypes = configService.getAllSkinTypes()
+        
+        for (skinType in allSkinTypes) {
+            val structureBlocks = configService.getStructureBlocks(skinType)
+            if (structureBlocks.size >= 3) {
+                // Check the block directly below the lodestone (index 2 in structure)
+                val lowerBlockType = structureBlocks[2]
+                try {
+                    val lowerMaterial = Material.valueOf(lowerBlockType)
+                    if (lodestone.getRelative(BlockFace.DOWN).type == lowerMaterial) {
+                        return skinType
+                    }
+                } catch (e: IllegalArgumentException) {
+                    // Skip invalid material names
+                    continue
+                }
+            }
+        }
+        return "SMOOTH_STONE" // Fallback to default
     }
 }

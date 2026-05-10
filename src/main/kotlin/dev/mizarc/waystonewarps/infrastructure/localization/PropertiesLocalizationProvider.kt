@@ -8,6 +8,7 @@ import java.text.MessageFormat
 import java.util.Locale
 import java.util.Properties
 import java.util.UUID
+import java.util.logging.Logger
 
 class PropertiesLocalizationProvider(private val config: ConfigService,
 private val dataFolder: File,
@@ -15,6 +16,7 @@ private val playerLocaleService: PlayerLocaleService
 ): LocalizationProvider {
     private val languages: MutableMap<String, Properties> = mutableMapOf()
     private val baseDefaultLanguageCode = "en"
+    private val logger = Logger.getLogger("WaystoneWarps")
 
     init {
         loadLayeredProperties()
@@ -76,11 +78,11 @@ private val playerLocaleService: PlayerLocaleService
             }
         } catch (_: IllegalArgumentException) {
             // Handle potential formatting errors (e.g., incorrect number/type of args for placeholders).
-            println("Failed to format localization key '$key' with arguments: ${args.joinToString()}")
+            logger.warning("Failed to format localization key '$key' with arguments: ${args.joinToString()}")
             pattern
         } catch (e: Exception) {
             // Catch any other unexpected exceptions during formatting.
-            println(
+            logger.warning(
                 "An unexpected error occurred while formatting localization with arguments: " +
                         "${args.joinToString()} - ${e.message}"
             )
@@ -106,7 +108,7 @@ private val playerLocaleService: PlayerLocaleService
                 try {
                     specificDefaultFile.reader(Charsets.UTF_8).use { properties.load(it) }
                 } catch (_: Exception) {
-                    println("Failed to load default language file for $locale")
+                    logger.warning("Failed to load default language file for $locale")
                 }
             }
 
@@ -116,7 +118,7 @@ private val playerLocaleService: PlayerLocaleService
                 try {
                     overrideFile.reader(Charsets.UTF_8).use { properties.load(it) }
                 } catch (_: Exception) {
-                    println("Failed to load override language file for $locale")
+                    logger.warning("Failed to load override language file for $locale")
                 }
             }
 
