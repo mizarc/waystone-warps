@@ -50,7 +50,6 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.admin.invalids.removeall` | Allows usage of removeall command. |
 | `waystonewarps.admin.set_server_warp` | Allows setting a waystone to server access level. |
 | `waystonewarps.admin.manage_groups` | Allows managing global warp groups. |
-| `waystonewarps.admin.givewarpstone` | Allows giving Warp Stone items to players. |
 | `waystonewarps.teleport` | Allows teleportation |
 | `waystonewarps.teleport.interworld` | Allows teleportation between different worlds |
 | `waystonewarps.teleport.interworldgroup` | Allows teleportation between different worlds of same world group (requires [Multiverse-Inventories](https://mvplugins.org/inventories/)) |

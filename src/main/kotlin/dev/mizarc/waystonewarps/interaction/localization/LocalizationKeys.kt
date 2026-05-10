@@ -223,8 +223,6 @@ object LocalizationKeys {
     const val COMMAND_INVALIDS_REMOVE_ERROR = "command.invalids.remove.error"
     const val COMMAND_INVALIDS_REMOVE_INVALID_WORLD = "command.invalids.remove.invalid_world"
     const val COMMAND_INVALIDS_NO_INVALID_WARPS = "command.invalids.no_invalid_warps"
-    const val COMMAND_GIVE_WARPSTONE_SUCCESS_SENDER = "command.give_warpstone.success.sender"
-    const val COMMAND_GIVE_WARPSTONE_SUCCESS_TARGET = "command.give_warpstone.success.target"
-
+    
 
 }

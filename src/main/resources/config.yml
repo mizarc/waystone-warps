@@ -29,7 +29,6 @@ teleport_cost_item: ENDER_PEARL
 
 # If set, only items with this exact item_model component will be accepted as
 # the teleport cost item. Leave empty to accept any item of the above material.
-# Example: minecraft:warpstone
 teleport_cost_item_model: ""
 
 # The amount it costs to teleport. This is the amount of item if set to item,

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit
 import java.util.UUID
 
 object PermissionWarpLimit {
-    private val warpLimitPermission = Regex("""^waystone\.(\d+)$""", RegexOption.IGNORE_CASE)
+    private val warpLimitPermission = Regex("""^waystonewarps.limit.\.(\d+)$""", RegexOption.IGNORE_CASE)
 
     fun get(playerId: UUID): Int? {
         val player = Bukkit.getPlayer(playerId) ?: return null

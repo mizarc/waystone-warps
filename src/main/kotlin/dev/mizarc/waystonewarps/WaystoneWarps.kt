@@ -2,12 +2,6 @@ package dev.mizarc.waystonewarps
 
 import co.aikar.commands.PaperCommandManager
 import co.aikar.idb.Database
-import io.papermc.paper.datacomponent.DataComponentTypes
-import io.papermc.paper.datacomponent.item.ItemLore
-import net.kyori.adventure.key.Key
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextDecoration
 import dev.mizarc.waystonewarps.api.WaystoneWarpsAPI
 import dev.mizarc.waystonewarps.application.actions.administration.ListInvalidWarps
 import dev.mizarc.waystonewarps.application.actions.administration.RemoveAllInvalidWarps
@@ -74,7 +68,6 @@ import dev.mizarc.waystonewarps.infrastructure.services.*
 import dev.mizarc.waystonewarps.infrastructure.services.teleportation.TeleportationServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.TownyServiceBukkit
 import dev.mizarc.waystonewarps.infrastructure.services.scheduling.SchedulerServiceBukkit
-import dev.mizarc.waystonewarps.interaction.commands.GiveWarpstoneCommand
 import dev.mizarc.waystonewarps.interaction.commands.InvalidsCommand
 import dev.mizarc.waystonewarps.interaction.commands.WarpCreateCommand
 import dev.mizarc.waystonewarps.interaction.listeners.*
@@ -82,10 +75,7 @@ import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import net.milkbowl.vault.economy.Economy
 import org.bukkit.Bukkit
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.configuration.file.YamlConfiguration
-import org.bukkit.inventory.ShapedRecipe
-import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.ServicePriority
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -174,7 +164,6 @@ class WaystoneWarps: JavaPlugin() {
         registerDependencies()
         registerCommands()
         registerEvents()
-        registerRecipes()
         AddAllDisplays(warpRepository, structureBuilderService, hologramService).execute()
 
         // Initialise API
@@ -354,32 +343,9 @@ class WaystoneWarps: JavaPlugin() {
         commandManager.registerCommand(WarpMenuCommand())
         commandManager.registerCommand(InvalidsCommand())
         commandManager.registerCommand(WarpCreateCommand())
-        commandManager.registerCommand(GiveWarpstoneCommand())
         commandManager.registerCommand(WarpGroupsCommand())
     }
 
-    private fun registerRecipes() {
-        val key = NamespacedKey(this, "warpstone")
-        server.removeRecipe(key)
-        val result = ItemStack(Material.ECHO_SHARD, 4)
-        result.setData(DataComponentTypes.ITEM_MODEL, Key.key("minecraft:warpstone"))
-        result.setData(DataComponentTypes.CUSTOM_NAME,
-            Component.text("Warp Stone")
-                .color(NamedTextColor.AQUA)
-                .decoration(TextDecoration.BOLD, true)
-                .decoration(TextDecoration.ITALIC, false))
-        result.setData(DataComponentTypes.LORE, ItemLore.lore()
-            .addLine(Component.text("A compact stone attuned to long-distance travel.")
-                .color(NamedTextColor.GRAY)
-                .decoration(TextDecoration.ITALIC, true))
-            .build())
-        val recipe = ShapedRecipe(key, result)
-        recipe.shape("QGQ", "GEG", "QGQ")
-        recipe.setIngredient('Q', Material.QUARTZ)
-        recipe.setIngredient('G', Material.GOLD_INGOT)
-        recipe.setIngredient('E', Material.ENDER_PEARL)
-        server.addRecipe(recipe)
-    }
 
     private fun registerEvents() {
         server.pluginManager.registerEvents(WaystoneInteractListener(configService), this)

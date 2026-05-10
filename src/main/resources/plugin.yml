@@ -126,6 +126,4 @@ permissions:
     description: Bypasses both the teleport warmup timer and the post-teleport cooldown
     default: op
 
-  waystonewarps.admin.givewarpstone:
-    description: Allows giving warpstone items to players
-    default: op
+  
