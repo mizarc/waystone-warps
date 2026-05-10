@@ -33,12 +33,6 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 
 | Permission Node | Description |
 |-----------------|-------------|
-| `waystonewarps.limit.<number>` | Sets a player's waystone creation limit, for example `waystonewarps.limit.4` or `waystonewarps.limit.19`. Highest matching value wins. |
-| `waystonewarps.limit.*` | Allows unlimited waystone creation. |
-| `waystonewarps.cost.<number>` | Sets a player's teleport cost multiplier, for example `waystonewarps.cost.0.5` for half price. Lowest matching value wins. |
-| `waystonewarps.cost.*` | Allows free teleportation (zero cost). |
-| `waystonewarps.timer.<number>` | Sets a player's teleport timer in seconds, for example `waystonewarps.timer.3` for 3-second timer. Lowest matching value wins. |
-| `waystonewarps.timer.*` | Allows instant teleportation (zero timer). |
 | `waystonewarps.command.warpmenu` | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
 | `waystonewarps.bypass.open_menu` | Allows access to open the management menu. |
 | `waystonewarps.bypass.limit` | Allows creating waystones without being blocked by the warp limit. |
@@ -62,8 +56,15 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.create` | Allow the creation of warps |
 | `waystonewarps.discover` | Allow the discovery of warps |
 
-## Per Player Limits
+## Player Specific Value Overrides
+If you require a more dynamic way of setting warp limits/timers/cost values for a player to override the configuration
+based values, you can use the these following methods to do so.
 
+There's two ways to set values for a player depending on what permission plugin you have installed. Modern permission
+plugins such as LuckPerms allow for metadata based value setting, which allows for a greater set of flexibility for
+numerical values. For legacy systems, you can set values via permission nodes instead:
+
+### Metadata-based
 Ensure that you have a Vault provider installed to set limits as described out in the installation section. Each Vault 
 provider plugin has its own way of implementing this feature. As LuckPerms is the recommended provider, instructions 
 will make use of it as such.
@@ -77,10 +78,27 @@ For groups:
 `/lp user <user_name> meta set <limit_name> <desired_number>`
 
 Here are the different limits you can set:
-- `waystonewarps.warp_limit` - Defines how many waystone warps a player can create.
-- `waystone.<number>` - Defines how many waystone warps a player can create via permission. This takes priority over Vault metadata.
-- `waystonewarps.teleport_cost` - Defines how much it costs to teleport.
-- `waystonewarps.teleport_timer` - Defines how long it takes to teleport.
+
+| Permission Node | Description |
+|-----------------|-------------|
+| `waystonewarps.warp_limit` | Defines how many waystone warps a player can create. |
+| `waystonewarps.teleport_cost` | Defines how much it costs to teleport. |
+| `waystonewarps.teleport_timer` | Defines how long it takes to teleport. |
+
+### Permission-based
+Permission based limits work as a fallback for when no metadata provider is available. If a value is set here but a
+metadata provider is available, these values will be ignored.
+
+Here are the different permissions you can set:
+
+| Permission Node | Description |
+|-----------------|-------------|
+| `waystonewarps.limit.<number>` | Sets a player's waystone creation limit, for example `waystonewarps.limit.4` or `waystonewarps.limit.19`. Highest matching value wins. |
+| `waystonewarps.limit.*` | Allows unlimited waystone creation. |
+| `waystonewarps.cost.<number>` | Sets a player's teleport cost multiplier, for example `waystonewarps.cost.0.5` for half price. Lowest matching value wins. |
+| `waystonewarps.cost.*` | Allows free teleportation (zero cost). |
+| `waystonewarps.timer.<number>` | Sets a player's teleport timer in seconds, for example `waystonewarps.timer.3` for 3-second timer. Lowest matching value wins. |
+| `waystonewarps.timer.*` | Allows instant teleportation (zero timer). |
 
 ## Building from Source
 
