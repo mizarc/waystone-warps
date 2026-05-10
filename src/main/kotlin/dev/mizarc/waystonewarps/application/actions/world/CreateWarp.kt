@@ -42,12 +42,12 @@ class CreateWarp(private val warpRepository: WarpRepository,
      * @return A `CreateWarpResult` indicating the outcome of the operation.
      */
     fun execute(playerId: UUID, name: String, position3D: Position3D, worldId: UUID,
-                baseBlock: String, bypassLimit: Boolean = false): CreateWarpResult {
+                baseBlock: String): CreateWarpResult {
         val warps = warpRepository.getByPlayer(playerId)
         val warpLimit = playerAttributeService.getWarpLimit(playerId)
-        
+
         // Check if player has unlimited warps or hasn't reached their limit
-        if (!bypassLimit && warpLimit != Int.MAX_VALUE && warps.count() >= warpLimit) {
+        if (warpLimit != Int.MAX_VALUE && warps.count() >= warpLimit) {
             return CreateWarpResult.LimitExceeded
         }
 

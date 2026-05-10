@@ -22,7 +22,6 @@ permissions:
     description: Full control of all waystones
     default: op
     children:
-      waystonewarps.bypass.limit: true
       waystonewarps.bypass.access_control: true
       waystonewarps.bypass.manage_players: true
       waystonewarps.bypass.rename: true
@@ -44,10 +43,6 @@ permissions:
 
   waystonewarps.bypass.access_control:
     description: Can change any waystone to private or public
-    default: op
-
-  waystonewarps.bypass.limit:
-    description: Admin bypass for warp limit checks (use waystonewarps.warp_limit.unlimited for unlimited player access)
     default: op
 
   waystonewarps.bypass.manage_players:

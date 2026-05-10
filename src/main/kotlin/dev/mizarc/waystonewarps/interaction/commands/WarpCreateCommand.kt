@@ -93,8 +93,7 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
             name = name,
             position3D = position,
             worldId = worldId,
-            baseBlock = baseBlockType,
-            bypassLimit = PermissionHelper.canBypassLimit(player)
+            baseBlock = baseBlockType
         )
 
         when (result) {

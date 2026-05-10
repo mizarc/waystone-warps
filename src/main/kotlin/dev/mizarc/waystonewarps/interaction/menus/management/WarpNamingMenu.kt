@@ -78,8 +78,7 @@ class WarpNamingMenu(
                 name,
                 location.toPosition3D(),
                 location.world.uid,
-                location.world.getBlockAt(belowLocation).type.name,
-                PermissionHelper.canBypassLimit(player)
+                location.world.getBlockAt(belowLocation).type.name
             )
 
             when (result) {
