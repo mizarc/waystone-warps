@@ -111,8 +111,8 @@ class WaystoneInteractListener(private val configService: ConfigService): Listen
                     menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
                 }
 
-                // Server warps are always accessible — no discovery needed
-                if (warp.accessLevel == WarpAccess.SERVER) {
+                // Global warps are always accessible — no discovery needed
+                if (warp.accessLevel == WarpAccess.GLOBAL) {
                     if (configService.allowWarpsMenuViaWaystone()) {
                         menuNavigator.openMenu(WarpMenu(player, menuNavigator, localizationProvider))
                     }

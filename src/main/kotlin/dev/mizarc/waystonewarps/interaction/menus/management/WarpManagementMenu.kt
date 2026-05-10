@@ -47,9 +47,9 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
 
         // Add privacy modes
         val canChangeAccess = PermissionHelper.canChangeAccessControl(player, warp.playerId)
-        val canSetServer = player.hasPermission("waystonewarps.admin.set_server_warp")
-        // SERVER warps can only be toggled by someone who also has canSetServer
-        val canToggleAccess = canChangeAccess && (warp.accessLevel != WarpAccess.SERVER || canSetServer)
+        val canSetServer = player.hasPermission("waystonewarps.admin.global_warp")
+        // GLOBAL warps can only be toggled by someone who has the permission
+        val canToggleAccess = canChangeAccess && (warp.accessLevel != WarpAccess.GLOBAL || canSetServer)
 
         fun buildAccessLabel(statusText: String, statusColor: TextColor): Component {
             val accessName = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME)
@@ -80,18 +80,18 @@ class WarpManagementMenu(private val player: Player, private val menuNavigator: 
                 }
                 item
             }
-            WarpAccess.SERVER -> {
+            WarpAccess.GLOBAL -> {
                 val item = ItemStack(Material.BEACON).name(
                     buildAccessLabel(
-                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_SERVER),
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_NAME_GLOBAL),
                         TextColor.color(255, 215, 0)
                     )
                 )
                 if (canToggleAccess) {
-                    item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_SERVER))
+                    item.lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_GLOBAL))
                 } else {
                     item.lore(
-                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_SERVER),
+                        localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_GLOBAL),
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_MANAGEMENT_ACCESS_LORE_NO_PERM)
                     )
                 }

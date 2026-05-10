@@ -15,16 +15,16 @@ class ToggleLock(private val warpRepository: WarpRepository,
             return Result.failure(Exception("Not authorized"))
         }
 
-        // Only server admins can change a SERVER warp
-        if (warp.accessLevel == WarpAccess.SERVER && !canSetServer) {
-            return Result.failure(Exception("Insufficient permissions to change a server warp"))
+        // Only server admins can change a GLOBAL warp
+        if (warp.accessLevel == WarpAccess.GLOBAL && !canSetServer) {
+            return Result.failure(Exception("Insufficient permissions to change a global warp"))
         }
 
         val oldWarp = warp.copy()
         warp.accessLevel = when (warp.accessLevel) {
             WarpAccess.PUBLIC -> WarpAccess.PRIVATE
-            WarpAccess.PRIVATE -> if (canSetServer) WarpAccess.SERVER else WarpAccess.PUBLIC
-            WarpAccess.SERVER -> WarpAccess.PUBLIC
+            WarpAccess.PRIVATE -> if (canSetServer) WarpAccess.GLOBAL else WarpAccess.PUBLIC
+            WarpAccess.GLOBAL -> WarpAccess.PUBLIC
         }
         warpRepository.update(warp)
         warpEventPublisher.warpModified(oldWarp, warp)

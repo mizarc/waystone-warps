@@ -77,8 +77,8 @@ permissions:
     description: Can teleport without paying waystone costs
     default: op
 
-  waystonewarps.admin.set_server_warp:
-    description: Can set a waystone to server access level (visible and accessible to all players)
+  waystonewarps.admin.global_warp:
+    description: Can set a waystone to global access level (visible and accessible to all players)
     default: op
 
   waystonewarps.admin.manage_groups:

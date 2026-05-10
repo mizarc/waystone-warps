@@ -18,7 +18,7 @@ class GetPlayerWarpAccess(private val discoveryRepository: DiscoveryRepository,
                 discoveredWarps.add(warp)
             }
         }
-        val serverWarps = warpRepository.getAll().filter { it.accessLevel == WarpAccess.SERVER }
-        return (discoveredWarps + serverWarps).distinctBy { it.id }
+        val globalWarps = warpRepository.getAll().filter { it.accessLevel == WarpAccess.GLOBAL }
+        return (discoveredWarps + globalWarps).distinctBy { it.id }
     }
 }

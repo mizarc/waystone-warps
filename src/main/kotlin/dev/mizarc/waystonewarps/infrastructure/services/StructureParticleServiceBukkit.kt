@@ -37,7 +37,7 @@ class StructureParticleServiceBukkit(private val plugin: JavaPlugin,
 
                         if (warp.playerId == player.uniqueId) {
                             player.spawnParticle(Particle.HAPPY_VILLAGER, location, 1, 0.5, 0.5, 0.5)
-                        } else if (warp.accessLevel == WarpAccess.SERVER) {
+                        } else if (warp.accessLevel == WarpAccess.GLOBAL) {
                             player.spawnParticle(Particle.SCRAPE, location, 1, 0.5, 0.5, 0.5)
                         } else if (warp.accessLevel == WarpAccess.PRIVATE && !whitelisted) {
                             player.spawnParticle(Particle.WAX_ON, location, 1, 0.5, 0.5, 0.5)

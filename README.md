@@ -31,29 +31,29 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 
 ## Permissions
 
-| Permission Node | Description |
-|-----------------|-------------|
-| `waystonewarps.command.warpmenu` | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
-| `waystonewarps.bypass.open_menu` | Allows access to open the management menu. |
-| `waystonewarps.bypass.access_control` | Allows access to change the access control. |
-| `waystonewarps.bypass.manage_players` | Allows access to manage players. |
-| `waystonewarps.bypass.rename` | Allows access to rename the waystone. |
-| `waystonewarps.bypass.icon` | Allows access to change the waystone icon. |
-| `waystonewarps.bypass.relocate` | Allows access to relocate the waystone. |
-| `waystonewarps.bypass.break` | Allows breaking any waystone regardless of ownership. |
-| `waystonewarps.bypass.private_access` | Allows access to private waystones without being whitelisted. |
-| `waystonewarps.bypass.cost` | Allows teleporting without paying waystone costs. |
-| `waystonewarps.admin.invalids.list` | Allows usage of the list command. |
-| `waystonewarps.admin.invalids.remove` | Allows usage of remove command. |
+| Permission Node                          | Description |
+|------------------------------------------|-------------|
+| `waystonewarps.command.warpmenu`         | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
+| `waystonewarps.bypass.open_menu`         | Allows access to open the management menu. |
+| `waystonewarps.bypass.access_control`    | Allows access to change the access control. |
+| `waystonewarps.bypass.manage_players`    | Allows access to manage players. |
+| `waystonewarps.bypass.rename`            | Allows access to rename the waystone. |
+| `waystonewarps.bypass.icon`              | Allows access to change the waystone icon. |
+| `waystonewarps.bypass.relocate`          | Allows access to relocate the waystone. |
+| `waystonewarps.bypass.break`             | Allows breaking any waystone regardless of ownership. |
+| `waystonewarps.bypass.private_access`    | Allows access to private waystones without being whitelisted. |
+| `waystonewarps.bypass.cost`              | Allows teleporting without paying waystone costs. |
+| `waystonewarps.admin.invalids.list`      | Allows usage of the list command. |
+| `waystonewarps.admin.invalids.remove`    | Allows usage of remove command. |
 | `waystonewarps.admin.invalids.removeall` | Allows usage of removeall command. |
-| `waystonewarps.admin.set_server_warp` | Allows setting a waystone to server access level. |
-| `waystonewarps.admin.manage_groups` | Allows managing global warp groups. |
-| `waystonewarps.teleport` | Allows teleportation |
-| `waystonewarps.teleport.interworld` | Allows teleportation between different worlds |
+| `waystonewarps.admin.global_warp`        | Allows setting a waystone to global access level. |
+| `waystonewarps.admin.manage_groups`      | Allows managing global warp groups. |
+| `waystonewarps.teleport`                 | Allows teleportation |
+| `waystonewarps.teleport.interworld`      | Allows teleportation between different worlds |
 | `waystonewarps.teleport.interworldgroup` | Allows teleportation between different worlds of same world group (requires [Multiverse-Inventories](https://mvplugins.org/inventories/)) |
 | `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the warmup and cooldown timers |
-| `waystonewarps.create` | Allow the creation of warps |
-| `waystonewarps.discover` | Allow the discovery of warps |
+| `waystonewarps.create`                   | Allow the creation of warps |
+| `waystonewarps.discover`                 | Allow the discovery of warps |
 
 ## Player Specific Value Overrides
 If you require a more dynamic way of setting warp limits/timers/cost values for a player to override the configuration
