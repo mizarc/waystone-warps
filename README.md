@@ -33,7 +33,8 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 
 | Permission Node | Description |
 |-----------------|-------------|
-| `waystone.<number>` | Sets a player's waystone creation limit, for example `waystone.4` or `waystone.19`. Highest matching value wins. |
+| `waystonewarps.limit.<number>` | Sets a player's waystone creation limit, for example `waystonewarps.limit.4` or `waystonewarps.limit.19`. Highest matching value wins. |
+| `waystonewarps.limit.*` | Allows unlimited waystone creation. |
 | `waystonewarps.command.warpmenu` | Allows the use of the warpmenu command to open up the menu that allows players to teleport to warps. |
 | `waystonewarps.bypass.open_menu` | Allows access to open the management menu. |
 | `waystonewarps.bypass.limit` | Allows creating waystones without being blocked by the warp limit. |

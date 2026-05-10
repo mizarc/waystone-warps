@@ -14,7 +14,6 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Towny support, which allows for free travel between two of the same town.
 - New permission to use the `/warpcreate command`: `waystonewarps.command.warpcreate`
 
-
 ## [1.0.0]
 
 ### Added

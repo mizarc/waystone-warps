@@ -16,10 +16,17 @@ class PlayerAttributeServiceVault(private val configService: ConfigService,
     override fun getWarpLimit(playerId: UUID): Int {
         PermissionWarpLimit.get(playerId)?.let { return it }
 
-        return metadata.getPlayerInfoInteger(
+        val vaultLimit = metadata.getPlayerInfoInteger(
             Bukkit.getServer().worlds[0].name, Bukkit.getPlayer(playerId),
             "waystonewarps.warp_limit", configService.getWarpLimit())
             .takeIf { it > -1 } ?: -1
+            
+        // Check if Vault metadata has unlimited value (-1 is treated as unlimited)
+        if (vaultLimit == -1) {
+            return Int.MAX_VALUE
+        }
+        
+        return vaultLimit
     }
 
     override fun getTeleportCost(playerId: UUID): Double =

@@ -14,8 +14,8 @@ permissions:
     description: Allows access to the warp menu command
     default: true
 
-  waystone.*:
-    description: Numeric waystone limit permissions, for example waystone.4 or waystone.19
+  waystonewarps.limit.*:
+    description: Warp limit permissions, for example waystonewarps.limit.4 or waystonewarps.limit.19
     default: false
 
   waystonewarps.bypass.*:
@@ -37,7 +37,7 @@ permissions:
   waystonewarps.create:
     description: Allows creating waystone warps
     default: true
-    
+
   waystonewarps.discover:
     description: Allows discovering waystone warps
     default: true
@@ -47,7 +47,7 @@ permissions:
     default: op
 
   waystonewarps.bypass.limit:
-    description: Can create waystones without being blocked by the warp limit
+    description: Admin bypass for warp limit checks (use waystonewarps.limit.unlimited for unlimited player access)
     default: op
 
   waystonewarps.bypass.manage_players:
@@ -126,4 +126,4 @@ permissions:
     description: Bypasses both the teleport warmup timer and the post-teleport cooldown
     default: op
 
-  
+
