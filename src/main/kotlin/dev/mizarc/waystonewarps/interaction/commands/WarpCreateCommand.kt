@@ -14,11 +14,14 @@ import co.aikar.commands.annotation.Description
 import co.aikar.commands.annotation.Name
 
 import dev.mizarc.waystonewarps.application.actions.world.CreateWarp
+import dev.mizarc.waystonewarps.application.actions.world.IsValidWarpBase
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.domain.positioning.Position3D
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationKeys
 import dev.mizarc.waystonewarps.interaction.localization.LocalizationProvider
 import dev.mizarc.waystonewarps.interaction.utils.PermissionHelper
+import org.bukkit.block.BlockFace
 
 @CommandAlias("warpcreate")
 @CommandPermission("waystonewarps.create")
@@ -27,6 +30,8 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
 
     private val createWarp: CreateWarp by inject()
     private val localization: LocalizationProvider by inject()
+    private val configService: ConfigService by inject()
+    private val isValidWarpBase: IsValidWarpBase by inject()
 
     /**
      * Handles the **warpcreate** command.
@@ -58,7 +63,9 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
             return
         }
 
-        if (targetBlock.getRelative(org.bukkit.block.BlockFace.DOWN).type != Material.SMOOTH_STONE) {
+        // Check all possible waystone base types
+        val validBaseFound = checkWaystoneStructure(targetBlock)
+        if (!validBaseFound) {
             player.sendMessage(
                 localization.get(playerId, LocalizationKeys.FEEDBACK_CREATE_NOT_SMOOTH_STONE)
             )
@@ -78,12 +85,15 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
             return
         }
 
+        // Determine the base block type from the structure
+        val baseBlockType = determineBaseBlockType(targetBlock)
+        
         val result = createWarp.execute(
             playerId = playerId,
             name = name,
             position3D = position,
             worldId = worldId,
-            baseBlock = "LODESTONE",
+            baseBlock = baseBlockType,
             bypassLimit = PermissionHelper.canBypassLimit(player)
         )
 
@@ -110,5 +120,55 @@ class WarpCreateCommand : BaseCommand(), KoinComponent {
             }
         }
 
+    }
+
+    /**
+     * Checks if the target lodestone has a valid waystone structure beneath it
+     */
+    private fun checkWaystoneStructure(lodestone: org.bukkit.block.Block): Boolean {
+        val allSkinTypes = configService.getAllSkinTypes()
+        
+        for (skinType in allSkinTypes) {
+            val structureBlocks = configService.getStructureBlocks(skinType)
+            if (structureBlocks.size >= 3) {
+                // Check the block directly below the lodestone (index 2 in structure)
+                val lowerBlockType = structureBlocks[2]
+                try {
+                    val lowerMaterial = Material.valueOf(lowerBlockType)
+                    if (lodestone.getRelative(BlockFace.DOWN).type == lowerMaterial) {
+                        return true
+                    }
+                } catch (e: IllegalArgumentException) {
+                    // Skip invalid material names
+                    continue
+                }
+            }
+        }
+        return false
+    }
+
+    /**
+     * Determines the base block type based on the waystone structure
+     */
+    private fun determineBaseBlockType(lodestone: org.bukkit.block.Block): String {
+        val allSkinTypes = configService.getAllSkinTypes()
+        
+        for (skinType in allSkinTypes) {
+            val structureBlocks = configService.getStructureBlocks(skinType)
+            if (structureBlocks.size >= 3) {
+                // Check the block directly below the lodestone (index 2 in structure)
+                val lowerBlockType = structureBlocks[2]
+                try {
+                    val lowerMaterial = Material.valueOf(lowerBlockType)
+                    if (lodestone.getRelative(BlockFace.DOWN).type == lowerMaterial) {
+                        return skinType
+                    }
+                } catch (e: IllegalArgumentException) {
+                    // Skip invalid material names
+                    continue
+                }
+            }
+        }
+        return "SMOOTH_STONE" // Fallback to default
     }
 }
