@@ -4,8 +4,8 @@ import org.bukkit.Bukkit
 import java.util.UUID
 
 object PermissionWarpTimer {
-    private val warpTimerPermission = Regex("""^waystonewarps.timer.\.(\d+)$""", RegexOption.IGNORE_CASE)
-    private val instantPermission = "waystonewarps.timer.*"
+    private val warpTimerPermission = Regex("""^waystonewarps.teleport_timer\.(\d+)$""", RegexOption.IGNORE_CASE)
+    private val instantPermission = "waystonewarps.teleport_timer.*"
 
     fun get(playerId: UUID): Int? {
         val player = Bukkit.getPlayer(playerId) ?: return null

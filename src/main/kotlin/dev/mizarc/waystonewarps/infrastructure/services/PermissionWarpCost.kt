@@ -4,8 +4,8 @@ import org.bukkit.Bukkit
 import java.util.UUID
 
 object PermissionWarpCost {
-    private val warpCostPermission = Regex("""^waystonewarps.cost.\.(\d+(?:\.\d+)?)$""", RegexOption.IGNORE_CASE)
-    private val freePermission = "waystonewarps.cost.*"
+    private val warpCostPermission = Regex("""^waystonewarps.teleport_cost\.(\d+(?:\.\d+)?)$""", RegexOption.IGNORE_CASE)
+    private val freePermission = "waystonewarps.teleport_cost.*"
 
     fun get(playerId: UUID): Double? {
         val player = Bukkit.getPlayer(playerId) ?: return null

@@ -14,8 +14,8 @@ permissions:
     description: Allows access to the warp menu command
     default: true
 
-  waystonewarps.limit.*:
-    description: Warp limit permissions, for example waystonewarps.limit.4 or waystonewarps.limit.19
+  waystonewarps.warp_limit.*:
+    description: Warp limit permissions, for example waystonewarps.warp_limit.4 or waystonewarps.warp_limit.19
     default: false
 
   waystonewarps.bypass.*:
@@ -47,7 +47,7 @@ permissions:
     default: op
 
   waystonewarps.bypass.limit:
-    description: Admin bypass for warp limit checks (use waystonewarps.limit.unlimited for unlimited player access)
+    description: Admin bypass for warp limit checks (use waystonewarps.warp_limit.unlimited for unlimited player access)
     default: op
 
   waystonewarps.bypass.manage_players:

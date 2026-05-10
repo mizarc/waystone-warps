@@ -93,12 +93,12 @@ Here are the different permissions you can set:
 
 | Permission Node | Description |
 |-----------------|-------------|
-| `waystonewarps.limit.<number>` | Sets a player's waystone creation limit, for example `waystonewarps.limit.4` or `waystonewarps.limit.19`. Highest matching value wins. |
-| `waystonewarps.limit.*` | Allows unlimited waystone creation. |
-| `waystonewarps.cost.<number>` | Sets a player's teleport cost multiplier, for example `waystonewarps.cost.0.5` for half price. Lowest matching value wins. |
-| `waystonewarps.cost.*` | Allows free teleportation (zero cost). |
-| `waystonewarps.timer.<number>` | Sets a player's teleport timer in seconds, for example `waystonewarps.timer.3` for 3-second timer. Lowest matching value wins. |
-| `waystonewarps.timer.*` | Allows instant teleportation (zero timer). |
+| `waystonewarps.warp_limit.<number>` | Sets a player's waystone creation limit, for example `waystonewarps.warp_limit.4` or `waystonewarps.warp_limit.19`. Highest matching value wins. |
+| `waystonewarps.warp_limit.*` | Allows unlimited waystone creation. |
+| `waystonewarps.teleport_cost.<number>` | Sets a player's teleport cost multiplier, for example `waystonewarps.teleport_cost.0.5` for half price. Lowest matching value wins. |
+| `waystonewarps.teleport_cost.*` | Allows free teleportation (zero cost). |
+| `waystonewarps.teleport_timer.<number>` | Sets a player's teleport timer in seconds, for example `waystonewarps.teleport_timer.3` for 3-second timer. Lowest matching value wins. |
+| `waystonewarps.teleport_timer.*` | Allows instant teleportation (zero timer). |
 
 ## Building from Source
 
