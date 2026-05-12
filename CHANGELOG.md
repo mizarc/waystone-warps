@@ -22,6 +22,9 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Towny support, which allows for free travel between two of the same town.
 - Simplified Chinese (zh_cn) localization.
 
+### Changed
+- Waystone skin menu tooltip now provides clearer information on how to use the blocks to apply the skins.
+
 ### Fixed
 - Teleport particles and sound not appearing when teleportation is instant.
 
