@@ -21,7 +21,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpSkinsMenu(
-    private val player: Player, 
+    private val player: Player,
     private val menuNavigator: MenuNavigator,
     private val localizationProvider: LocalizationProvider
 ): Menu, KoinComponent {
@@ -56,6 +56,8 @@ class WarpSkinsMenu(
             .name(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_NAME), PrimaryColourPalette.INFO.color!!)
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_1))
             .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_2))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_3))
+            .lore(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_SKINS_ITEM_TOOLTIP_LINE_4))
         val tooltipGuiItem = GuiItem(tooltipItem) { guiEvent -> guiEvent.isCancelled = true }
         navigationPane.addItem(tooltipGuiItem, 0, 2)
 
