@@ -1,0 +1,36 @@
+name: 📚 Documentation Update
+description: Suggest improvements or report errors in the docs.
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: 📖 Which part of the documentation is affected?
+      value: |
+        - **Location:** [e.g., Wiki: Commands Page]
+        - **URL:**
+  - type: checkboxes
+    id: issue_type
+    attributes:
+      label: 📝 What is the issue?
+      options:
+        - label: "Missing Information"
+        - label: "Incorrect Information"
+        - label: "Typo/Grammar"
+        - label: "Outdated"
+        - label: "Clarity/Formatting"
+  - type: textarea
+    id: proposed
+    attributes:
+      label: 💡 Proposed Change
+      value: |
+        > **Current Text:**
+        > [Paste current text here]
+
+        > **Suggested Text:**
+        > [Paste your improved version here]
+  - type: textarea
+    id: context
+    attributes:
+      label: 🛠️ Additional Context
+      placeholder: Does this change require a new screenshot?

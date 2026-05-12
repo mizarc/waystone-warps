@@ -1,0 +1,44 @@
+name: ✨ Feature Request
+description: Suggest a new idea for the project.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **Wait!** Is your idea still a work-in-progress? If you aren't sure about the specific goals, please **[open a Discussion](LINK_TO_DISCUSSIONS)** instead!
+  - type: textarea
+    id: concept
+    attributes:
+      label: 📖 Feature Concept
+      placeholder: How could this improve the user experience?
+  - type: textarea
+    id: goals
+    attributes:
+      label: 🚩 Goals
+      value: |
+        - [ ]
+        - [ ]
+  - type: textarea
+    id: implementation
+    attributes:
+      label: 🛠️ Implementation Details
+      placeholder: Recommendations for commands, permissions, or interactions.
+  - type: textarea
+    id: design
+    attributes:
+      label: 🎨 Design/UI Ideas
+      placeholder: Mockups or diagrams.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🏗️ Example Alternatives
+      placeholder: Links to other tools that do this and what they are missing.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 🏁 Checklist
+      options:
+        - label: I have checked existing issues to ensure this hasn't been requested before.
+          required: true
+        - label: This is a single feature request (not a "bundle" of different ideas).
+          required: true

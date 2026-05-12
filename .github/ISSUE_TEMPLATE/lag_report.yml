@@ -1,0 +1,48 @@
+name: ⚡ Lag Report
+description: Report performance issues or TPS drops.
+labels: ["performance", "triage"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Lag Description
+      placeholder: Describe exactly what happens. Is it a constant TPS drop, or a sudden spike?
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🕒 Steps to Reproduce
+      value: |
+        1.
+        2.
+        3.
+  - type: input
+    id: profiler
+    attributes:
+      label: 📊 Profiler Link
+      placeholder: Link to a Spark profile or Timings report.
+  - type: textarea
+    id: context
+    attributes:
+      label: 👥 Contextual Data
+      value: |
+        - **Online Players:**
+        - **Nearby Entities (If applicable):**
+        - **Other heavy plugins installed:**
+  - type: textarea
+    id: environment
+    attributes:
+      label: 🖥️ Server Environment
+      value: |
+        - **Server Version:** [e.g. Paper 1.20.1]
+        - **Plugin Version:**
+        - **Java Version:** [e.g. Java 17]
+        - **RAM:** [e.g. 8GB]
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 🏁 Checklist
+      options:
+        - label: I have checked existing issues to ensure this hasn't been reported before.
+          required: true
+        - label: I have isolated this issue by testing in a clean environment.
+          required: true
