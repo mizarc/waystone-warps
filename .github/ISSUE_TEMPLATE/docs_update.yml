@@ -1,6 +1,6 @@
 name: 📚 Documentation Update
 description: Suggest improvements or report errors in the docs.
-labels: ["documentation"]
+labels: ["type: documentation"]
 body:
   - type: textarea
     id: location

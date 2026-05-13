@@ -1,6 +1,6 @@
 name: 🐛 Bug Report
 description: Report a bug to help us improve.
-labels: ["bug", "triage"]
+labels: ["type: hotfix"]
 body:
   - type: textarea
     id: description

@@ -1,6 +1,6 @@
 name: ⚡ Lag Report
 description: Report performance issues or TPS drops.
-labels: ["performance", "triage"]
+labels: ["type: refactor"]
 body:
   - type: textarea
     id: description
