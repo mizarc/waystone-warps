@@ -1,0 +1,27 @@
+# Define the labels based on branch name patterns
+"type: feature":
+  - head-branch: ['^feature/.*']
+
+"type: bug":
+  - head-branch: ['^fix/.*']
+
+"type: hotfix":
+  - head-branch: ['^hotfix/.*']
+
+"type: refactor":
+  - head-branch: ['^refactor/.*']
+
+"type: test":
+  - head-branch: ['^test/.*']
+
+"type: build":
+  - head-branch: ['^build/.*']
+
+"type: chore":
+  - head-branch: ['^chore/.*']
+
+"type: documentation":
+  - head-branch: ['^docs/.*']
+
+"type: support":
+  - head-branch: ['^support/.*']
