@@ -27,6 +27,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Fixed
 - Teleport particles and sound not appearing when teleportation is instant.
+- Shift clicking items into menus deletes items.
 
 ## [1.0.0]
 
