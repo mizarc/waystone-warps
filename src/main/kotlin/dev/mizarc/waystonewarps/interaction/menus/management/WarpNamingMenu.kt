@@ -21,6 +21,7 @@ import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.SoundCategory
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -39,6 +40,8 @@ class WarpNamingMenu(
         val title = localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_NAMING_TITLE)
         val gui = AnvilGui(title)
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
+        gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
+            guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
         gui.setOnNameInputChanged { newName ->
             if (!isConfirming) {
                 name = newName

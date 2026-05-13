@@ -17,12 +17,13 @@ import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class WarpRenamingMenu(
-    private val player: Player, 
+    private val player: Player,
     private val menuNavigator: MenuNavigator,
     private val warp: Warp,
     private val localizationProvider: LocalizationProvider
@@ -44,6 +45,8 @@ class WarpRenamingMenu(
         // Create renaming menu
         val gui = AnvilGui(localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_RENAMING_TITLE))
         gui.setOnTopClick { guiEvent -> guiEvent.isCancelled = true }
+        gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
+            guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
         gui.setOnNameInputChanged { newName ->
             if (!isConfirming) {
                 name = newName
@@ -88,7 +91,7 @@ class WarpRenamingMenu(
                 UpdateWarpNameResult.WARP_NOT_FOUND -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name(localizationProvider.get(
-                            player.uniqueId, 
+                            player.uniqueId,
                             LocalizationKeys.CONDITION_NAMING_NOT_FOUND
                         ), PrimaryColourPalette.FAILED.color!!)
                     val guiPaperItem = GuiItem(paperItem)
@@ -100,7 +103,7 @@ class WarpRenamingMenu(
                 UpdateWarpNameResult.NAME_ALREADY_TAKEN -> {
                     val paperItem = ItemStack(Material.PAPER)
                         .name(localizationProvider.get(
-                            player.uniqueId, 
+                            player.uniqueId,
                             LocalizationKeys.CONDITION_NAMING_EXISTING,
                             name
                         ), PrimaryColourPalette.FAILED.color!!)

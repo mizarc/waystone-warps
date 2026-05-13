@@ -18,6 +18,7 @@ import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import org.bukkit.Material
 import org.bukkit.entity.Player
+import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.ItemStack
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -36,6 +37,8 @@ class WarpGroupPickerMenu(
     override fun open() {
         val gui = ChestGui(4, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_GROUP_PICKER_TITLE))
         gui.setOnTopClick { it.isCancelled = true }
+        gui.setOnBottomClick { guiEvent -> if (guiEvent.click == ClickType.SHIFT_LEFT ||
+            guiEvent.click == ClickType.SHIFT_RIGHT) guiEvent.isCancelled = true }
 
         val controlsPane = StaticPane(6, 1)
 
