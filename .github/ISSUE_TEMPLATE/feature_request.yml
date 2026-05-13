@@ -11,13 +11,17 @@ body:
     attributes:
       label: 📖 Feature Concept
       placeholder: How could this improve the user experience?
+    validations:
+      required: true
   - type: textarea
     id: goals
     attributes:
       label: 🚩 Goals
-      value: |
-        - [ ]
-        - [ ]
+      placeholder: |
+        - Users can...
+        - The plugin will...
+    validations:
+      required: true
   - type: textarea
     id: implementation
     attributes:
@@ -27,12 +31,12 @@ body:
     id: design
     attributes:
       label: 🎨 Design/UI Ideas
-      placeholder: Mockups or diagrams.
+      placeholder: (Optional) Mockups or diagrams.
   - type: textarea
     id: alternatives
     attributes:
       label: 🏗️ Example Alternatives
-      placeholder: Links to other tools that do this and what they are missing.
+      placeholder: (Optional) If you've seen this feature elsewhere, feel free to provide screenshots or links for us to use as a reference. Let us know what they’re missing and what we could do to make our version even better.
   - type: checkboxes
     id: checklist
     attributes:

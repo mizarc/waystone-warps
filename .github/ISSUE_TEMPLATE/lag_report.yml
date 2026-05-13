@@ -35,6 +35,8 @@ body:
     attributes:
       label: 📟 System Hardware
       placeholder: "e.g. Ryzen 9 9950X, 64GB RAM, 2TB NVMe SSD"
+    validations:
+      required: true
   - type: input
     id: os
     attributes:

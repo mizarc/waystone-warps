@@ -6,9 +6,10 @@ body:
     id: location
     attributes:
       label: 📖 Which part of the documentation is affected?
-      value: |
-        - **Location:** [e.g., Wiki: Commands Page]
-        - **URL:**
+      placeholder: |
+        Specify the location of the documentation you are referring to. (e.g. Wiki: <url>)
+    validations:
+      required: true
   - type: checkboxes
     id: issue_type
     attributes:
@@ -22,15 +23,22 @@ body:
   - type: textarea
     id: proposed
     attributes:
-      label: 💡 Proposed Change
-      value: |
-        > **Current Text:**
-        > [Paste current text here]
+      label: 💡 Proposed Changes
+      placeholder: |
+        Feel free to format this how you see fit, though here's a provided example that you can use:
+        #### Change 1
+        - Current:
+        - Suggested:
+        - Reason:
 
-        > **Suggested Text:**
-        > [Paste your improved version here]
+        #### Change 2
+        - Current:
+        - Suggested:
+        - Reason:
+    validations:
+      required: true
   - type: textarea
     id: context
     attributes:
       label: 🛠️ Additional Context
-      placeholder: Does this change require a new screenshot?
+      placeholder: (Optional) Does this change require a new screenshot? Anything else to be aware of?

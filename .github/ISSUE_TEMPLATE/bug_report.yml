@@ -25,11 +25,15 @@ body:
     attributes:
       label: 🎯 Expected Behavior
       placeholder: What you expected to happen.
+    validations:
+      required: true
   - type: textarea
     id: actual
     attributes:
       label: 🐛 Actual Behavior
       placeholder: What actually happened. Include error logs or stack traces if available.
+    validations:
+      required: true
   - type: textarea
     id: screenshots
     attributes:
