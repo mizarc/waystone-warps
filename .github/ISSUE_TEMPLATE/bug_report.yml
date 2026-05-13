@@ -22,12 +22,12 @@ body:
   - type: textarea
     id: expected
     attributes:
-      label: 📉 Expected Behavior
+      label: 🎯 Expected Behavior
       placeholder: What you expected to happen.
   - type: textarea
     id: actual
     attributes:
-      label: 🚨 Actual Behavior
+      label: 🐛 Actual Behavior
       placeholder: What actually happened. Include error logs or stack traces if available.
   - type: textarea
     id: screenshots

@@ -10,7 +10,7 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: 🕒 Steps to Reproduce
+      label: 🧪 Steps to Reproduce
       value: |
         1.
         2.
@@ -23,7 +23,7 @@ body:
   - type: textarea
     id: context
     attributes:
-      label: 👥 Contextual Data
+      label: 🔍 Contextual Data
       value: |
         - **Online Players:**
         - **Nearby Entities (If applicable):**
