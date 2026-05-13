@@ -1,0 +1,78 @@
+name: ⚡ Lag Report
+description: Report performance issues or TPS drops.
+labels: ["type: refactor"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Lag Description
+      placeholder: Describe exactly what happens. Is it a constant TPS drop, or a sudden spike?
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🧪 Steps to Reproduce
+      placeholder: |
+        Please provide a numbered list:
+        1. Go to...
+        2. Click on...
+        3. Observe...
+  - type: input
+    id: profiler
+    attributes:
+      label: 📊 Profiler Link
+      placeholder: Link to a Spark profile or Timings report.
+  - type: textarea
+    id: context
+    attributes:
+      label: 🔍 Contextual Data
+      placeholder: |
+        Please provide any relevant information to the issue, use these categories as a guide but feel free to modify:
+        - Average MSPT:
+        - Player Count:
+        - Loaded Entities:
+  - type: input
+    id: hardware
+    attributes:
+      label: 📟 System Hardware
+      placeholder: "e.g. Ryzen 9 9950X, 64GB RAM, 2TB NVMe SSD"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: 💻 Operating System
+      placeholder: "e.g. Windows 11, macOS 26, Fedora Linux 44"
+    validations:
+      required: true
+  - type: input
+    id: java_version
+    attributes:
+      label: ☕ Java Version
+      placeholder: "e.g. Java 17, Java 21, Java 25"
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: ⚙️ Server Version
+      placeholder: "e.g. Spigot 1.21.5, Paper 1.21.11, Purpur 26.1"
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 🏷️ Plugin Version
+      placeholder: "e.g. v1.0.0, v1.1.0, v1.2.0"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 🏁 Checklist
+      options:
+        - label: I have checked existing issues to ensure this hasn't been reported before.
+          required: true
+        - label: I have isolated this issue by testing in a clean environment.
+          required: true
+        - label: I am running a supported version of the software.
+          required: true

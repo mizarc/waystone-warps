@@ -1,0 +1,44 @@
+name: 📚 Documentation Update
+description: Suggest improvements or report errors in the docs.
+labels: ["type: documentation"]
+body:
+  - type: textarea
+    id: location
+    attributes:
+      label: 📖 Which part of the documentation is affected?
+      placeholder: |
+        Specify the location of the documentation you are referring to. (e.g. Wiki: <url>)
+    validations:
+      required: true
+  - type: checkboxes
+    id: issue_type
+    attributes:
+      label: 📝 What is the issue?
+      options:
+        - label: "Missing Information"
+        - label: "Incorrect Information"
+        - label: "Typo/Grammar"
+        - label: "Outdated"
+        - label: "Clarity/Formatting"
+  - type: textarea
+    id: proposed
+    attributes:
+      label: 💡 Proposed Changes
+      placeholder: |
+        Feel free to format this how you see fit, though here's a provided example that you can use:
+        #### Change 1
+        - Current:
+        - Suggested:
+        - Reason:
+
+        #### Change 2
+        - Current:
+        - Suggested:
+        - Reason:
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 🛠️ Additional Context
+      placeholder: (Optional) Does this change require a new screenshot? Anything else to be aware of?

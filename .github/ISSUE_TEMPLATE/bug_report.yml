@@ -1,0 +1,78 @@
+name: 🐛 Bug Report
+description: Report a bug to help us improve.
+labels: ["type: hotfix"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 📖 Bug Description
+      placeholder: A clear and concise description of what the bug is.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🧪 Steps to Reproduce
+      placeholder: |
+        Please provide a numbered list:
+        1. Go to...
+        2. Click on...
+        3. Observe...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 Expected Behavior
+      placeholder: What you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 🐛 Actual Behavior
+      placeholder: What actually happened. Include error logs or stack traces if available.
+    validations:
+      required: true
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 📸 Screenshots
+      placeholder: If applicable, add screenshots to help explain your problem.
+  - type: input
+    id: java_version
+    attributes:
+      label: ☕ Java Version
+      placeholder: "e.g. Java 17, Java 21, Java 25"
+    validations:
+      required: true
+  - type: input
+    id: server_version
+    attributes:
+      label: ⚙️ Server Version
+      placeholder: "e.g. Spigot 1.21.5, Paper 1.21.11, Purpur 26.1"
+    validations:
+      required: true
+  - type: input
+    id: plugin_version
+    attributes:
+      label: 🏷️ Plugin Version
+      placeholder: "e.g. v1.0.0, v1.1.0, v1.2.0"
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: 💡 Possible Fix
+      placeholder: (Optional) If you have an idea of where the issue lies.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 🏁 Checklist
+      options:
+        - label: I have checked existing issues to ensure this hasn't been reported before.
+          required: true
+        - label: I have isolated this bug by testing in a clean environment.
+          required: true
+        - label: I am running a supported version of the software.
+          required: true

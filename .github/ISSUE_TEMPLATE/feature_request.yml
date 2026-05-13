@@ -1,0 +1,48 @@
+name: ✨ Feature Request
+description: Suggest a new idea for the project.
+labels: ["type: feature"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        > **Wait!** Is your idea still a work-in-progress? If you aren't sure about the specific goals, please **[open a Discussion](LINK_TO_DISCUSSIONS)** instead!
+  - type: textarea
+    id: concept
+    attributes:
+      label: 📖 Feature Concept
+      placeholder: How could this improve the user experience?
+    validations:
+      required: true
+  - type: textarea
+    id: goals
+    attributes:
+      label: 🚩 Goals
+      placeholder: |
+        - Users can...
+        - The plugin will...
+    validations:
+      required: true
+  - type: textarea
+    id: implementation
+    attributes:
+      label: 🛠️ Implementation Details
+      placeholder: Recommendations for commands, permissions, or interactions.
+  - type: textarea
+    id: design
+    attributes:
+      label: 🎨 Design/UI Ideas
+      placeholder: (Optional) Mockups or diagrams.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 🏗️ Example Alternatives
+      placeholder: (Optional) If you've seen this feature elsewhere, feel free to provide screenshots or links for us to use as a reference. Let us know what they’re missing and what we could do to make our version even better.
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: 🏁 Checklist
+      options:
+        - label: I have checked existing issues to ensure this hasn't been requested before.
+          required: true
+        - label: This is a single feature request (not a "bundle" of different ideas).
+          required: true
