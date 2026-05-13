@@ -12,11 +12,12 @@ body:
   - type: textarea
     id: steps
     attributes:
-      label: 🛠️ Steps to Reproduce
-      value: |
-        1.
-        2.
-        3.
+      label: 🧪 Steps to Reproduce
+      placeholder: |
+        Please provide a numbered list:
+        1. Go to...
+        2. Click on...
+        3. Observe...
     validations:
       required: true
   - type: textarea
@@ -34,14 +35,27 @@ body:
     attributes:
       label: 📸 Screenshots
       placeholder: If applicable, add screenshots to help explain your problem.
-  - type: textarea
-    id: environment
+  - type: input
+    id: java_version
     attributes:
-      label: 💻 Environment
-      value: |
-        - **OS:** [e.g. iOS, Windows]
-        - **Browser/Version:** [e.g. Chrome 124, Safari]
-        - **App Version:** [e.g. v1.2.3]
+      label: ☕ Java Version
+      placeholder: "e.g. Java 17, Java 21, Java 25"
+    validations:
+      required: true
+  - type: input
+    id: server_version
+    attributes:
+      label: ⚙️ Server Version
+      placeholder: "e.g. Spigot 1.21.5, Paper 1.21.11, Purpur 26.1"
+    validations:
+      required: true
+  - type: input
+    id: plugin_version
+    attributes:
+      label: 🏷️ Plugin Version
+      placeholder: "e.g. v1.0.0, v1.1.0, v1.2.0"
+    validations:
+      required: true
   - type: textarea
     id: fix
     attributes:
