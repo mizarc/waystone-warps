@@ -11,6 +11,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - New `/warpcreate` command to create a new waystone via command. Permission to use: `waystonewarps.command.warpcreate`
 - New "Global" access type for warps. Warps with this access can be used without discovery.
 - Boss bar teleport timer. Can be optionally toggled via config.
+- Waystones can no longer be moved into areas protected by land protection plugins.
 - Warp groups feature, optionally enabled via config. Allows players to put their warp under a group for easier browsing. Groups are admin-defined.
 - Player override values can be set without a metadata provider such as Vault. Permissions are as follows:
   - `waystonewarps.warp_limit.<number>`: Sets a player's waystone creation limit, for example `waystonewarps.warp_limit.4` or `waystonewarps.warp_limit.19`. Highest matching value wins.
@@ -28,6 +29,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 ### Fixed
 - Teleport particles and sound not appearing when teleportation is instant.
 - Shift clicking items into menus deletes items.
+- Check failure error when an item being placed does not have an attached ItemMeta.
 
 ## [1.0.0]
 
