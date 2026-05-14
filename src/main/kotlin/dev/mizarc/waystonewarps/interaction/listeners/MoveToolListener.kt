@@ -27,7 +27,8 @@ class MoveToolListener: Listener, KoinComponent {
     @EventHandler
     fun onClaimMoveBlockPlace(event: BlockPlaceEvent) {
         // Check to see if item in hand is the warp mover
-        val warpId = event.itemInHand.itemMeta.persistentDataContainer.get(
+        val itemMeta = event.itemInHand.itemMeta ?: return
+        val warpId = itemMeta.persistentDataContainer.get(
             NamespacedKey("waystonewarps","warp"), PersistentDataType.STRING) ?: return
 
         // Get the warp to check permissions
