@@ -8,10 +8,11 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 
 ### Added
 - Support for Minecraft 26.1.
-- New `/warpcreate` command to create a new waystone via command. Permission to use: `waystonewarps.command.warpcreate`
+- New `/warpcreate` command to create a new waystone via command. Build a waystone as usual but type this command while looking at the lodestone block. Permission to use: `waystonewarps.command.warpcreate`
 - New "Global" access type for warps. Warps with this access can be used without discovery.
 - Boss bar teleport timer. Can be optionally toggled via config.
 - Waystones can no longer be moved into areas protected by land protection plugins.
+- Teleport cost can be dynamic based on distance, config options provided to tweak.
 - Warp groups feature, optionally enabled via config. Allows players to put their warp under a group for easier browsing. Groups are admin-defined.
 - Teleporting can now be restricted by a config cooldown or a player override with a metadata value: `waystonewarps.teleport_cooldown`
 - Player override values can be set without a metadata provider such as Vault. Permissions are as follows:
