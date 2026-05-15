@@ -48,12 +48,10 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Check cooldown
-        if (!player.hasPermission("waystonewarps.teleport.cooldown_bypass")) {
-            val cooldownMs = configService.getTeleportCooldown() * 1000L
-            val lastTeleport = getPlayerState(playerId).lastTeleportTime
-            if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
-                return TeleportResult.ON_COOLDOWN
-            }
+        val cooldownMs = configService.getTeleportCooldown() * 1000L
+        val lastTeleport = getPlayerState(playerId).lastTeleportTime
+        if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
+            return TeleportResult.ON_COOLDOWN
         }
 
         // Check inter-world/inter-world-group teleport permission if changing worlds
@@ -131,14 +129,12 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Cancel if on cooldown
-        if (!player.hasPermission("waystonewarps.teleport.cooldown_bypass")) {
-            val cooldownMs = configService.getTeleportCooldown() * 1000L
-            val lastTeleport = getPlayerState(playerId).lastTeleportTime
-            if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
-                val secondsRemaining = ((cooldownMs - (System.currentTimeMillis() - lastTeleport)) / 1000 + 1).toInt()
-                onCooldown(secondsRemaining)
-                return
-            }
+        val cooldownMs = configService.getTeleportCooldown() * 1000L
+        val lastTeleport = getPlayerState(playerId).lastTeleportTime
+        if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
+            val secondsRemaining = ((cooldownMs - (System.currentTimeMillis() - lastTeleport)) / 1000 + 1).toInt()
+            onCooldown(secondsRemaining)
+            return
         }
 
         // Cancel if player doesn't have the funds to teleport
@@ -155,9 +151,8 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
             return
         }
 
-        // Check for cooldown bypass or instant teleport if no timer
-        if (player.hasPermission("waystonewarps.teleport.cooldown_bypass")
-                || playerAttributeService.getTeleportTimer(playerId) <= 0) {
+        // Check for instant teleport if no timer
+        if (playerAttributeService.getTeleportTimer(playerId) <= 0) {
             val teleportResult = teleportPlayer(playerId, warp)
             if (teleportResult == TeleportResult.SUCCESS) {
                 onSuccess()

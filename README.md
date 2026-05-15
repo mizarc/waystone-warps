@@ -51,7 +51,6 @@ To teleport to waystones, right click with a compass in hand. This will bring up
 | `waystonewarps.teleport`                 | Allows teleportation |
 | `waystonewarps.teleport.interworld`      | Allows teleportation between different worlds |
 | `waystonewarps.teleport.interworldgroup` | Allows teleportation between different worlds of same world group (requires [Multiverse-Inventories](https://mvplugins.org/inventories/)) |
-| `waystonewarps.teleport.cooldown_bypass` | Allows bypassing the warmup and cooldown timers |
 | `waystonewarps.create`                   | Allow the creation of warps |
 | `waystonewarps.discover`                 | Allow the discovery of warps |
 
