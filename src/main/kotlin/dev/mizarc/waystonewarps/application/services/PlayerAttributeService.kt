@@ -32,4 +32,12 @@ interface PlayerAttributeService {
      * @returns The time it takes to teleport.
      */
     fun getTeleportTimer(playerId: UUID): Int
+
+    /**
+     * Gets the cooldown in seconds after a successful teleport before the player can use a waystone again.
+     *
+     * @param playerId The target player's id.
+     * @returns The cooldown in seconds.
+     */
+    fun getTeleportCooldown(playerId: UUID): Int
 }

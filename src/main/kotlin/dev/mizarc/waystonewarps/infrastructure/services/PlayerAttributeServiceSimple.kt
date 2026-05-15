@@ -16,4 +16,8 @@ class PlayerAttributeServiceSimple(private val configService: ConfigService): Pl
     override fun getTeleportTimer(playerId: UUID): Int {
         return PermissionWarpTimer.get(playerId) ?: configService.getTeleportTimer()
     }
+
+    override fun getTeleportCooldown(playerId: UUID): Int {
+        return PermissionWarpCooldown.get(playerId) ?: configService.getTeleportCooldown()
+    }
 }

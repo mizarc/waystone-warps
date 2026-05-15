@@ -305,7 +305,7 @@ class WaystoneWarps: JavaPlugin() {
                 discoveryRepository, whitelistRepository, structureParticleService, hologramService, warpEventPublisher) }
             single { TeleportPlayerImmediately(teleportationService) }
             single { TeleportPlayer(teleportationService, playerAttributeService, playerParticleService, playerCountdownService,
-                discoveryRepository, warpEventPublisher, get())}
+                discoveryRepository, warpEventPublisher, get(), playerStateRepository)}
             single { LogPlayerMovement(movementMonitorService) }
             single { DiscoverWarp(discoveryRepository, warpEventPublisher) }
             single { MoveWarp(warpRepository, structureBuilderService, structureParticleService, hologramService, warpEventPublisher) }

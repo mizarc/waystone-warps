@@ -48,9 +48,10 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Check cooldown
-        val cooldownMs = configService.getTeleportCooldown() * 1000L
+        val cooldownSeconds = playerAttributeService.getTeleportCooldown(playerId)
+        val cooldownMs = cooldownSeconds * 1000L
         val lastTeleport = getPlayerState(playerId).lastTeleportTime
-        if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
+        if (cooldownSeconds > 0 && lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
             return TeleportResult.ON_COOLDOWN
         }
 
@@ -129,9 +130,10 @@ class TeleportationServiceBukkit(private val playerAttributeService: PlayerAttri
         }
 
         // Cancel if on cooldown
-        val cooldownMs = configService.getTeleportCooldown() * 1000L
+        val cooldownSeconds = playerAttributeService.getTeleportCooldown(playerId)
+        val cooldownMs = cooldownSeconds * 1000L
         val lastTeleport = getPlayerState(playerId).lastTeleportTime
-        if (lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
+        if (cooldownSeconds > 0 && lastTeleport > 0L && System.currentTimeMillis() - lastTeleport < cooldownMs) {
             val secondsRemaining = ((cooldownMs - (System.currentTimeMillis() - lastTeleport)) / 1000 + 1).toInt()
             onCooldown(secondsRemaining)
             return

@@ -7,6 +7,8 @@ import dev.mizarc.waystonewarps.application.services.PlayerParticleService
 import dev.mizarc.waystonewarps.application.services.TeleportationService
 import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.discoveries.DiscoveryRepository
+import dev.mizarc.waystonewarps.domain.playerstate.PlayerState
+import dev.mizarc.waystonewarps.domain.playerstate.PlayerStateRepository
 import dev.mizarc.waystonewarps.domain.warps.Warp
 import java.time.Instant
 import java.util.*
@@ -17,7 +19,8 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
                      private val playerCountdownService: PlayerCountdownService,
                      private val discoveryRepository: DiscoveryRepository,
                      private val warpEventPublisher: WarpEventPublisher,
-                     private val teleportPlayerImmediately: TeleportPlayerImmediately) {
+                     private val teleportPlayerImmediately: TeleportPlayerImmediately,
+                     private val playerStateRepository: PlayerStateRepository) {
 
     fun execute(playerId: UUID, warp: Warp, onSuccess: () -> Unit, onPending: () -> Unit,
                 onInsufficientFunds: () -> Unit, onCanceled: () -> Unit, onWorldNotFound: () -> Unit,
@@ -110,7 +113,26 @@ class TeleportPlayer(private val teleportationService: TeleportationService,
             TeleportResult.FAILED -> onFailure()
             TeleportResult.PERMISSION_DENIED -> onPermissionDenied()
             TeleportResult.INTERWORLD_PERMISSION_DENIED -> onInterworldPermissionDenied()
-            TeleportResult.ON_COOLDOWN -> onCooldown(0)
+            TeleportResult.ON_COOLDOWN -> {
+                val cooldownSeconds = playerAttributeService.getTeleportCooldown(playerId)
+                val cooldownMs = cooldownSeconds * 1000L
+                val lastTeleport = getPlayerState(playerId).lastTeleportTime
+                val secondsRemaining = if (cooldownSeconds > 0 && lastTeleport > 0L) {
+                    ((cooldownMs - (System.currentTimeMillis() - lastTeleport)) / 1000 + 1).toInt()
+                } else {
+                    0
+                }
+                onCooldown(secondsRemaining)
+            }
         }
+    }
+
+    private fun getPlayerState(playerId: UUID): PlayerState {
+        val existing = playerStateRepository.getById(playerId)
+        if (existing != null) return existing
+
+        val state = PlayerState(playerId)
+        playerStateRepository.add(state)
+        return state
     }
 }
