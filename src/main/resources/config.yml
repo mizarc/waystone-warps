@@ -15,7 +15,7 @@ teleport_cooldown: 30
 
 # If waystone teleportation should charge players.
 # When false, all teleport cost settings below are ignored.
-waystone-cost: false
+teleport_cost: false
 
 # The type of cost that is required for teleportation. This can be set to:
 # - ITEM

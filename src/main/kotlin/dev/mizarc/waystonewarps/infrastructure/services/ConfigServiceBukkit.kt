@@ -23,7 +23,7 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigSer
     }
 
     override fun isTeleportCostEnabled(): Boolean {
-        return configFile.getBoolean("waystone-cost", false)
+        return configFile.getBoolean("teleport_cost", false)
     }
 
     override fun getTeleportCostType(): CostType {
