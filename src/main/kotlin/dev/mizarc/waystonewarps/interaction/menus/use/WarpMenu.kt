@@ -336,7 +336,7 @@ class WarpMenu(
             if (configService.isTeleportCostEnabled() && configService.getTeleportCostType() == CostType.ITEM) {
                 val cost = teleportationService.calculateCost(player.uniqueId, warp)
                 if (cost > 0) {
-                    customLore.add(0, "§6${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_COST, cost, itemDisplayName)}")
+                    customLore.add(0, "§a${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_COST, cost, itemDisplayName)}")
                 }
             }
             customLore.add(0, "§8$locationText")
@@ -371,12 +371,12 @@ class WarpMenu(
             // Add permission-related lore (only show one message at a time, priority order)
             when {
                 !hasTeleportPermission -> {
-                    customLore.add(2, "§c${
+                    customLore.add(3, "§c${
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_TELEPORT_PERMISSION)
                     }")
                 }
                 !hasInterworldPermission && !hasIntergroupPermission -> {
-                    customLore.add(2, "§c${
+                    customLore.add(3, "§c${
                         localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_NO_INTERWORLD_PERMISSION)
                     }")
                 }
@@ -384,7 +384,7 @@ class WarpMenu(
                     // No additional message needed if locked
                 }
                 else -> {
-                    customLore.add(2, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_LEFT_CLICK))
+                    customLore.add(3, localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_LEFT_CLICK))
                 }
             }
 
