@@ -12,6 +12,7 @@ import net.kyori.adventure.text.Component
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.persistence.PersistentDataType
@@ -24,10 +25,11 @@ class MoveToolListener: Listener, KoinComponent {
     private val warpRepository: WarpRepository by inject()
     private val localizationProvider: LocalizationProvider by inject()
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     fun onClaimMoveBlockPlace(event: BlockPlaceEvent) {
         // Check to see if item in hand is the warp mover
-        val warpId = event.itemInHand.itemMeta.persistentDataContainer.get(
+        val itemMeta = event.itemInHand.itemMeta ?: return
+        val warpId = itemMeta.persistentDataContainer.get(
             NamespacedKey("waystonewarps","warp"), PersistentDataType.STRING) ?: return
 
         // Get the warp to check permissions
