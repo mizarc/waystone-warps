@@ -54,7 +54,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     compileOnly("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.53-stable")
+    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains.kotlin:kotlin-stdlib:2.3.0")
     compileOnly("io.insert-koin:koin-core-jvm:4.1.1")
     implementation("co.aikar:idb-core:1.0.0-SNAPSHOT")
@@ -68,18 +68,18 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 kotlin {
-    jvmToolchain(25)
+    jvmToolchain(21)
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 
 tasks.withType<JavaCompile>().configureEach {
-    options.release.set(25)
+    options.release.set(21)
 }
 
 tasks.test {
