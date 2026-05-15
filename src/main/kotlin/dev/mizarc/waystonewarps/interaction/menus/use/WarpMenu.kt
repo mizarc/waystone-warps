@@ -33,6 +33,8 @@ import dev.mizarc.waystonewarps.interaction.utils.lore
 import dev.mizarc.waystonewarps.interaction.utils.name
 import me.xdrop.fuzzywuzzy.FuzzySearch
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.kyori.adventure.translation.GlobalTranslator
 import org.bukkit.event.inventory.ClickType
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -310,7 +312,15 @@ class WarpMenu(
             localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_RIGHT_CLICK)
         )
 
-        for (warp in warps) {
+        val costItem = configService.getTeleportCostItem()
+        val costItemStack = ItemStack(Material.valueOf(costItem.uppercase()))
+        val playerLocale = player.locale()
+        val translationComponent = Component.translatable(costItemStack.type.translationKey())
+        val renderedComponent = GlobalTranslator.render(translationComponent, playerLocale)
+        val itemDisplayName = LegacyComponentSerializer.legacySection().serialize(renderedComponent)
+
+
+            for (warp in warps) {
             val warpModel = warp.toViewModel()
             val locationText = warpModel.location?.let { location ->
                 if (configService.worldNameEnabled()) {
@@ -326,7 +336,7 @@ class WarpMenu(
             if (configService.isTeleportCostEnabled() && configService.getTeleportCostType() == CostType.ITEM) {
                 val cost = teleportationService.calculateCost(player.uniqueId, warp)
                 if (cost > 0) {
-                    customLore.add(0, "§6${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_COST, cost)}")
+                    customLore.add(0, "§6${localizationProvider.get(player.uniqueId, LocalizationKeys.MENU_WARP_ITEM_WARP_LORE_COST, cost, itemDisplayName)}")
                 }
             }
             customLore.add(0, "§8$locationText")
