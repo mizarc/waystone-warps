@@ -508,7 +508,7 @@ class WarpMenu(
 
             // Check if the current page is full (21 players)
             if (playerCounter >= 21) {
-                playerPane.addPage(Slot.fromXY(1, 2), currentPagePane)
+                playerPane.addPage(Slot.fromXY(0, 0), currentPagePane)
                 currentPagePane = OutlinePane(7, 3)
                 playerCounter = 0
             }
