@@ -1,6 +1,7 @@
 package dev.mizarc.waystonewarps.application.actions.world
 
 import dev.mizarc.waystonewarps.application.results.CreateWarpResult
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.application.services.HologramService
 import dev.mizarc.waystonewarps.application.services.PlayerAttributeService
 import dev.mizarc.waystonewarps.application.services.StructureBuilderService
@@ -27,7 +28,8 @@ class CreateWarp(private val warpRepository: WarpRepository,
                  private val discoveryRepository: DiscoveryRepository,
                  private val structureParticleService: StructureParticleService,
                  private val hologramService: HologramService,
-                 private val warpEventPublisher: WarpEventPublisher
+                 private val warpEventPublisher: WarpEventPublisher,
+                 private val configService: ConfigService
 ) {
 
     /**
@@ -55,8 +57,7 @@ class CreateWarp(private val warpRepository: WarpRepository,
             return CreateWarpResult.NameCannotBeBlank
         }
 
-        val existingWarp = warpRepository.getByName(playerId, name)
-        if (existingWarp != null) {
+        if (!configService.warpNameNonUniqueAllowed() && warpRepository.getByName(playerId, name) != null) {
             return CreateWarpResult.NameAlreadyExists
         }
 

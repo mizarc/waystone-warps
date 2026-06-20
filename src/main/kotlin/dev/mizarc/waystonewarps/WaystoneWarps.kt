@@ -295,11 +295,11 @@ class WaystoneWarps: JavaPlugin() {
 
         val actions = module {
             single { CreateWarp(warpRepository, playerAttributeService, structureBuilderService,
-                discoveryRepository, structureParticleService, hologramService, warpEventPublisher) }
+                discoveryRepository, structureParticleService, hologramService, warpEventPublisher, configService) }
             single { GetWarpPlayerAccess(discoveryRepository) }
             single { GetPlayerWarpAccess(discoveryRepository, warpRepository) }
             single { UpdateWarpIcon(warpRepository, warpEventPublisher) }
-            single { UpdateWarpName(warpRepository, hologramService, warpEventPublisher) }
+            single { UpdateWarpName(warpRepository, hologramService, warpEventPublisher, configService) }
             single { GetWarpAtPosition(warpRepository) }
             single { BreakWarpBlock(warpRepository, structureBuilderService,
                 discoveryRepository, whitelistRepository, structureParticleService, hologramService, warpEventPublisher) }

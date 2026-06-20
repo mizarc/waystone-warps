@@ -96,4 +96,8 @@ class ConfigServiceBukkit(private val configFile: FileConfiguration) : ConfigSer
     override fun warpGroupsEnabled(): Boolean {
         return configFile.getBoolean("warp_groups_enabled", false)
     }
+
+    override fun warpNameNonUniqueAllowed(): Boolean {
+        return configFile.getBoolean("warp_name_allow_non_unique", false)
+    }
 }

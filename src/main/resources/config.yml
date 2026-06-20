@@ -69,6 +69,9 @@ boss_bar_enabled: false
 # If the warp group system should be enabled, allowing you to tag warps to appear in a given category.
 warp_groups_enabled: false
 
+# If enabled, allows multiple warps to have the same name
+warp_name_allow_non_unique: false
+
 # The blocks that can be used to transform the waystone appearance. This
 # contains all the required blocks that make up the waystone that must be in the
 # following order:

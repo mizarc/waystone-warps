@@ -25,4 +25,5 @@ interface ConfigService {
     fun worldNameEnabled(): Boolean
     fun bossBarEnabled(): Boolean
     fun warpGroupsEnabled(): Boolean
+    fun warpNameNonUniqueAllowed(): Boolean
 }

@@ -1,15 +1,17 @@
 package dev.mizarc.waystonewarps.application.actions.management
 
 import dev.mizarc.waystonewarps.application.results.UpdateWarpNameResult
+import dev.mizarc.waystonewarps.application.services.ConfigService
 import dev.mizarc.waystonewarps.application.services.HologramService
 import dev.mizarc.waystonewarps.application.services.WarpEventPublisher
 import dev.mizarc.waystonewarps.domain.warps.WarpRepository
 import java.util.*
 
 class UpdateWarpName(
-    private val warpRepository: WarpRepository, 
+    private val warpRepository: WarpRepository,
     private val hologramService: HologramService,
-    private val warpEventPublisher: WarpEventPublisher
+    private val warpEventPublisher: WarpEventPublisher,
+    private val configService: ConfigService
 ) {
     fun execute(
         warpId: UUID,
@@ -27,7 +29,7 @@ class UpdateWarpName(
         }
 
         // Use the warp owner's ID to check for duplicate names
-        if (warpRepository.getByName(warp.playerId, name) != null) {
+        if (!configService.warpNameNonUniqueAllowed() && warpRepository.getByName(warp.playerId, name) != null) {
              return UpdateWarpNameResult.NAME_ALREADY_TAKEN
         }
 
